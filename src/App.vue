@@ -42,6 +42,9 @@
 .topMenu{
   box-shadow: 0px -2px 3px #252525;
 }
+.el-menu{
+  width: 100%;
+}
 </style>
 
 <template>
@@ -58,6 +61,7 @@
           mode="horizontal"
           background-color="#666C7B"
           text-color="#fff"
+          @select="topSelect"
           active-text-color="#ffd04b"
         >
           <el-menu-item v-for="(item,index) in topMenu" :key="index" :index="index">{{item}}</el-menu-item>
@@ -66,7 +70,22 @@
 
       <el-container>
         <!-- 左侧菜单 -->
-        <el-aside width="240px">Aside</el-aside>
+        <el-aside width="240px">
+          <el-menu
+            default-active="2"
+            class="el-menu-vertical-demo"
+            @open="handleOpen"
+            @close="handleClose">
+            <el-submenu index="1">
+              <template slot="title">
+                <i class="el-icon-location"></i>
+                <span>导航一</span>
+              </template>
+              <el-menu-item index="1-1">选项1</el-menu-item>
+              <el-menu-item index="1-2">选项2</el-menu-item>
+            </el-submenu>
+          </el-menu>
+        </el-aside>
 
         <!-- 内容区 -->
         <el-main>
@@ -85,6 +104,12 @@ export default {
     };
   },
   mounted() {},
-  methods: {}
+  methods: {
+    topSelect(index,path) {
+      console.log('------------');
+      console.log(index);
+      console.log(path);
+    },
+  }
 }
 </script>

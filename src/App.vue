@@ -64,25 +64,20 @@
           @select="topSelect"
           active-text-color="#ffd04b"
         >
-          <el-menu-item v-for="(item,index) in topMenu" :key="index" :index="index">{{item}}</el-menu-item>
+          <el-menu-item v-for="(item,index) in topMenu" :key="index" :index="String(index)">{{item}}</el-menu-item>
         </el-menu>
       </el-header>
 
       <el-container>
         <!-- 左侧菜单 -->
         <el-aside width="240px">
-          <el-menu
-            default-active="2"
-            class="el-menu-vertical-demo"
-            @open="handleOpen"
-            @close="handleClose">
-            <el-submenu index="1">
+          <el-menu default-active="0-0" @select="sideSelect">
+            <el-submenu v-for="(item,index) in sideMenu" :key="index" :index="String(index)" >
               <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>导航一</span>
+                  <i class="el-icon-location"></i>
+                  <span>{{item.title}}</span>
               </template>
-              <el-menu-item index="1-1">选项1</el-menu-item>
-              <el-menu-item index="1-2">选项2</el-menu-item>
+              <el-menu-item v-for="(menu, menuIndex) in item.list" :key="menuIndex" :index="`${index}-${menuIndex}`">{{menu}}</el-menu-item>
             </el-submenu>
           </el-menu>
         </el-aside>
@@ -97,19 +92,49 @@
 </template>
 
 <script>
+import pageName from './router/pageName.js';
 export default {
   data() {
     return {
-      topMenu: ['个人门户', '组织中台', '系统管理'],
+      topMenu: ['组织管理', '员工管理', '权限管理'],
+      topMenuIndex: 0,
+      sideMenuTotal: {
+        '组织管理': [
+          {title: '组织机构',list: ['机构维护']},
+          {title: '职位管理',list: ['职位体系']},
+          {title: '岗位管理',list: ['岗位维护']},
+          {title: '用户管理',list: ['用户信息']}
+        ],
+        '员工管理': [
+          {title: '档案管理',list: ['信息维护', '员工台账', '附件管理']},
+          {title: '劳动合同',list: ['未签合同', '已签合同', '合同概况']}
+        ],
+        '权限管理': [
+          {title: '角色授权',list: ['角色授权']},
+          {title: '用户授权',list: ['用户授权']},
+          {title: '角色反查',list: ['角色反查']},
+          {title: '权限移交',list: ['权限移交']}
+        ],
+      }
     };
   },
-  mounted() {},
-  methods: {
-    topSelect(index,path) {
-      console.log('------------');
-      console.log(index);
-      console.log(path);
+  computed: {
+    sideMenu() {
+      return this.sideMenuTotal[this.topMenu[this.topMenuIndex]];
     },
+  },
+  mounted() {
+  },
+  methods: {
+    topSelect(index) {
+      this.topMenuIndex = index;
+    },
+    sideSelect(index) {
+      let position = index.split('-');
+      let pageNameCh = this.sideMenu[Number(position[0])]['list'][Number(position[1])];
+      let route = pageName[pageNameCh];
+      this.$router.push(route);
+    }
   }
 }
 </script>

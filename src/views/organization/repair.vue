@@ -44,9 +44,12 @@
         :on-change="fileChange"
         :before-upload="beforeAvatarUpload">
         </el-upload>
+        <el-button type="primy" @click="submit">发送请求</el-button>
     </div>
 </template>
+
 <script>
+import {page_api1} from '../../request/api';
 export default {
     name: 'repair',        /* 机构维护 */
     data() {
@@ -58,7 +61,13 @@ export default {
         beforeAvatarUpload() {},
         fileChange(file) {
             console.log(file);
-        }
+        },
+        submit() {
+          let send = {name:'小明', age:17};
+          page_api1(send, res => {
+            console.log(res);
+          })
+        },
     }
 }
 </script>

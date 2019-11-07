@@ -10,23 +10,21 @@ const routes = [
     path: '/',
     name: 'index',
     component: index
-  },
-  {
-    path: '/organization_repair',
-    name: 'organization_repair',
-    component: path['organization_repair']
-  },
-  {
-    path: '/organization_position',
-    name: 'organization_position',
-    component: path['organization_position']
-  },
-  {
-    path: '/organization_station',
-    name: 'organization_station',
-    component: path['organization_station']
   }
-]
+];
+
+for (const key in path) {
+  if (path.hasOwnProperty(key)) {
+    const value = path[key];
+    let route = {
+      path: `/${key}`,
+      name: key,
+      component: value
+    };
+    routes.push(route);
+  }
+}
+
 
 const router = new VueRouter({
   routes

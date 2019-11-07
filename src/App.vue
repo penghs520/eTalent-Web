@@ -97,7 +97,6 @@ export default {
   data() {
     return {
       topMenu: ['组织管理', '员工管理', '权限管理'],
-      topMenuIndex: 0,
       sideMenuTotal: {
         '组织管理': [
           {title: '组织机构',list: ['机构维护']},
@@ -115,7 +114,10 @@ export default {
           {title: '角色反查',list: ['角色反查']},
           {title: '权限移交',list: ['权限移交']}
         ],
-      }
+      },
+      topMenuIndex: 0,
+      sideMenuIndex: '0-0',
+      lastRouteId: '0*0-0'
     };
   },
   computed: {
@@ -127,9 +129,16 @@ export default {
   },
   methods: {
     topSelect(index) {
-      this.topMenuIndex = index;
+      this.topMenuIndex = Number(index);
     },
     sideSelect(index) {
+      this.sideMenuIndex = index;
+      let routeId = `${this.topMenuIndex}*${index}`;
+      if (routeId === this.lastRouteId) {
+        return false;
+      }else{
+        this.lastRouteId = routeId;
+      }
       let position = index.split('-');
       let pageNameCh = this.sideMenu[Number(position[0])]['list'][Number(position[1])];
       let route = pageName[pageNameCh];

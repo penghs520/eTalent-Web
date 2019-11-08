@@ -21,7 +21,7 @@
 
 <script>
 import base from '../../assets/js/base';
-import {login_api1} from '../../request/api';
+import {login_api1, login_api2} from '../../request/api';
 
 export default {
     name: 'login',
@@ -58,8 +58,58 @@ export default {
             login_api1(send , res => {
                 let d = res.data;
                 base.log('r', '登录', d);
+                if (d.success) {
+                    this.getMenu();
+                }else{
+                    base.error(d);
+                }
             })
 
+        },
+
+        // 请求菜单
+        getMenu() {
+            login_api2({}, res => {
+                let d = res.data;
+                base.log('r', '请求菜单', d);
+                if (d.success) {
+                    // 处理数据
+                    this.menuFormat(d.result);
+                    this.$router.push('/qinjee/organization_repair')
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 处理菜单
+        menuFormat(list) {
+            let topMenu = new Array();
+            let sideMenu = new Object();
+            for (let i = 0; i < list.length; i++) {
+                const item = list[i];
+                topMenu.push(item.menuName);
+                sideMenu[item.menuName] = new Array();
+                for (let k = 0; k < item.childMenuList.length; k++) {
+                    const sideItem = item.childMenuList[k];
+                    let o = {
+                        title: sideItem.menuName,
+                        list: []
+                    };
+                    if (sideItem.childMenuList) {
+                        for (let j = 0; j < sideItem.childMenuList.length; j++) {
+                            const listItem = sideItem.childMenuList[j];
+                            o.list.push(listItem.menuName);
+                        };
+                    }else{
+                        o.list.push(sideItem.menuName);
+                    };
+                    sideMenu[item.menuName].push(o);
+                };
+            };
+            // 存储菜单
+            localStorage.setItem('topMenu',JSON.stringify(topMenu));
+            localStorage.setItem('sideMenu',JSON.stringify(sideMenu));
         },
     }
 }

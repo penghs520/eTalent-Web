@@ -124,9 +124,11 @@ export default {
     computed: {
         sideMenu() {
             return this.sideMenuTotal[this.topMenu[this.topMenuIndex]];
-        },
+        }
     },
     mounted() {
+        this.topMenu = JSON.parse(localStorage.getItem('topMenu'));
+        this.sideMenuTotal = JSON.parse(localStorage.getItem('sideMenu'));
     },
     methods: {
         topSelect(index) {

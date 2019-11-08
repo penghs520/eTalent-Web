@@ -1,4 +1,5 @@
 // 基础js方法
+import { Message } from 'element-ui';
 let base = {
     /**
      * http请求log输出方法
@@ -14,6 +15,17 @@ let base = {
             console.log(`${log}----返回的数据是:`);
             console.log(data);
         }
+    },
+
+    /**
+     * http请求success !== true 时的提醒
+     * @param {json} data http请求接收的数据res.data
+     */
+    error(data) {
+        Message({
+            message: `${data.message} code: ${data.code}`,
+            type: 'error'
+        })
     },
 };
 

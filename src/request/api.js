@@ -1,9 +1,9 @@
 // 页面接口配置
 import request from './http';
-import base from './base';
 
-const page_api1 = (data, callback) => {request('post', `${base.kt}/url`, data, callback)};
+// 登录
+const login_api1 = (data, callback) => {request('get', `dev/api/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
 
 export {
-    page_api1
+    login_api1,
 }

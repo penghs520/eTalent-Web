@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 function request_get(url, data, callback) {
-    axios.get(url, {data: data})
+    axios.get(url, {params: data})
         .then(function (response) {
             callback(response);
         })

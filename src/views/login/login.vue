@@ -21,6 +21,7 @@
 
 <script>
 import base from '../../assets/js/base';
+import pageName from '../../router/pageName';
 import {login_api1, login_api2} from '../../request/api';
 
 export default {
@@ -93,16 +94,20 @@ export default {
                 for (let k = 0; k < item.childMenuList.length; k++) {
                     const sideItem = item.childMenuList[k];
                     let o = {
-                        title: sideItem.menuName,
-                        list: []
+                        chName: sideItem.menuName
                     };
                     if (sideItem.childMenuList) {
+                        o.children = new Array();
                         for (let j = 0; j < sideItem.childMenuList.length; j++) {
                             const listItem = sideItem.childMenuList[j];
-                            o.list.push(listItem.menuName);
+                            let route = {
+                                chName: listItem.menuName,
+                                path: pageName[listItem.menuName] ? pageName[listItem.menuName] : ''
+                            };
+                            o.children.push(route);
                         };
                     }else{
-                        o.list.push(sideItem.menuName);
+                        o.path = pageName[sideItem.menuName] ? pageName[sideItem.menuName] : '';
                     };
                     sideMenu[item.menuName].push(o);
                 };

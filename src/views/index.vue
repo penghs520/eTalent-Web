@@ -45,6 +45,9 @@
 .el-menu{
   width: 100%;
 }
+#index{
+    height: 100%;
+}
 </style>
 
 <template>
@@ -71,14 +74,20 @@
             <el-container>
                 <!-- 左侧菜单 -->
                 <el-aside width="240px">
-                    <el-menu default-active="0-0" @select="sideSelect">
-                        <el-submenu v-for="(item,index) in sideMenu" :key="index" :index="String(index)" >
-                            <template slot="title">
-                                <i class="el-icon-location"></i>
-                                <span>{{item.title}}</span>
-                            </template>
-                            <el-menu-item v-for="(menu, menuIndex) in item.list" :key="menuIndex" :index="`${index}-${menuIndex}`">{{menu}}</el-menu-item>
-                        </el-submenu>
+                    <el-menu default-active="organization_repair" :router="true">
+                        <div v-for="(item,index) in sideMenu" :key="index" >
+                            <el-menu-item v-if="!item.children" :index="item.path" >
+                                <i class="el-icon-menu"></i>
+                                <span slot="title">{{item.chName}}</span>
+                            </el-menu-item>
+                            <el-submenu v-else :index="String(index)" >
+                                <template slot="title">
+                                    <i class="el-icon-location"></i>
+                                    <span>{{item.chName}}</span>
+                                </template>
+                                <el-menu-item v-for="(menu, menuIndex) in item.children" :key="menuIndex" :index="menu.path" :aa="menu.path" >{{menu.chName}}</el-menu-item>
+                            </el-submenu>
+                        </div>
                     </el-menu>
                 </el-aside>
 
@@ -99,26 +108,9 @@ export default {
         return {
             topMenu: ['组织管理', '员工管理', '权限管理'],
             sideMenuTotal: {
-                '组织管理': [
-                    {title: '组织机构',list: ['机构维护']},
-                    {title: '职位管理',list: ['职位体系']},
-                    {title: '岗位管理',list: ['岗位维护']},
-                    {title: '用户管理',list: ['用户信息']}
-                ],
-                '员工管理': [
-                    {title: '档案管理',list: ['信息维护', '员工台账', '附件管理']},
-                    {title: '劳动合同',list: ['未签合同', '已签合同', '合同概况']}
-                ],
-                '权限管理': [
-                    {title: '角色授权',list: ['角色授权']},
-                    {title: '用户授权',list: ['用户授权']},
-                    {title: '角色反查',list: ['角色反查']},
-                    {title: '权限移交',list: ['权限移交']}
-                ],
+                '组织管理': [],
             },
             topMenuIndex: 0,
-            sideMenuIndex: '0-0',
-            lastRouteId: '0*0-0'
         };
     },
     computed: {
@@ -129,24 +121,13 @@ export default {
     mounted() {
         this.topMenu = JSON.parse(localStorage.getItem('topMenu'));
         this.sideMenuTotal = JSON.parse(localStorage.getItem('sideMenu'));
+        console.log(this.topMenu)
+        console.log(this.sideMenuTotal)
     },
     methods: {
         topSelect(index) {
             this.topMenuIndex = Number(index);
         },
-        sideSelect(index) {
-            this.sideMenuIndex = index;
-            let routeId = `${this.topMenuIndex}*${index}`;
-            if (routeId === this.lastRouteId) {
-            return false;
-            }else{
-            this.lastRouteId = routeId;
-            }
-            let position = index.split('-');
-            let pageNameCh = this.sideMenu[Number(position[0])]['list'][Number(position[1])];
-            let route = pageName[pageNameCh];
-            this.$router.push(route);
-        }
     }
 }
 </script>

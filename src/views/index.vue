@@ -14,7 +14,7 @@
 }
 
 .el-aside {
-  background-color: #d3dce6;
+  background-color: #666C7B;
   color: #333;
   text-align: center;
 }
@@ -74,7 +74,7 @@
             <el-container>
                 <!-- 左侧菜单 -->
                 <el-aside width="240px">
-                    <el-menu default-active="organization_repair" :router="true">
+                    <el-menu default-active="organization_repair" :router="true" background-color="#666C7B" text-color="#fff" active-text-color="#FF8C58" >
                         <div v-for="(item,index) in sideMenu" :key="index" >
                             <el-menu-item v-if="!item.children" :index="item.path" >
                                 <i class="el-icon-menu"></i>
@@ -101,7 +101,6 @@
 </template>
 
 <script>
-import pageName from '../router/pageName.js';
 export default {
     name: 'index',
     data() {

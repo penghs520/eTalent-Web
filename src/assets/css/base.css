@@ -8,3 +8,15 @@ ul,li{
 html,body,#app,.el-container{
     height: 100%;
 }
+.el-main{
+    padding: 0 !important;
+}
+
+/* 弹窗样式-----------开始 */
+.qinjeeDialogSmall>div{
+    width: 560px !important;
+}
+.el-dialog__header{
+    text-align: left;
+}
+/* 弹窗样式-----------结束 */

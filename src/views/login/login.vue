@@ -21,7 +21,7 @@
 
 <script>
 import base from '../../assets/js/base';
-import pageName from '../../router/pageName';
+import pageRoute from '../../router/pageRoute';
 import {login_api1, login_api2} from '../../request/api';
 
 export default {
@@ -102,12 +102,12 @@ export default {
                             const listItem = sideItem.childMenuList[j];
                             let route = {
                                 chName: listItem.menuName,
-                                path: pageName[listItem.menuName] ? pageName[listItem.menuName] : ''
+                                path: pageRoute[listItem.menuName] ? pageRoute[listItem.menuName] : ''
                             };
                             o.children.push(route);
                         };
                     }else{
-                        o.path = pageName[sideItem.menuName] ? pageName[sideItem.menuName] : '';
+                        o.path = pageRoute[sideItem.menuName] ? pageRoute[sideItem.menuName] : '';
                     };
                     sideMenu[item.menuName].push(o);
                 };

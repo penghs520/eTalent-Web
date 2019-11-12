@@ -2,13 +2,14 @@
 
 </style>
 <template>
-    <div id="index" class="index">
-        <h1>test</h1>
+    <div id="authority_power">
+        <h1>权限移交</h1>
     </div>
 </template>
+
 <script>
 export default {
-    name: '1',
+    name: 'power',             /* 权限移交 */
     data() {
         return {};
     },

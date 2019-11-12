@@ -6,7 +6,8 @@ import store from './store'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import '@/assets/css/base.css'
-// import '@/assets/css/theme/index.css'
+import '@/assets/css/theme/element.scss'
+import '@/assets/icon/iconfont.css'
 
 // 处理element-ui路由，点击已经打开的路由报错的问题
 const originalPush = Router.prototype.push

@@ -123,6 +123,27 @@
       "font_class": "chengyuan",
       "unicode": "e62c",
       "unicode_decimal": 58924
+    },
+    {
+      "icon_id": "11738829",
+      "name": "quanxian",
+      "font_class": "quanxian",
+      "unicode": "e630",
+      "unicode_decimal": 58928
+    },
+    {
+      "icon_id": "11738971",
+      "name": "nav_client",
+      "font_class": "nav_client",
+      "unicode": "e631",
+      "unicode_decimal": 58929
+    },
+    {
+      "icon_id": "11738976",
+      "name": "wenjianjia",
+      "font_class": "wenjianjia",
+      "unicode": "e632",
+      "unicode_decimal": 58930
     }
   ]
 }

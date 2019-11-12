@@ -2,13 +2,13 @@
 
 </style>
 <template>
-    <div id="index" class="index">
-        <h1>test</h1>
+    <div id="authority_user">
+        <h1>用户授权</h1>
     </div>
 </template>
 <script>
 export default {
-    name: '1',
+    name: 'user',             /* 用户授权 */
     data() {
         return {};
     },

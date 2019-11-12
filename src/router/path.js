@@ -10,10 +10,11 @@ const organization_station   = () => import(/* webpackChunkName: "group-organiza
 // const staff_annex            = () => import(/* webpackChunkName: "group-staff" */ '@/src/views/staff/staffAnnex.vue');
 
 // 权限管理
-// const authority_role         = () => import(/* webpackChunkName: "group-authority" */ '@/src/views/authority/authorityRole.vue');
-// const authority_user         = () => import(/* webpackChunkName: "group-authority" */ '@/src/views/authority/authorityUser.vue');
-// const authority_search       = () => import(/* webpackChunkName: "group-authority" */ '@/src/views/authority/authoritySearch.vue');
-// const authority_power        = () => import(/* webpackChunkName: "group-authority" */ '@/src/views/authority/authorityPower.vue');
+const authority_role         = () => import(/* webpackChunkName: "group-authority" */ '../views/authority/role.vue');
+const authority_user         = () => import(/* webpackChunkName: "group-authority" */ '../views/authority/user.vue');
+const authority_search       = () => import(/* webpackChunkName: "group-authority" */ '../views/authority/search.vue');
+const authority_power        = () => import(/* webpackChunkName: "group-authority" */ '../views/authority/power.vue');
+
 let path = {
     // 组织管理
     organization_repair,
@@ -25,10 +26,10 @@ let path = {
     // staff_info, staff_ledger, staff_annex,
 
     // 权限管理
-    // authority_role,
-    // authority_user,
-    // authority_search,
-    // authority_power
+    authority_role,
+    authority_user,
+    authority_search,
+    authority_power
 };
 
 export default path;

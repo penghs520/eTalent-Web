@@ -27,6 +27,17 @@ let base = {
             type: 'error'
         })
     },
+
+    /**
+     * http请求success === true 时的提醒
+     * @param {json} data http请求接收的数据res.data
+     */
+    success(data) {
+        Message({
+            message: `${data.message} code: ${data.code}`,
+            type: 'success'
+        })
+    },
 };
 
 export default base;

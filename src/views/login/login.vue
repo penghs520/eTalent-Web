@@ -50,7 +50,7 @@
                     .number {
                         position: absolute;
                         left: 10px;
-                         color: #6C7072FF
+                        color: #6C7072FF
                     }
                     .mobile {
                         text-indent: 46px;                       
@@ -65,9 +65,13 @@
                     position: relative;
                    .codeBlock{
                        position: absolute;
+                       top: -8px;
                        right: 0px;
                        width: 104px;
-                       height: 32px;
+                       height: 32px;   
+                       text-align: center;
+                       line-height: 32px;
+                       color: #fff;                    
                        background-color: #FF8C58FF;
                    }
                 }
@@ -169,7 +173,7 @@
                                 <el-form-item prop="password" class="formInput2 codeInput" >
                                     <el-input v-model="mobileForm.code" type="password"></el-input>
                                     <div class="codeBlock">
-
+                                        <span>获取验证码</span>
                                     </div>
                                     <div class="line"></div>
                                 </el-form-item>

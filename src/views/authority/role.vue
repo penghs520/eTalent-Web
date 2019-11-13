@@ -27,7 +27,7 @@
 </style>
 <style>
     .el-tree-node.is-current{
-        color: orangered;
+        /* color: orangered; */
     }
 </style>
 <template>
@@ -36,7 +36,7 @@
             <div class="tree">
                 <nav>角色授权</nav>
                 <div class="btnBar">
-                    <el-button size="mini" plain @click="add" :disabled="roleTreeNodeGroupId === undefined" >新增</el-button>
+                    <el-button size="mini" plain @click="add" :disabled="roleTreeNodeGroupId === undefined || !roleTreeNodeIsTop" >新增</el-button>
                     <el-button size="mini" plain @click="edit" >编辑</el-button>
                     <el-button size="mini" plain @click="delet" >删除</el-button>
                 </div>
@@ -96,12 +96,19 @@ export default {
     name: 'role',             /* 角色授权 */
     data() {
         return {
-            roleTree: [],
+            roleTree: [
+                {
+                    childRoleGroupList: [],
+                    roleGroupName: '角色分类',
+                    roleType: 'ROLE_TOP'
+                }
+            ],
             roleTreeProps:{
                 children: 'childRoleGroupList',
                 label: 'roleGroupName'
             },
             roleTreeNodeGroupId: undefined,     /* 角色树被点击的分组的id */
+            roleTreeNodeIsTop: false,           /* 角色树被点击的节点是否是顶部节点 */
 
             roleTreeAddDialog: false,
             addForm: {
@@ -130,14 +137,17 @@ export default {
                 let d = res.data;
                 base.log('r', '角色树查询', d);
                 if (d.success) {
-                    this.roleTree = d.result;
+                    this.roleTree[0].childRoleGroupList = d.result;
                 }else{
                     base.error(d);
                 }
             })
         },
         roleTreeNodeClick(node) {
+            console.log('---------');
+            console.log(node.roleType);
             this.roleTreeNodeGroupId = node.roleType === 'ROLE_GROUP' ? node.roleGroupId : undefined;
+            this.roleTreeNodeIsTop = node.roleType === 'ROLE_TOP' ? true : false;
         },
         add () {
             this.addForm = {

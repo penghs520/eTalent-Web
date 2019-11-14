@@ -21,6 +21,7 @@
                 width: 432px;
                 background-color: skyblue;
             }
+            // 账号手机登陆
             .content {
                 flex: 1;
                 position: relative;
@@ -50,30 +51,26 @@
                     .number {
                         position: absolute;
                         left: 10px;
-                        color: #6C7072FF
+                        color: #6c7072ff;
                     }
                     .mobile {
-                        text-indent: 46px;                       
+                        text-indent: 46px;
                     }
                     .small_line {
                         margin-left: 12px;
                         color: #e5e5e5ff;
                     }
                 }
-                //验证码
-                .codeInput{
+                //手机验证码
+                .codeInput {
                     position: relative;
-                   .codeBlock{
-                       position: absolute;
-                       top: -8px;
-                       right: 0px;
-                       width: 104px;
-                       height: 32px;   
-                       text-align: center;
-                       line-height: 32px;
-                       color: #fff;                    
-                       background-color: #FF8C58FF;
-                   }
+                    .codeBlock {
+                        position: absolute;
+                        top: -40px;
+                        right: 0px;
+                        width: 104px;
+                        height: 32px;
+                    }
                 }
                 .link_text {
                     display: flex;
@@ -81,13 +78,72 @@
                     font-size: 14px;
                     .forget {
                         color: #ff8c58;
+                        span {
+                            cursor: pointer;
+                        }
+                    }
+                }
+                .we_chat {
+                    .footer_line {
+                        text-align: center;
+                        background: url("./img/admin_line.png") no-repeat center
+                            center;
+                        i {
+                            display: inline-block;
+                            width: 16px;
+                            height: 14px;
+                            margin-right: 5px;
+                            background: url("./img/admin_weixin.png") center;
+                        }
+                        span {
+                            font-size: 14px;
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+            // 微信扫码登录
+            .wechat_login {
+                flex: 1;
+                position: relative;
+                padding: 80px 88px 0px;
+                text-align: left;
+                .code {
+                    position: absolute;
+                    top: 27px;
+                    right: 21px;
+                    img {
+                        width: 64px;
+                        height: 64px;
+                    }
+                }
+                .wechat_content {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    .wechat_code {
+                        margin: 80px auto 72px;
+                        img {
+                            width: 160px;
+                            height: 160px;
+                        }
+                    }
+                    p {
+                        color: #bfbfbfff;
+                    }
+                    .footer_login {
+                        margin-top: 20px;
+                        span {
+                            color: #ff8c58;
+                            cursor: pointer;
+                        }
                     }
                 }
             }
             .el-button {
                 display: block;
                 width: 288px;
-                margin: 32px auto 35px;
+                margin: 32px auto 25px;
             }
             .input-text {
                 font-size: 16px;
@@ -99,9 +155,6 @@
             }
             .active {
                 background: #ff8c58;
-            }
-            .el-input-group__prepend {
-                border: none;
             }
         }
     }
@@ -119,9 +172,9 @@
                 <div class="swiper-wrap">
                     <swiper></swiper>
                 </div>
-                <!-- 右边登陆页面 -->
-                <div class="content">
-                    <div class="code">
+                <!-- 手机登陆页面 -->
+                <div class="content" v-if="methodChange">
+                    <div class="code" @click="methodChange = false">
                         <img src="./img/admin_qrcode.png" alt />
                     </div>
                     <h1>登录</h1>
@@ -134,13 +187,14 @@
                         label-position="left"
                         label-width="0"
                     >
-                        <el-tabs v-model="activeName" @tab-click="handleClick">
+                        <el-tabs v-model="activeName">
                             <!-- 普通登陆 -->
                             <el-tab-pane label="普通登陆" name="account_login">
                                 <el-form-item prop="userName" class="formInput1">
                                     <el-input
                                         v-model="loginForm.userName"
-                                        @focus="name = !name"
+                                        @focus="name = true"
+                                        @blur="name = false"
                                         class="input-text"
                                         placeholder="电话/邮箱/用户名"
                                     ></el-input>
@@ -150,7 +204,8 @@
                                     <el-input
                                         v-model="loginForm.password"
                                         type="password"
-                                        @focus="name2 = !name2"
+                                        @focus="name2 = true"
+                                        @blur="name2 = false"
                                         placeholder="密码"
                                     ></el-input>
                                     <div class="line" :class="{active: name2}"></div>
@@ -158,24 +213,35 @@
                             </el-tab-pane>
                             <!-- 手机快捷登陆 -->
                             <el-tab-pane label="手机快捷登陆" name="mobile_login">
-                                <el-form-item prop="userName" class="formInput1 mobileInput">
+                                <el-form-item prop="phone" class="formInput1 mobileInput">
                                     <span class="number">
                                         <span>+86</span>
                                         <span class="small_line">|</span>
                                     </span>
                                     <el-input
-                                        v-model="mobileForm.phone"
+                                        v-model="loginForm.phone"
                                         placeholder="手机"
                                         class="mobile"
+                                        @focus="name3 = true"
+                                        @blur="name3 = false"
                                     ></el-input>
-                                    <div class="line"></div>
+                                    <div class="line" :class="{active: name3}"></div>
                                 </el-form-item>
-                                <el-form-item prop="password" class="formInput2 codeInput" >
-                                    <el-input v-model="mobileForm.code" type="password"></el-input>
-                                    <div class="codeBlock">
-                                        <span>获取验证码</span>
-                                    </div>
-                                    <div class="line"></div>
+                                <el-form-item prop="code" class="formInput2 codeInput">
+                                    <el-input
+                                        v-model="loginForm.code"
+                                        type="password"
+                                        @focus="name4= true"
+                                        @blur="name4 = false"
+                                    ></el-input>
+                                    <el-button
+                                        class="codeBlock"
+                                        @click="getCode"
+                                        type="primary"
+                                        size="mini"
+                                        :disabled="isDisable"
+                                    >{{codeTxt}}</el-button>
+                                    <div class="line" :class="{active: name4}"></div>
                                 </el-form-item>
                             </el-tab-pane>
                         </el-tabs>
@@ -191,6 +257,31 @@
                     </el-form>
 
                     <el-button type="primary" @click="login('loginForm')">登录</el-button>
+
+                    <div class="we_chat">
+                        <div class="footer_line">
+                            <i></i>
+                            <span @click="methodChange = false">微信登陆</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 微信扫码登陆 -->
+                <div class="wechat_login" v-else>
+                    <div class="code" @click="methodChange = true">
+                        <img src="./img/admin_qrcode.png" alt />
+                    </div>
+                    <div class="wechat_content">
+                        <h1>微信登陆</h1>
+                        <div class="wechat_code">
+                            <img src="./img/adimin_qrcode.png" alt />
+                        </div>
+                        <p>已有账号,请使用微信扫描二维码登陆</p>
+                        <div class="footer_login">
+                            <span @click="methodChange = true">密码登陆</span>
+                            <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                            <span>注册</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -210,11 +301,12 @@ export default {
         return {
             loginForm: {
                 userName: "zhouyun",
-                password: "123456"
-            },
-            mobileForm: {
+                password: "123456",
                 phone: "",
                 code: ""
+            },
+            mobileForm: {
+                
             },
             checked: false,
             rules: {
@@ -227,23 +319,72 @@ export default {
                         message: "请输入登录密码",
                         trigger: "blur"
                     }
+                ],
+                phone: [
+                    { required: true, message: "请输入手机号", trigger: "blur" },
+                    { pattern :/0?(13|14|15|18)[0-9]{9}/,message: "请输入正确的手机号", trigger: "blur" }
+                ],
+                code: [
+                    {
+                        required: true,
+                        message: "请输入验证码",
+                        trigger: "blur"
+                    }
                 ]
             },
             activeName: "account_login",
             name: false,
-            name2: false
+            name2: false,
+            name3: false,
+            name4: false,
+            methodChange: true, //登录方式,
+            isDisable: false,
+            codeTxt: "获取验证码",
+            sec: 60,
+            waitTime: 60,
         };
     },
     components: {
         swiper
     },
     mounted() {},
+    created() {
+        let timestamp = +localStorage.getItem("time");       
+        if ((Math.round((Date.now() - timestamp)) / 1000) < this.waitTime) {
+            this.sec = this.waitTime - Math.round((Date.now() - timestamp) / 1000) 
+            this.codeTxt = `还有${this.sec}秒`;
+            this.isDisable = true;
+            let timeId = setInterval(() => {
+                this.sec--;
+                this.codeTxt = `还有${this.sec}秒`;
+                if (this.sec < 0) {
+                    clearInterval(timeId);
+                    this.isDisable = false;
+                    this.codeTxt = "获取验证码";
+                }
+            }, 1000);
+        }
+    },
     methods: {
-        //tab栏切换
-        handleClick() {},
         // login() {
         //     this.$router.push('/qinjee/index')
         // },
+        //验证码倒计时
+        getCode() {
+            let timestamp = localStorage.setItem("time", Date.now());
+            this.isDisable = true;
+            this.codeTxt = `还有${this.sec}秒`;
+            let timeId = setInterval(() => {
+                this.sec--;
+                this.codeTxt = `还有${this.sec}秒`;
+                if (this.sec < 0) {
+                    clearInterval(timeId);
+                    this.isDisable = false;
+                    this.codeTxt = "获取验证码";
+                    this.sec = this.waitTime
+                }
+            }, 1000);
+        },
         login(formName) {
             this.$refs[formName].validate(valid => {
                 if (valid) {

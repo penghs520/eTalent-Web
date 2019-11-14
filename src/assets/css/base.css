@@ -17,6 +17,10 @@ html,body,#app,.el-container{
     border: none !important;
     background-color: rgba(241, 242, 242, 0) !important;
 }
+#login .el-tabs__item {
+    font-size: 16px !important;
+}
+
 /* 登陆样式-----------结束 */
 
 /* 弹窗样式-----------开始 */

@@ -38,6 +38,7 @@
                 }
                 h1 {
                     margin-bottom: 20px;
+                    font-size: 28px;
                 }
                 .formInput1 {
                     margin-top: 30px;
@@ -159,6 +160,7 @@
         }
     }
 }
+
 // .loginForm {
 //     width: 600px;
 //     margin: 20px auto;
@@ -178,18 +180,17 @@
                         <img src="./img/admin_qrcode.png" alt />
                     </div>
                     <h1>登录</h1>
-
-                    <el-form
-                        :model="loginForm"
-                        ref="loginForm"
-                        :rules="rules"
-                        class="loginForm"
-                        label-position="left"
-                        label-width="0"
-                    >
-                        <el-tabs v-model="activeName">
-                            <!-- 普通登陆 -->
-                            <el-tab-pane label="普通登陆" name="account_login">
+                    <el-tabs v-model="activeName">
+                        <!-- 普通登陆 -->
+                        <el-tab-pane label="普通登陆" name="account_login" class="login_title">
+                            <el-form
+                                :model="loginForm"
+                                ref="loginForm"
+                                :rules="rules"
+                                class="loginForm"
+                                label-position="left"
+                                label-width="0"
+                            >
                                 <el-form-item prop="userName" class="formInput1">
                                     <el-input
                                         v-model="loginForm.userName"
@@ -210,16 +211,26 @@
                                     ></el-input>
                                     <div class="line" :class="{active: name2}"></div>
                                 </el-form-item>
-                            </el-tab-pane>
-                            <!-- 手机快捷登陆 -->
-                            <el-tab-pane label="手机快捷登陆" name="mobile_login">
+                            </el-form>
+                        </el-tab-pane>
+                        <!-- 手机快捷登陆 -->
+
+                        <el-tab-pane label="手机快捷登陆" name="mobile_login" class="login_title">
+                            <el-form
+                                :model="mobileForm"
+                                ref="mobileForm"
+                                :rules="rules"
+                                class="loginForm"
+                                label-position="left"
+                                label-width="0"
+                            >
                                 <el-form-item prop="phone" class="formInput1 mobileInput">
                                     <span class="number">
                                         <span>+86</span>
                                         <span class="small_line">|</span>
                                     </span>
                                     <el-input
-                                        v-model="loginForm.phone"
+                                        v-model="mobileForm.phone"
                                         placeholder="手机"
                                         class="mobile"
                                         @focus="name3 = true"
@@ -229,7 +240,7 @@
                                 </el-form-item>
                                 <el-form-item prop="code" class="formInput2 codeInput">
                                     <el-input
-                                        v-model="loginForm.code"
+                                        v-model="mobileForm.code"
                                         type="password"
                                         @focus="name4= true"
                                         @blur="name4 = false"
@@ -243,20 +254,20 @@
                                     >{{codeTxt}}</el-button>
                                     <div class="line" :class="{active: name4}"></div>
                                 </el-form-item>
-                            </el-tab-pane>
-                        </el-tabs>
+                            </el-form>
+                        </el-tab-pane>
+                    </el-tabs>
 
-                        <div class="link_text">
-                            <el-checkbox v-model="checked">记住我</el-checkbox>
-                            <div class="forget">
-                                <span>忘记密码?</span>
-                                <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-                                <span>注册</span>
-                            </div>
+                    <div class="link_text">
+                        <el-checkbox v-model="checked">记住我</el-checkbox>
+                        <div class="forget">
+                            <span>忘记密码?</span>
+                            <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                            <span>注册</span>
                         </div>
-                    </el-form>
+                    </div>
 
-                    <el-button type="primary" @click="login('loginForm')">登录</el-button>
+                    <el-button type="primary" @click="login">登录</el-button>
 
                     <div class="we_chat">
                         <div class="footer_line">
@@ -291,7 +302,12 @@
 <script>
 import base from "../../assets/js/base";
 import pageRoute from "../../router/pageRoute";
-import { login_api1, login_api2 } from "../../request/api";
+import {
+    login_api1,
+    login_api2,
+    login_api_sendCode,
+    login_api_phoneLogin
+} from "../../request/api";
 
 import swiper from "./components/swiper";
 
@@ -301,12 +317,11 @@ export default {
         return {
             loginForm: {
                 userName: "zhouyun",
-                password: "123456",
-                phone: "",
-                code: ""
+                password: "123456"
             },
             mobileForm: {
-                
+                phone: "",
+                code: ""
             },
             checked: false,
             rules: {
@@ -321,8 +336,16 @@ export default {
                     }
                 ],
                 phone: [
-                    { required: true, message: "请输入手机号", trigger: "blur" },
-                    { pattern :/0?(13|14|15|18)[0-9]{9}/,message: "请输入正确的手机号", trigger: "blur" }
+                    {
+                        required: true,
+                        message: "请输入手机号",
+                        trigger: "blur"
+                    },
+                    {
+                        pattern: /0?(13|14|15|18)[0-9]{9}/,
+                        message: "请输入正确的手机号",
+                        trigger: "blur"
+                    }
                 ],
                 code: [
                     {
@@ -341,17 +364,18 @@ export default {
             isDisable: false,
             codeTxt: "获取验证码",
             sec: 60,
-            waitTime: 60,
+            waitTime: 60
         };
     },
     components: {
         swiper
     },
-    mounted() {},
+    //获取倒计时
     created() {
-        let timestamp = +localStorage.getItem("time");       
-        if ((Math.round((Date.now() - timestamp)) / 1000) < this.waitTime) {
-            this.sec = this.waitTime - Math.round((Date.now() - timestamp) / 1000) 
+        let timestamp = +localStorage.getItem("time");
+        if (Math.round(Date.now() - timestamp) / 1000 < this.waitTime) {
+            this.sec =
+                this.waitTime - Math.round((Date.now() - timestamp) / 1000);
             this.codeTxt = `还有${this.sec}秒`;
             this.isDisable = true;
             let timeId = setInterval(() => {
@@ -369,8 +393,10 @@ export default {
         // login() {
         //     this.$router.push('/qinjee/index')
         // },
-        //验证码倒计时
+        //tab栏切换事件{
+        //获取验证码 , 验证码倒计时
         getCode() {
+            //验证码倒计时
             let timestamp = localStorage.setItem("time", Date.now());
             this.isDisable = true;
             this.codeTxt = `还有${this.sec}秒`;
@@ -381,17 +407,53 @@ export default {
                     clearInterval(timeId);
                     this.isDisable = false;
                     this.codeTxt = "获取验证码";
-                    this.sec = this.waitTime
+                    this.sec = this.waitTime;
                 }
             }, 1000);
-        },
-        login(formName) {
-            this.$refs[formName].validate(valid => {
-                if (valid) {
-                    this.submit();
-                }
+            //获取验证码
+            login_api_sendCode({ phone: this.mobileForm.phone }, res => {
+                this.$message.success("短信发送成功");
             });
         },
+        //登陆
+        login() {
+            if (this.activeName == "account_login") {
+                if (
+                    this.loginForm.password.length == 0 ||
+                    this.loginForm.userName.length == 0
+                ) {
+                    this.$message.warning("输入内容为空");
+                    return;
+                }
+                this.$refs["loginForm"].validate(valid => {
+                    if (valid) {
+                        this.submit();
+                    }
+                });
+            } else {
+                if (this.mobileForm.phone.length == 0) {
+                    this.$message.warning("输入内容为空");
+                    return;
+                }
+                this.$refs["mobileForm"].validate(valid => {
+                    if (valid) {
+                        this.mobileLogin();
+                    }
+                });
+            }
+        },
+        //手机快捷登陆
+        mobileLogin() {
+            let send = {
+                phone: this.mobileForm.phone,
+                code: this.mobileForm.code
+            };
+            login_api_phoneLogin(send, res => {
+                this.$message.success("登陆成功");
+                this.$router.push("/qinjee/organization_repair");
+            });
+        },
+        //普通登陆提交
         submit() {
             let send = {
                 account: this.loginForm.userName,
@@ -408,7 +470,6 @@ export default {
                 }
             });
         },
-
         // 请求菜单
         getMenu() {
             login_api2({}, res => {
@@ -417,13 +478,13 @@ export default {
                 if (d.success) {
                     // 处理数据
                     this.menuFormat(d.result);
+                    this.$message.success("登陆成功");
                     this.$router.push("/qinjee/organization_repair");
                 } else {
                     base.error(d);
                 }
             });
         },
-
         // 处理菜单
         menuFormat(list) {
             let topMenu = new Array();

@@ -71,7 +71,7 @@
                 </el-menu>
             </el-header>
 
-            <el-container>
+            <el-container class="section">
                 <!-- 左侧菜单 -->
                 <el-aside width="240px">
                     <el-menu default-active="organization_repair" :router="true" background-color="#666C7B" text-color="#fff" active-text-color="#FF8C58" >

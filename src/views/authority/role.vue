@@ -11,6 +11,12 @@
 .cont{
     width: calc(100% - 216px);
     background-color: #F0F0F0;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.cont>div{
+    background-color: #fff;
+    height: 100%;
 }
 .tree nav{
     padding: 13px 20px;
@@ -19,21 +25,70 @@
     border-bottom: 1px solid #F1F2F2;
 }
 .tree .btnBar{
-    padding: 16px 0;
+    padding: 16px 0 10px 0;
 }
 .is-focusable{
     color: orange;
 }
 .roleTreeIcon{
     margin-right: 12px;
-    color: #676B6D;
+    color: rgba(0, 0, 0, 0.45);
     font-size: 14px;
 }
 .roleTreeNode{
     font-size: 14px;
     color: #676B6D;
 }
+
+.tab{
+    padding: 0 24px;
+    border-bottom: 2px solid #F1F2F2;
+}
+.tabCont{
+    height: calc(100% - 54px);
+}
+.tabCont li{
+    overflow: auto;
+    height: 100%;
+}
+.serverTree{
+    /* padding: 0 24px; */
+    background: linear-gradient(#fff 50%, #FAFAFA 50%);
+    background-size: 100% 108px;
+}
+.serverIcon{
+    margin-left: 6px;
+    margin-right: 12px;
+}
 </style>
+<style>
+    #authority_role .serverTree .el-tree-node__content{
+        height: 54px;
+    }
+    #authority_role .leftTree .el-tree-node__content{
+        height: 40px;
+    }
+    #authority_role .serverTree .el-tree-node__expand-icon{
+        margin-right: 6px;
+        margin-left: 24px;
+    }
+    /* #authority_role .el-tabs__header{
+        margin-bottom: 0;
+    }
+    #authority_role .el-tabs__item{
+        height: 64px;
+        line-height: 64px;
+        font-size: 16px;
+    }
+    #authority_role .el-tabs__item:not(.is-active){
+        color: #676B6D;
+    }
+    #authority_role .el-tabs__nav-wrap::after{
+        background-color: rgba(0, 0, 0, 0);
+    } */
+
+</style>
+
 <template>
     <div id="authority_role">
         <div class="mian">
@@ -44,7 +99,7 @@
                     <el-button size="mini" plain @click="edit" :disabled="!roleTreeNode || roleTreeNodeGroupId === 'top'" >编辑</el-button>
                     <el-button size="mini" plain @click="delet" :disabled="!roleTreeNode || roleTreeNodeGroupId === 'top'" >删除</el-button>
                 </div>
-                <el-tree :data="roleTree" :props="roleTreeProps" @node-click="roleTreeNodeClick" :highlight-current="true" icon-class="aa" >
+                <el-tree class="leftTree" :data="roleTree" :props="roleTreeProps" @node-click="roleTreeNodeClick" :highlight-current="true" icon-class="aa" >
                     <span slot-scope="{ node, data }">
                         <span v-show="data.roleType === 'ROLE_GROUP'" class="qj-wenjianjia roleTreeIcon"></span>
                         <span v-show="data.roleType === 'ROLE'" class="qj-nav_client roleTreeIcon"></span>
@@ -52,7 +107,53 @@
                     </span>
                 </el-tree>
             </div>
-            <div class="cont"></div>
+            <div class="cont">
+                <div>
+                    <el-tabs class="tab" v-model="tabActive" >
+                        <el-tab-pane v-for="(item,index) in tabs" :key="index" :label="item.label" :name="item.name"></el-tab-pane>
+                    </el-tabs>
+                    <ul class="tabCont">
+                        <!-- 功能权限 -->
+                        <li 
+                            v-if="tabActive === 'server'" 
+                            v-loading='contLoading' 
+                            element-loading-text="拼命加载中"
+                            element-loading-spinner="el-icon-loading"
+                            element-loading-background="rgba(0, 0, 0, 0.5)" 
+                            >
+                            <template>
+                                <el-tree class="serverTree" :data="serverData" :props="serverProps" ref="serverTree" node-key="menuId" show-checkbox @check="serverCheck" :highlight-current="true" >
+                                    <span slot-scope="{ node, data }">
+                                        <span v-show="data.funcType !== 'NODE'" class="qj-wenjianjia roleTreeIcon serverIcon"></span>
+                                        <span v-show="data.funcType === 'NODE'" class="qj-detail roleTreeIcon serverIcon"></span>
+                                        <span class="roleTreeNode">{{node.label}}</span>
+                                    </span>
+                                </el-tree>
+                            </template>
+                        </li>
+
+                        <!-- 管理范围权限 -->
+                        <li 
+                            v-if="tabActive === 'range'"
+                            v-loading='contLoading' 
+                            element-loading-text="拼命加载中"
+                            element-loading-spinner="el-icon-loading"
+                            element-loading-background="rgba(0, 0, 0, 0.5)"
+                            >管理范围权限
+                        </li>
+                        
+                        <!-- 字段权限 -->
+                        <li 
+                            v-if="tabActive === 'field'"
+                            v-loading='contLoading' 
+                            element-loading-text="拼命加载中"
+                            element-loading-spinner="el-icon-loading"
+                            element-loading-background="rgba(0, 0, 0, 0.5)"
+                            >字段权限
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <!-- 角色树--新增弹窗 -->
@@ -142,7 +243,7 @@
 
 <script>
 import base from '../../assets/js/base';
-import {role_api1, role_api2, role_api3, role_api4, role_api5, role_api6, role_api7} from '../../request/api';
+import {role_api1, role_api2, role_api3, role_api4, role_api5, role_api6, role_api7, role_api8, role_api9} from '../../request/api';
 
 export default {
     name: 'role',             /* 角色授权 */
@@ -194,6 +295,24 @@ export default {
             // 角色树--删除
             roleTreeDeleteDialog: false,
             deleteRoleLoading: false,
+
+            // tab标签
+            tabs: [
+                {label: '功能权限', name: 'server'},
+                {label: '管理范围权限', name: 'range'},
+                {label: '字段权限', name: 'field'},
+            ],
+            tabActive: 'server',
+            contLoading: false,         /* 内容区加载动画 */
+
+            roleTreeRoleId: undefined,  /* 角色树被点击的角色id */
+
+            // 功能权限
+            serverData: [],
+            serverProps:{
+                children: 'childMenuList',
+                label: 'menuName'
+            },
         };
     },
     mounted() {
@@ -213,9 +332,18 @@ export default {
                 }
             })
         },
+
+        // 角色树节点被点击
         roleTreeNodeClick(node) {
             this.roleTreeNode = node;
             this.roleTreeNodeGroupId = node.roleType === 'ROLE_GROUP' ? node.roleGroupId : undefined;
+
+            if (node.roleType === 'ROLE') {
+                if (this.roleTreeRoleId !== node.roleGroupId) {
+                    this.roleTreeRoleId = node.roleGroupId;
+                    this.getCont(node.roleGroupId);
+                };
+            };
         },
 
         // 新增角色（组）
@@ -387,6 +515,91 @@ export default {
             })
         },
 
+        // 点击角色树的时候查询内容
+        getCont(id) {
+            switch (this.tabActive) {
+                case 'server':
+                    // 功能权限
+                    this.getServer(id);
+                    break;
+                
+                case 'range':
+                    // 管理范围权限
+                    break;
+                
+                case 'field':
+                    // 字段权限
+                    break;
+            
+                default:
+                    break;
+            }
+        },
+
+        // 根据角色id查询角色功能权限树
+        getServer(id) {
+            let send = {"roleId": id};
+            base.log('s', '角色功能权限树', send);
+            this.contLoading = true;
+            role_api8(send, res => {
+                this.contLoading = false;
+                let d = res.data;
+                base.log('r', '角色功能权限树', d);
+                if (d.success) {
+                    // 赋值
+                    this.serverData = d.result;
+                    // 设置选中状态
+                    let checkedNodeList = this.getHasMenu(d.result);
+                    console.log(checkedNodeList)
+                    this.$refs.serverTree.setCheckedKeys(checkedNodeList.map(item => {return item.menuId}));
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 获取已有权限的节点
+        getHasMenu(list) {
+            let nodeList = new Array();
+            this.getNode(list, nodeList);
+            let result = nodeList.filter(item => {
+                return item.hasMenu;
+            });
+            return result;
+        },
+
+        // 获取权限node节点
+        getNode(list,resultList) {
+            list.forEach(item => {
+                if (item.funcType === 'NODE') {
+                    resultList.push(item);
+                }else{
+                    this.getNode(item.childMenuList,resultList);
+                }
+            });
+        },
+
+        // 功能权限树选中值改变
+        serverCheck() {
+            let list = this.$refs.serverTree.getCheckedNodes(false,true);
+            console.log(list)
+            let send = {
+                "roleId": this.roleTreeNode.roleGroupId,
+                "menuIdList": list.map(item => {return item.menuId}),
+            };
+            base.log('s', '功能权限更新', send);
+            this.contLoading = true;
+            role_api9(send, res => {
+                this.contLoading = false;
+                let d = res.data;
+                base.log('r', '功能权限更新', d);
+                if (d.success) {
+                    base.success(d);
+                }else{
+                    base.error(d);
+                }
+            })
+        },
     }
 }
 </script>

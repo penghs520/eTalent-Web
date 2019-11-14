@@ -1,8 +1,14 @@
 // axios请求配置
 import axios from 'axios';
+import qs from 'qs'
 
 function request_get(url, data, callback) {
-    axios.get(url, {params: data})
+    axios.get(url, {
+            params: data,
+            paramsSerializer: params => {
+                return qs.stringify(params, { indices: false })
+            }
+        })
         .then(function (response) {
             callback(response);
         })

@@ -8,6 +8,9 @@ ul,li{
 html,body,#app,.el-container{
     height: 100%;
 }
+.el-container.section{
+    height: calc(100% - 64px);
+}
 .el-main{
     padding: 0 !important;
 }
@@ -83,3 +86,20 @@ html,body,#app,.el-container{
     color: #FF8C58;
 }
 /* 角色树-----------结束 */
+
+/* element-ui tab样式修改-----------开始 */
+.el-tabs__header{
+    margin-bottom: 0 !important;
+}
+.el-tabs__item{
+    height: 64px !important;
+    line-height: 64px !important;
+    font-size: 16px !important;
+}
+.el-tabs__item:not(.is-active){
+    color: #676B6D !important;
+}
+.el-tabs__nav-wrap::after{
+    background-color: rgba(0, 0, 0, 0) !important;
+}
+/* element-ui tab样式修改-----------结束 */

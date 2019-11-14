@@ -1,9 +1,13 @@
 
 <style scoped>
+ .swiper-wrap{
+     width: 432px;
+     background-color: skyblue;
+ }
 </style>
 
 <template>
-    <div>
+    <div class="swiper-wrap">
         <el-carousel height="600px">
             <el-carousel-item v-for="item in 4" :key="item">
                 <img :src="item" alt />

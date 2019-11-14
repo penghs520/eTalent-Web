@@ -15,11 +15,16 @@ html,body,#app,.el-container{
     padding: 0 !important;
 }
 
+
 /* 登陆样式-----------开始 */
-#login .el-input__inner {
+.login_wrap .el-input__inner {
     border: none !important;
     background-color: rgba(241, 242, 242, 0) !important;
 }
+#login .el-tabs__item {
+    font-size: 16px !important;
+}
+
 /* 登陆样式-----------结束 */
 
 /* 弹窗样式-----------开始 */

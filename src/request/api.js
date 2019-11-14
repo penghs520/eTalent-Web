@@ -2,10 +2,10 @@
 import request from './http';
 
 // 登录
-const login_api1 = (data, callback) => {request('get', `dev/api/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
-const login_api2 = (data, callback) => {request('get', `dev/api/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
-const login_api_sendCode = (data, callback) => {request('get', `dev/api/masterdata/userLogin/sendCodeByPhone`, data, callback)};
-const login_api_phoneLogin = (data, callback) => {request('get', `dev/api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
+const login_api1 = (data, callback) => {request('get', `api/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
+const login_api2 = (data, callback) => {request('get', `api/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
+const login_api_sendCode = (data, callback) => {request('get', `api/masterdata/userLogin/sendCodeByPhone`, data, callback)};
+const login_api_phoneLogin = (data, callback) => {request('get', `api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
 
 // 系统管理
     // 权限管理

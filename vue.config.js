@@ -9,11 +9,11 @@ module.exports = {
         https: false,   //是否使用https协议
         hotOnly: false, //是否开启热更新
         proxy: {
-            '/dev': {
+            '/api': {
                 target: 'http://193.112.188.180/',
                 changeOrigin: true,
                 pathRewrite: {
-                    '^/dev': ''
+                    '^/api': ''
                 }
             }
         },

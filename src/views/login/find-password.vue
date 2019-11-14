@@ -85,7 +85,7 @@
         </div>
         <div class="content">
             <h1>找回密码</h1>
-            <el-tabs v-model="activeName">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
                 <!-- 手机找回 -->
                 <el-tab-pane label="手机快捷登陆" name="mobile_find" class="login_title">
                     <el-form
@@ -186,11 +186,11 @@ export default {
                         message: "请输入手机号",
                         trigger: "blur"
                     },
-                    {
-                        pattern: /0?(13|14|15|18)[0-9]{9}/,
-                        message: "请输入正确的手机号",
-                        trigger: "blur"
-                    }
+                    // {
+                    //     pattern: /0?(13|14|15|18)[0-9]{9}/,
+                    //     message: "请输入正确的手机号",
+                    //     trigger: "blur"
+                    // }
                 ],
                 code: [
                     {
@@ -222,13 +222,13 @@ export default {
             waitTime: 60
         };
     },
-
     components: { swiper },
     created() {
         //倒计时
         let timestamp = +localStorage.getItem("findTime");
         if (Math.round(Date.now() - timestamp) / 1000 < this.waitTime) {
-            this.sec = this.waitTime - Math.round((Date.now() - timestamp) / 1000);
+            this.sec =
+                this.waitTime - Math.round((Date.now() - timestamp) / 1000);
             this.codeTxt = `还有${this.sec}秒`;
             this.isDisable = true;
             let timeId = setInterval(() => {
@@ -243,8 +243,15 @@ export default {
             }, 1000);
         }
     },
-
     methods: {
+        //tab栏切换
+        handleClick(tab, event) {
+            if (tab.name == "mobile_find") {
+                this.btnTxt = "确定";
+            } else {
+                this.btnTxt = "发送验证邮箱";
+            }
+        },
         //验证码倒计时
         getCode() {
             let timestamp = localStorage.setItem("findTime", Date.now());

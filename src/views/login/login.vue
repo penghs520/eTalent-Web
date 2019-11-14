@@ -318,11 +318,11 @@ export default {
                         message: "请输入手机号",
                         trigger: "blur"
                     },
-                    {
-                        pattern: /0?(13|14|15|18)[0-9]{9}/,
-                        message: "请输入正确的手机号",
-                        trigger: "blur"
-                    }
+                    // {
+                    //     pattern: /0?(13|14|15|18)[0-9]{9}/,
+                    //     message: "请输入正确的手机号",
+                    //     trigger: "blur"
+                    // }
                 ],
                 code: [
                     {

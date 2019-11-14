@@ -60,6 +60,24 @@
     margin-left: 6px;
     margin-right: 12px;
 }
+
+.rangeTreeHeader{
+    position: relative;
+    text-align: left;
+    background-color: #F8F8F8;
+}
+.rangeTreeHeader span{
+    font-size: 14px;
+    line-height: 54px;
+    font-weight: 600;
+}
+.rangeTreeHeader span:first-child{
+    margin-left: 54px;
+}
+.rangeTreeHeader span:last-child{
+    position: absolute;
+    left: calc(300px + 20%);
+}
 </style>
 <style>
     #authority_role .serverTree .el-tree-node__content{
@@ -87,6 +105,14 @@
         background-color: rgba(0, 0, 0, 0);
     } */
 
+    #authority_role .el-tree-node__content{
+        position: relative;
+    }
+    #authority_role .rangeTree .el-checkbox{
+        position: absolute;
+        left: calc(300px + 20%);
+    }
+
 </style>
 
 <template>
@@ -99,7 +125,7 @@
                     <el-button size="mini" plain @click="edit" :disabled="!roleTreeNode || roleTreeNodeGroupId === 'top'" >编辑</el-button>
                     <el-button size="mini" plain @click="delet" :disabled="!roleTreeNode || roleTreeNodeGroupId === 'top'" >删除</el-button>
                 </div>
-                <el-tree class="leftTree" :data="roleTree" :props="roleTreeProps" @node-click="roleTreeNodeClick" :highlight-current="true" icon-class="aa" >
+                <el-tree class="leftTree" key="leftTree" :data="roleTree" :props="roleTreeProps" @node-click="roleTreeNodeClick" :highlight-current="true" icon-class="aa" >
                     <span slot-scope="{ node, data }">
                         <span v-show="data.roleType === 'ROLE_GROUP'" class="qj-wenjianjia roleTreeIcon"></span>
                         <span v-show="data.roleType === 'ROLE'" class="qj-nav_client roleTreeIcon"></span>
@@ -121,15 +147,13 @@
                             element-loading-spinner="el-icon-loading"
                             element-loading-background="rgba(0, 0, 0, 0.5)" 
                             >
-                            <template>
-                                <el-tree class="serverTree" :data="serverData" :props="serverProps" ref="serverTree" node-key="menuId" show-checkbox @check="serverCheck" :highlight-current="true" >
-                                    <span slot-scope="{ node, data }">
-                                        <span v-show="data.funcType !== 'NODE'" class="qj-wenjianjia roleTreeIcon serverIcon"></span>
-                                        <span v-show="data.funcType === 'NODE'" class="qj-detail roleTreeIcon serverIcon"></span>
-                                        <span class="roleTreeNode">{{node.label}}</span>
-                                    </span>
-                                </el-tree>
-                            </template>
+                            <el-tree class="serverTree" key="serverTree" :data="serverData" :props="serverProps" ref="serverTree" node-key="menuId" show-checkbox @check="serverCheck" :highlight-current="true" >
+                                <span slot-scope="{ node, data }">
+                                    <span v-show="data.funcType !== 'NODE'" class="qj-wenjianjia roleTreeIcon serverIcon"></span>
+                                    <span v-show="data.funcType === 'NODE'" class="qj-detail roleTreeIcon serverIcon"></span>
+                                    <span class="roleTreeNode">{{node.label}}</span>
+                                </span>
+                            </el-tree>
                         </li>
 
                         <!-- 管理范围权限 -->
@@ -139,7 +163,18 @@
                             element-loading-text="拼命加载中"
                             element-loading-spinner="el-icon-loading"
                             element-loading-background="rgba(0, 0, 0, 0.5)"
-                            >管理范围权限
+                            >
+                            <div class="rangeTreeHeader">
+                                <span>机构范围</span>
+                                <span>授权</span>
+                            </div>
+                            <el-tree class="serverTree rangeTree" key="rangeTree" :data="rangeData" :props="rangeProps" ref="rangeTree" node-key="orgId" show-checkbox @check="rangeCheck" :highlight-current="true" >
+                                <span slot-scope="{ node, data }">
+                                    <!-- <span v-show="data.funcType !== 'NODE'" class="qj-wenjianjia roleTreeIcon serverIcon"></span>
+                                    <span v-show="data.funcType === 'NODE'" class="qj-detail roleTreeIcon serverIcon"></span> -->
+                                    <span class="roleTreeNode">{{node.label}}</span>
+                                </span>
+                            </el-tree>
                         </li>
                         
                         <!-- 字段权限 -->
@@ -243,7 +278,7 @@
 
 <script>
 import base from '../../assets/js/base';
-import {role_api1, role_api2, role_api3, role_api4, role_api5, role_api6, role_api7, role_api8, role_api9} from '../../request/api';
+import {role_api1, role_api2, role_api3, role_api4, role_api5, role_api6, role_api7, role_api8, role_api9, role_api10, role_api11} from '../../request/api';
 
 export default {
     name: 'role',             /* 角色授权 */
@@ -312,6 +347,13 @@ export default {
             serverProps:{
                 children: 'childMenuList',
                 label: 'menuName'
+            },
+
+            // 管理范围权限
+            rangeData: [],
+            rangeProps:{
+                children: 'childOrganizationList',
+                label: 'orgName'
             },
         };
     },
@@ -525,6 +567,7 @@ export default {
                 
                 case 'range':
                     // 管理范围权限
+                    this.getRange(id);
                     break;
                 
                 case 'field':
@@ -593,6 +636,50 @@ export default {
                 this.contLoading = false;
                 let d = res.data;
                 base.log('r', '功能权限更新', d);
+                if (d.success) {
+                    base.success(d);
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 根据角色id查询管理范围权限树
+        getRange(id) {
+            let send = {"roleId": id};
+            base.log('s', '角色管理范围权限树', send);
+            this.contLoading = true;
+            role_api10(send, res => {
+                this.contLoading = false;
+                let d = res.data;
+                base.log('r', '角色管理范围权限树', d);
+                if (d.success) {
+                    // 赋值
+                    this.rangeData = d.result;
+                    console.log(this.rangeData);
+                    // 设置选中状态
+                    // let checkedNodeList = this.getHasMenu(d.result);
+                    // console.log(checkedNodeList)
+                    // this.$refs.rangeTree.setCheckedKeys(checkedNodeList.map(item => {return item.menuId}));
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 管理范围权限树选中值改变
+        rangeCheck() {
+            let list = this.$refs.rangeTree.getCheckedNodes(false,true);
+            let send = {
+                "roleId": this.roleTreeNode.roleGroupId,
+                "menuIdList": list.map(item => {return item.orgId}),
+            };
+            base.log('s', '管理范围权限更新', send);
+            this.contLoading = true;
+            role_api11(send, res => {
+                this.contLoading = false;
+                let d = res.data;
+                base.log('r', '管理范围权限更新', d);
                 if (d.success) {
                     base.success(d);
                 }else{

@@ -4,11 +4,11 @@ import qs from 'qs'
 
 function request_get(url, data, callback) {
     axios.get(url, {
-            params: data,
-            paramsSerializer: params => {
-                return qs.stringify(params, { indices: false })
-            }
-        })
+        params: data,
+        paramsSerializer: params => {
+            return qs.stringify(params, { indices: false })
+        }
+    })
         .then(function (response) {
             callback(response);
         })
@@ -40,6 +40,7 @@ axios.interceptors.request.use(function (config) {
     return Promise.reject(error);
 });
 
+
 /**
  * 请求方法
  * @param {string} type 请求方式
@@ -47,16 +48,16 @@ axios.interceptors.request.use(function (config) {
  * @param {object} data 请求发送的数据
  * @param {function} callback 回调函数
  */
-export default function request(type,url, data, callback) {
+export default function request(type, url, data, callback) {
     switch (type) {
         case 'get' || 'GET':
             request_get(url, data, callback);
             break;
-        
+
         case 'post' || 'POST':
             request_post(url, data, callback);
             break;
-    
+
         default:
             console.error('请求方式写错了，请检查');
             break;

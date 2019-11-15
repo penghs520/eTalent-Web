@@ -4,8 +4,9 @@ import request from './http';
 // 登录
 const login_api1 = (data, callback) => {request('get', `api/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
 const login_api2 = (data, callback) => {request('get', `api/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
-const login_api_sendCode = (data, callback) => {request('get', `api/masterdata/userLogin/sendCodeByPhone`, data, callback)};
-const login_api_phoneLogin = (data, callback) => {request('get', `api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
+const login_api3 = (data, callback) => {request('get', `api/masterdata/userLogin/sendCodeByPhone`, data, callback)};
+const login_api4 = (data, callback) => {request('get', `api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
+const login_api5 = (data, callback) => {request('get', `/api/masterdata/userLogin/logout`, data, callback)};
 
 // 系统管理
     // 权限管理
@@ -25,7 +26,7 @@ const login_api_phoneLogin = (data, callback) => {request('get', `api/masterdata
 
 export {
     // 登录
-    login_api1, login_api2,login_api_sendCode,login_api_phoneLogin,
+    login_api1, login_api2,login_api3,login_api4,login_api5,
 
     // 系统管理
         // 权限管理

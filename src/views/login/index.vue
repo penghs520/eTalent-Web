@@ -4,7 +4,7 @@
     justify-content: center;
     align-items: center;
     height: 100%;
-    background: url("./img/pic1.png") center / cover;
+    background: url("../../assets/img/login/pic1.png") center / cover;
     .back {
         display: flex;
         flex-direction: column;
@@ -14,7 +14,7 @@
         height: 100%;
         background-color: rgba(241, 242, 242, 0.9);
         .footer{
-            margin-top: 80px;
+            margin-top: 96px;
             color:#676B6DFF;
             font-size: 14px;
             .vertical-line{

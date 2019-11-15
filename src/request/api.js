@@ -21,6 +21,8 @@ const login_api_phoneLogin = (data, callback) => {request('get', `api/masterdata
         const role_api9     = (data, callback) => {request('get', `api/masterdata/roleAuth/updateRoleMenuAuth`, data, callback)};
         const role_api10    = (data, callback) => {request('get', `api/masterdata/roleAuth/searchOrgAuthTree`, data, callback)};
         const role_api11    = (data, callback) => {request('get', `api/masterdata/roleAuth/updateRoleOrgAuth`, data, callback)};
+        const role_api12    = (data, callback) => {request('get', `api/masterdata/roleAuth/searchCustomArchiveTableList`, data, callback)};
+        const role_api13    = (data, callback) => {request('get', `api/masterdata/roleAuth/searchCustomArchiveTableFieldListByTableId`, data, callback)};
 
 
 export {
@@ -30,5 +32,6 @@ export {
     // 系统管理
         // 权限管理
             // 角色授权
-            role_api1, role_api2, role_api3, role_api4, role_api5, role_api6, role_api7, role_api8, role_api9, role_api10, role_api11
+            role_api1, role_api2, role_api3, role_api4, role_api5, role_api6, role_api7, role_api8, role_api9, role_api10, role_api11,
+            role_api12, role_api13,
 }

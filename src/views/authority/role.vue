@@ -78,6 +78,11 @@
     position: absolute;
     left: calc(300px + 20%);
 }
+
+.fieldSelect{
+    padding: 18px 24px;
+    font-size: 14px;
+}
 </style>
 <style>
     #authority_role .serverTree .el-tree-node__content{
@@ -169,9 +174,7 @@
                                 <span>授权</span>
                             </div>
                             <el-tree class="serverTree rangeTree" key="rangeTree" :data="rangeData" :props="rangeProps" ref="rangeTree" node-key="orgId" show-checkbox @check="rangeCheck" :highlight-current="true" >
-                                <span slot-scope="{ node, data }">
-                                    <!-- <span v-show="data.funcType !== 'NODE'" class="qj-wenjianjia roleTreeIcon serverIcon"></span>
-                                    <span v-show="data.funcType === 'NODE'" class="qj-detail roleTreeIcon serverIcon"></span> -->
+                                <span slot-scope="{ node}">
                                     <span class="roleTreeNode">{{node.label}}</span>
                                 </span>
                             </el-tree>
@@ -184,7 +187,49 @@
                             element-loading-text="拼命加载中"
                             element-loading-spinner="el-icon-loading"
                             element-loading-background="rgba(0, 0, 0, 0.5)"
-                            >字段权限
+                            >
+                            <el-row class="fieldSelect" type="flex" align="middle" >
+                                <el-col :span=".5">自定义表：</el-col>
+                                <el-col :span=".5" style="margin-left: 10px;" >
+                                    <el-select v-model="tableChecked" size="small" @change="fieldSelectChange" placeholder="请选择自定义表">
+                                        <el-option
+                                            v-for="item in tableList"
+                                            :key="item.tableId"
+                                            :label="item.tableName"
+                                            :value="item.tableId">
+                                        </el-option>
+                                    </el-select>
+                                </el-col>
+                            </el-row>
+                            <el-table
+                                ref="multipleTable"
+                                :data="fieldTableData"
+                                tooltip-effect="dark"
+                                style="width: 100%">
+                                <!-- <el-table-column label="名称" width="120">
+                                    <template slot-scope="scope">{{ scope.row.date }}</template>
+                                </el-table-column> -->
+                                <el-table-column prop="fieldName" label="名称" class="fieldTableFirstLine" width="120"></el-table-column>
+                                <el-table-column prop="name" label="可读" width="120">
+                                    <template slot-scope="scope">
+                                        <!-- <el-checkbox v-model="scope.row.readWriteCode"  >备选项</el-checkbox> -->
+                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateRead" v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldChange($event,'read',scope.row)" ></el-checkbox>
+                                        <el-checkbox v-else v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldChange($event,'read',scope.row)" ></el-checkbox>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="name" label="新增可写" width="120">
+                                    <template slot-scope="scope">
+                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateAddWrite" v-model="scope.row.isAddWrite" @change="fieldChange($event,'addWrite',scope.row)" ></el-checkbox>
+                                        <el-checkbox v-else v-model="scope.row.isAddWrite" @change="fieldChange($event,'addWrite',scope.row) "></el-checkbox>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="address" label="可写">
+                                    <template slot-scope="scope">
+                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateWrite" v-model="scope.row.isWrite" @change="fieldChange($event,'write',scope.row)" ></el-checkbox>
+                                        <el-checkbox v-else v-model="scope.row.isWrite" @change="fieldChange($event,'write',scope.row)" ></el-checkbox>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
                         </li>
                     </ul>
                 </div>
@@ -278,7 +323,8 @@
 
 <script>
 import base from '../../assets/js/base';
-import {role_api1, role_api2, role_api3, role_api4, role_api5, role_api6, role_api7, role_api8, role_api9, role_api10, role_api11} from '../../request/api';
+import {role_api1, role_api2, role_api3, role_api4, role_api5, role_api6, role_api7, role_api8, role_api9, role_api10, role_api11,
+        role_api12, role_api13} from '../../request/api';
 
 export default {
     name: 'role',             /* 角色授权 */
@@ -355,11 +401,17 @@ export default {
                 children: 'childOrganizationList',
                 label: 'orgName'
             },
+
+            // 自定义字段表
+            tableList: [],
+            tableChecked: '',
+            fieldTableData: [],
         };
     },
     mounted() {
         console.clear();
         this.getRoleTree();
+        this.getTable();
     },
     methods: {
         // 角色树查询
@@ -452,7 +504,6 @@ export default {
 
         // 编辑角色（组）
         edit () {
-            console.log(this.roleTreeNode)
             this.editRoleType = this.roleTreeNode.roleType;
             this.editForm = {
                 groupName: this.roleTreeNode.roleGroupName,
@@ -592,7 +643,7 @@ export default {
                     // 赋值
                     this.serverData = d.result;
                     // 设置选中状态
-                    let checkedNodeList = this.getHasMenu(d.result);
+                    let checkedNodeList = this.getHasMenu(d.result, 'funcType', 'NODE', 'childMenuList', 'hasMenu');
                     console.log(checkedNodeList)
                     this.$refs.serverTree.setCheckedKeys(checkedNodeList.map(item => {return item.menuId}));
                 }else{
@@ -602,22 +653,22 @@ export default {
         },
 
         // 获取已有权限的节点
-        getHasMenu(list) {
+        getHasMenu(list, nodeTypeKey, nodeTypeVal, childKey, hasKey) {
             let nodeList = new Array();
-            this.getNode(list, nodeList);
+            this.getNode(list, nodeList, nodeTypeKey, nodeTypeVal, childKey);
             let result = nodeList.filter(item => {
-                return item.hasMenu;
+                return item[hasKey];
             });
             return result;
         },
 
         // 获取权限node节点
-        getNode(list,resultList) {
+        getNode(list,resultList, nodeTypeKey, nodeTypeVal, childKey) {
             list.forEach(item => {
-                if (item.funcType === 'NODE') {
+                if (item[nodeTypeKey] === nodeTypeVal) {
                     resultList.push(item);
                 }else{
-                    this.getNode(item.childMenuList,resultList);
+                    this.getNode(item[childKey],resultList);
                 }
             });
         },
@@ -656,11 +707,9 @@ export default {
                 if (d.success) {
                     // 赋值
                     this.rangeData = d.result;
-                    console.log(this.rangeData);
                     // 设置选中状态
-                    // let checkedNodeList = this.getHasMenu(d.result);
-                    // console.log(checkedNodeList)
-                    // this.$refs.rangeTree.setCheckedKeys(checkedNodeList.map(item => {return item.menuId}));
+                    let checkedNodeList = this.getHasMenu(d.result, 'orgType', 'DETP', 'childOrganizationList', 'hasOrg');
+                    this.$refs.rangeTree.setCheckedKeys(checkedNodeList.map(item => {return item.orgId}));
                 }else{
                     base.error(d);
                 }
@@ -672,7 +721,7 @@ export default {
             let list = this.$refs.rangeTree.getCheckedNodes(false,true);
             let send = {
                 "roleId": this.roleTreeNode.roleGroupId,
-                "menuIdList": list.map(item => {return item.orgId}),
+                "orgIdList": list.map(item => {return item.orgId}),
             };
             base.log('s', '管理范围权限更新', send);
             this.contLoading = true;
@@ -686,6 +735,158 @@ export default {
                     base.error(d);
                 }
             })
+        },
+
+        // 根据企业id查询字段表
+        getTable() {
+            role_api12(null, res => {
+                let d = res.data;
+                base.log('r', '根据企业id查询字段表', d);
+                if (d.success) {
+                    this.tableList = d.result;
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // select change
+        fieldSelectChange(v) {
+            this.getTableCont(v);
+        },
+
+        // 查询自定义表字段列表
+        getTableCont(tableId) {
+            let send = {
+                "roleId": this.roleTreeRoleId,
+                "tableId": tableId
+            };
+            base.log('s', '查询自定义表字段列表', send);
+            role_api13(send, res => {
+                let d = res.data;
+                base.log('r', '查询自定义表字段列表', d);
+                if (d.success) {
+                    // 添加权限字段
+                    let list = this.addFieldKeys(d.result);
+                    // 添加全选行
+                    this.fieldTableData = this.addCheckAllRow(list);
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 数据处理，添加权限字段
+        addFieldKeys(list) {
+            let result = list.map(item => {
+                item.isRead = false;
+                item.isAddWrite = false;
+                item.isWrite = false;
+                switch (item.readWriteCode) {
+                    case 'READ':
+                        item.isRead = true;
+                        break;
+
+                    case 'ADDWRITE':
+                        item.isRead = true;
+                        item.isAddWrite = true;
+                        break;
+                        
+                    case 'WRITE':
+                        item.isRead = true;
+                        item.isAddWrite = true;
+                        item.isWrite = true;
+                        break;
+                
+                    default:
+                        break;
+                }
+                return item;
+            });
+            return result;
+        },
+
+        // 添加全选行
+        addCheckAllRow(list) {
+            // this.tableList
+            // tableChecked
+            let select = this.tableList.filter(item => {
+                return item.tableId === this.tableChecked;
+            });
+
+            // 获取全选状态值
+            let status = this.checkAllStatusVal(list);
+            let row = {
+                fieldName               : select[0]['tableName'],
+                isRead                  : status.read[0],
+                isAddWrite              : status.addWrite[0],
+                isWrite                 : status.write[0],
+                isIndeterminateRead     : status.read[1],
+                isIndeterminateAddWrite : status.addWrite[0],
+                isIndeterminateWrite    : status.write[0],
+            };
+            list.unshift(row);
+            return list;
+        },
+
+        // 获取全选状态值
+        checkAllStatusVal(list) {
+            let read        = list.map(item => {return item.isRead});
+            let addWrite    = list.map(item => {return item.isAddWrite});
+            let write       = list.map(item => {return item.isWrite});
+            // includes(true)
+            let result = {
+                read    : this.checkAllStatus(read),
+                addWrite: this.checkAllStatus(addWrite),
+                write   : this.checkAllStatus(write),
+            };
+            return result;
+        },
+
+        // 判断全选状态
+        checkAllStatus(list) {
+            let result = [false,false];
+            if (!list.includes(true)) {
+                result = [false,false];
+            }else if (!list.includes(false)) {
+                result = [true,false];
+            }else{
+                result = [false,true];
+            };
+            return result;
+        },
+
+        // 权限改变
+        fieldChange(v,type,row) {
+            switch (type) {
+                case 'read':
+                    // 可读
+                    if (!v) {
+                        row.isAddWrite = false;
+                        row.isWrite = false;
+                    }
+                    break;
+                
+                case 'addWrite':
+                    // 新增可写
+                    if (v) {
+                        row.isRead = true;
+                    }else{
+                        row.isWrite = false;
+                    }
+                    break;
+                
+                case 'write':
+                    // 可写
+                    if (v) {
+                        row.isRead = true;
+                        row.isAddWrite = true;
+                    }
+                    break;
+            
+                default:
+                    break;
+            }
         },
     }
 }

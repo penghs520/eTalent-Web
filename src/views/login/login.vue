@@ -4,12 +4,15 @@
     width: 1008px;
     height: 600px;
     background: rgba(241, 242, 242, 1);
+     border-radius:12px;
     // 账号手机登陆
     .content {
         flex: 1;
         position: relative;
+        box-sizing: border-box;
+        height: 600px;
         padding: 80px 88px 0px;
-        text-align: left;
+        text-align: left;    
         .code {
             position: absolute;
             top: 27px;
@@ -17,6 +20,7 @@
             img {
                 width: 64px;
                 height: 64px;
+                cursor: pointer;
             }
         }
         h1 {
@@ -75,13 +79,13 @@
         .we_chat {
             .footer_line {
                 text-align: center;
-                background: url("./img/admin_line.png") no-repeat center center;
+                background: url("../../assets/img/login/admin_line.png") no-repeat center center;
                 i {
                     display: inline-block;
                     width: 16px;
                     height: 14px;
                     margin-right: 5px;
-                    background: url("./img/admin_weixin.png") center;
+                    background: url("../../assets/img/login/admin_weixin.png") center;
                 }
                 span {
                     font-size: 14px;
@@ -103,6 +107,7 @@
             img {
                 width: 64px;
                 height: 64px;
+                cursor: pointer;
             }
         }
         .wechat_content {
@@ -123,7 +128,11 @@
                 margin-top: 20px;
                 span {
                     color: #ff8c58;
+                    font-size: 14px;
                     cursor: pointer;
+                }
+                .vertical_line{
+                    margin: 0px 10px;
                 }
             }
         }
@@ -156,7 +165,7 @@
             <!-- 手机登陆页面 -->
             <div class="content" v-if="methodChange">
                 <div class="code" @click="methodChange = false">
-                    <img src="./img/admin_qrcode.png" alt />
+                    <img src="../../assets/img/login/admin_qrcode.png" alt />
                 </div>
                 <h1>登录</h1>
                 <el-tabs v-model="activeName">
@@ -222,6 +231,7 @@
                                     type="password"
                                     @focus="name4= true"
                                     @blur="name4 = false"
+                                    placeholder="请输入验证码"
                                 ></el-input>
                                 <el-button
                                     class="codeBlock"
@@ -257,17 +267,17 @@
             <!-- 微信扫码登陆 -->
             <div class="wechat_login" v-else>
                 <div class="code" @click="methodChange = true">
-                    <img src="./img/admin_qrcode.png" alt />
+                    <img src="../../assets/img/login/admin_computer.png" alt />
                 </div>
                 <div class="wechat_content">
                     <h1>微信登陆</h1>
                     <div class="wechat_code">
-                        <img src="./img/adimin_qrcode.png" alt />
+                        <img src="../../assets/img/login/adimin_qrcode.png" alt />
                     </div>
                     <p>已有账号,请使用微信扫描二维码登陆</p>
                     <div class="footer_login">
                         <span @click="methodChange = true">密码登陆</span>
-                        <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                        <span class="vertical_line">|</span>
                         <span @click="$router.push('/register')">注册</span>
                     </div>
                 </div>
@@ -282,11 +292,11 @@ import pageRoute from "../../router/pageRoute";
 import {
     login_api1,
     login_api2,
-    login_api_sendCode,
-    login_api_phoneLogin
+    login_api3,
+    login_api4,
 } from "../../request/api";
 
-import swiper from "./components/swiper";
+import swiper from "../../components/swiper";
 
 export default {
     name: "login",
@@ -318,11 +328,11 @@ export default {
                         message: "请输入手机号",
                         trigger: "blur"
                     },
-                    // {
-                    //     pattern: /0?(13|14|15|18)[0-9]{9}/,
-                    //     message: "请输入正确的手机号",
-                    //     trigger: "blur"
-                    // }
+                    {
+                        pattern: /1[0-9]{10}/,
+                        message: "请输入正确的手机号",
+                        trigger: "blur"
+                    }
                 ],
                 code: [
                     {
@@ -371,7 +381,7 @@ export default {
         //获取验证码 , 验证码倒计时
         getCode() {
             if (this.mobileForm.phone.length == 0) {
-                this.$message.warning("输入内容为空");
+                this.$message.error("请输入手机号");
                 return;
             }
             //验证码倒计时
@@ -389,7 +399,7 @@ export default {
                 }
             }, 1000);
             //获取验证码
-            login_api_sendCode({ phone: this.mobileForm.phone }, res => {
+            login_api3({ phone: this.mobileForm.phone }, res => {
                 this.$message.success("短信发送成功");
             });
         },
@@ -400,7 +410,7 @@ export default {
                     this.loginForm.password.length == 0 ||
                     this.loginForm.userName.length == 0
                 ) {
-                    this.$message.warning("输入内容为空");
+                    this.$message.error("输入内容为空");
                     return;
                 }
                 this.$refs["loginForm"].validate(valid => {
@@ -410,7 +420,7 @@ export default {
                 });
             } else {
                 if (this.mobileForm.phone.length == 0) {
-                    this.$message.warning("输入内容为空");
+                    this.$message.error("输入内容为空");
                     return;
                 }
                 this.$refs["mobileForm"].validate(valid => {
@@ -426,7 +436,7 @@ export default {
                 phone: this.mobileForm.phone,
                 code: this.mobileForm.code
             };
-            login_api_phoneLogin(send, res => {
+            login_api4(send, res => {
                 this.$message.success("登陆成功");
                 this.$router.push("/qinjee/organization_repair");
             });
@@ -443,6 +453,8 @@ export default {
                 base.log("r", "登录", d);
                 if (d.success) {
                     this.getMenu();
+                    console.log('成功登陆');                    
+                    localStorage.setItem('userInfo',JSON.stringify(d))                    
                 } else {
                     base.error(d);
                 }

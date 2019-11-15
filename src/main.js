@@ -16,6 +16,7 @@ Router.prototype.push = function push(location) {
 }
 
 Vue.config.productionTip = false
+Vue.config.devtools = true;//允许使用调试工具
 
 Vue.use(ElementUI);
 

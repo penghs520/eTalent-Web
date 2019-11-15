@@ -2,13 +2,17 @@
 .find_password {
     display: flex;
     width: 1008px;
-    height: 600px;
-    background: rgba(241, 242, 242, 1);
+    height: 600px; 
+    border-radius:12px;   
     .content {
         flex: 1;
         position: relative;
+        box-sizing: border-box;
+        height: 600px;
         padding: 80px 88px 0px;
         text-align: left;
+        background: rgba(241, 242, 242, 1);
+        border-radius:12px;        
         h1 {
             margin-bottom: 20px;
             font-size: 28px;
@@ -45,13 +49,15 @@
         .we_chat {
             .footer_line {
                 text-align: center;
-                background: url("./img/admin_line.png") no-repeat center center;
+                background: url("../../assets/img/login/admin_line.png")
+                    no-repeat center center;
                 i {
                     display: inline-block;
                     width: 16px;
                     height: 14px;
                     margin-right: 5px;
-                    background: url("./img/admin_weixin.png") center;
+                    background: url("../../assets/img/login/admin_weixin.png")
+                        center;
                 }
                 span {
                     font-size: 14px;
@@ -87,12 +93,11 @@
             <h1>找回密码</h1>
             <el-tabs v-model="activeName" @tab-click="handleClick">
                 <!-- 手机找回 -->
-                <el-tab-pane label="手机快捷登陆" name="mobile_find" class="login_title">
+                <el-tab-pane label="手机号找回" name="mobile_find">
                     <el-form
                         :model="mobileForm"
                         ref="mobile_find"
                         :rules="rules"
-                        class="loginForm"
                         label-position="left"
                         label-width="0"
                     >
@@ -130,12 +135,11 @@
                     </el-form>
                 </el-tab-pane>
                 <!-- 邮箱找回 -->
-                <el-tab-pane label="邮箱找回" name="email_find" class="login_title">
+                <el-tab-pane label="邮箱找回" name="email_find" >
                     <el-form
                         :model="emailForm"
-                        ref="mobile_find"
+                        ref="email_find"
                         :rules="rules"
-                        class="loginForm"
                         label-position="left"
                         label-width="0"
                     >
@@ -152,8 +156,7 @@
                     </el-form>
                 </el-tab-pane>
             </el-tabs>
-
-            <el-button type="primary">{{btnTxt}}</el-button>
+            <el-button type="primary" @click="toSetPwd">{{btnTxt}}</el-button>
             <!-- 登陆图标 -->
             <div class="we_chat">
                 <div class="footer_line">
@@ -166,7 +169,7 @@
 </template>
 
 <script>
-import swiper from "./components/swiper";
+import swiper from "../../components/swiper";
 
 export default {
     data() {
@@ -185,7 +188,7 @@ export default {
                         required: true,
                         message: "请输入手机号",
                         trigger: "blur"
-                    },
+                    }
                     // {
                     //     pattern: /0?(13|14|15|18)[0-9]{9}/,
                     //     message: "请输入正确的手机号",
@@ -244,6 +247,25 @@ export default {
         }
     },
     methods: {
+        //找回密码按钮
+        toSetPwd() {
+            if (this.btnTxt == "确定") {
+                this.$refs["mobile_find"].validate(valid => {
+                    if (valid) {
+                        console.log("手机找回密码");
+                        setTimeout(() => {
+                            this.$router.push("/setpassword");
+                        }, 1000);
+                    }
+                });
+            } else {
+                this.$refs["email_find"].validate(valid => {
+                    if (valid) {
+                        console.log("邮箱验证成功");
+                    }
+                });
+            }
+        },
         //tab栏切换
         handleClick(tab, event) {
             if (tab.name == "mobile_find") {
@@ -254,6 +276,10 @@ export default {
         },
         //验证码倒计时
         getCode() {
+            if(this.mobileForm.phone.length == 0){
+                this.$message.error('请输入手机')
+                return
+            }
             let timestamp = localStorage.setItem("findTime", Date.now());
             this.isDisable = true;
             this.codeTxt = `还有${this.sec}秒`;

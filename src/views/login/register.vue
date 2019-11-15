@@ -3,12 +3,16 @@
     display: flex;
     width: 1008px;
     height: 600px;
-    background: rgba(241, 242, 242, 1);
+    border-radius: 12px;
     .content {
         flex: 1;
         position: relative;
+        box-sizing: border-box;
+        height: 600px;
         padding: 80px 88px 0px;
         text-align: left;
+        background: rgba(241, 242, 242, 1);
+        border-radius: 12px;
         h1 {
             font-size: 28px;
         }
@@ -54,13 +58,15 @@
         .we_chat {
             .footer_line {
                 text-align: center;
-                background: url("./img/admin_line.png") no-repeat center center;
+                background: url("../../assets/img/login/admin_line.png")
+                    no-repeat center center;
                 i {
                     display: inline-block;
                     width: 16px;
                     height: 14px;
                     margin-right: 5px;
-                    background: url("./img/admin_weixin.png") center;
+                    background: url("../../assets/img/login/admin_weixin.png")
+                        center;
                 }
                 span {
                     font-size: 14px;
@@ -123,7 +129,7 @@
                         type="password"
                         @focus="name1= true"
                         @blur="name1 = false"
-                        placeholder="请输入验证码"
+                        placeholder="请输入密码"
                     ></el-input>
                     <div class="line" :class="{active: name1}"></div>
                 </el-form-item>
@@ -152,7 +158,7 @@
                 <span class="agreement">《勤杰Qinjee软件协议》</span>
             </div>
             <!-- 登陆按钮 -->
-            <el-button type="primary" @click="register">注册</el-button>
+            <el-button type="primary" @click="register('regForm')">注册</el-button>
             <!-- 返回登陆 -->
             <div class="we_chat">
                 <div class="footer_line">
@@ -165,7 +171,7 @@
 </template>
 
 <script>
-import swiper from "./components/swiper";
+import swiper from "../../components/swiper";
 
 export default {
     data() {
@@ -175,7 +181,26 @@ export default {
                 password: "",
                 code: ""
             },
-            rules: {},
+            rules: {
+                mobile: [
+                    {
+                        required: true,
+                        message: "请输入手机号",
+                        trigger: "blur"
+                    },
+                    {
+                        pattern: /1[0-9]{10}/,
+                        message: "请输入正确的手机号",
+                        trigger: "blur"
+                    }
+                ],
+                password: [
+                    { required: true, message: "请输入用户名", trigger: "blur" }
+                ],
+                code: [
+                    { required: true, message: "请输入密码", trigger: "blur" }
+                ]
+            },
             name: false,
             name1: false,
             name2: false,
@@ -190,7 +215,8 @@ export default {
     created() {
         let timestamp = +localStorage.getItem("regTime");
         if (Math.round(Date.now() - timestamp) / 1000 < this.waitTime) {
-            this.sec =this.waitTime - Math.round((Date.now() - timestamp) / 1000);
+            this.sec =
+                this.waitTime - Math.round((Date.now() - timestamp) / 1000);
             this.codeTxt = `还有${this.sec}秒`;
             this.isDisable = true;
             let timeId = setInterval(() => {
@@ -200,7 +226,7 @@ export default {
                     clearInterval(timeId);
                     this.isDisable = false;
                     this.codeTxt = "获取验证码";
-                    this.sec = this.waitTime
+                    this.sec = this.waitTime;
                 }
             }, 1000);
         }
@@ -208,6 +234,10 @@ export default {
     methods: {
         //验证码倒计时
         getCode() {
+            if (this.regForm.mobile.length == 0) {
+                this.$message.error("请输入手机");
+                return;
+            }
             let timestamp = localStorage.setItem("regTime", Date.now());
             this.isDisable = true;
             this.codeTxt = `还有${this.sec}秒`;
@@ -223,8 +253,12 @@ export default {
             }, 1000);
         },
         //注册账号
-        register() {
-            this.$router.push('/create')
+        register(formName) {
+            this.$refs[formName].validate(valid => {
+                if (valid) {
+                    this.$router.push("/create");
+                }
+            });
         }
     }
 };

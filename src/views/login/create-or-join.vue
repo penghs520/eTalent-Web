@@ -27,7 +27,7 @@
 <template>
     <div class="create">
         <div class="logo">
-            <img src="./img/admin_logo2.png" alt />
+            <img src="../../assets/img/login/admin_logo2.png" alt />
         </div>
         <el-card class="staff"></el-card>
         <el-card class="hr"></el-card>

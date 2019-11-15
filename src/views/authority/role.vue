@@ -213,19 +213,19 @@
                                 <el-table-column prop="name" label="可读" width="120">
                                     <template slot-scope="scope">
                                         <!-- <el-checkbox v-model="scope.row.readWriteCode"  >备选项</el-checkbox> -->
-                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateRead" v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldChange($event,'read',scope.row)" ></el-checkbox>
+                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateRead" v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldcheckAllChange($event,'read')" ></el-checkbox>
                                         <el-checkbox v-else v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldChange($event,'read',scope.row)" ></el-checkbox>
                                     </template>
                                 </el-table-column>
                                 <el-table-column prop="name" label="新增可写" width="120">
                                     <template slot-scope="scope">
-                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateAddWrite" v-model="scope.row.isAddWrite" @change="fieldChange($event,'addWrite',scope.row)" ></el-checkbox>
+                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateAddWrite" v-model="scope.row.isAddWrite" @change="fieldcheckAllChange($event,'addWrite')" ></el-checkbox>
                                         <el-checkbox v-else v-model="scope.row.isAddWrite" @change="fieldChange($event,'addWrite',scope.row) "></el-checkbox>
                                     </template>
                                 </el-table-column>
                                 <el-table-column prop="address" label="可写">
                                     <template slot-scope="scope">
-                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateWrite" v-model="scope.row.isWrite" @change="fieldChange($event,'write',scope.row)" ></el-checkbox>
+                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateWrite" v-model="scope.row.isWrite" @change="fieldcheckAllChange($event,'write')" ></el-checkbox>
                                         <el-checkbox v-else v-model="scope.row.isWrite" @change="fieldChange($event,'write',scope.row)" ></el-checkbox>
                                     </template>
                                 </el-table-column>
@@ -822,8 +822,8 @@ export default {
                 isAddWrite              : status.addWrite[0],
                 isWrite                 : status.write[0],
                 isIndeterminateRead     : status.read[1],
-                isIndeterminateAddWrite : status.addWrite[0],
-                isIndeterminateWrite    : status.write[0],
+                isIndeterminateAddWrite : status.addWrite[1],
+                isIndeterminateWrite    : status.write[1],
             };
             list.unshift(row);
             return list;
@@ -861,9 +861,12 @@ export default {
             switch (type) {
                 case 'read':
                     // 可读
-                    if (!v) {
-                        row.isAddWrite = false;
+                    if (v) {
+                        row.isRead = true;
+                    }else{
+                        row.isRead = false;
                         row.isWrite = false;
+                        row.isAddWrite = false;
                     }
                     break;
                 
@@ -871,7 +874,9 @@ export default {
                     // 新增可写
                     if (v) {
                         row.isRead = true;
+                        row.isAddWrite = true;
                     }else{
+                        row.isAddWrite = false;
                         row.isWrite = false;
                     }
                     break;
@@ -881,12 +886,31 @@ export default {
                     if (v) {
                         row.isRead = true;
                         row.isAddWrite = true;
+                        row.isWrite = true;
+                    }else{
+                        row.isWrite = false;
                     }
                     break;
             
                 default:
                     break;
-            }
+            };
+            // 判断全选状态
+            let list = this.fieldTableData.slice(1);
+            let status = this.checkAllStatusVal(list);
+            this.fieldTableData[0].isRead                  = status.read[0];
+            this.fieldTableData[0].isAddWrite              = status.addWrite[0];
+            this.fieldTableData[0].isWrite                 = status.write[0];
+            this.fieldTableData[0].isIndeterminateRead     = status.read[1];
+            this.fieldTableData[0].isIndeterminateAddWrite = status.addWrite[1];
+            this.fieldTableData[0].isIndeterminateWrite    = status.write[1];
+        },
+
+        // 全选改变
+        fieldcheckAllChange(v,type) {
+            this.fieldTableData.map(item => {
+                this.fieldChange(v,type,item);
+            });
         },
     }
 }

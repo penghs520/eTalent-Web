@@ -138,9 +138,9 @@
                     </span>
                 </el-tree>
             </div>
-            <div class="cont">
+            <div v-show="roleTreeRoleId" class="cont">
                 <div>
-                    <el-tabs class="tab" v-model="tabActive" >
+                    <el-tabs class="tab" v-model="tabActive" @tab-click="tabClick" >
                         <el-tab-pane v-for="(item,index) in tabs" :key="index" :label="item.label" :name="item.name"></el-tab-pane>
                     </el-tabs>
                     <ul class="tabCont">
@@ -385,6 +385,7 @@ export default {
             ],
             tabActive: 'server',
             contLoading: false,         /* 内容区加载动画 */
+            currentTab: '功能权限',             /* 当前tab的名称 */
 
             roleTreeRoleId: undefined,  /* 角色树被点击的角色id */
 
@@ -623,6 +624,39 @@ export default {
                 
                 case 'field':
                     // 字段权限
+                    if (this.tableChecked || this.tableChecked === 0) {
+                        this.getTableCont(this.tableChecked);
+                    }
+                    break;
+            
+                default:
+                    break;
+            }
+        },
+
+        // tab被点击
+        tabClick(tab) {
+            if (this.currentTab === tab.label) {
+                return false;
+            };
+            this.currentTab = tab.label;
+
+            if (!this.roleTreeRoleId) {
+                return false;
+            };
+            switch (tab.label) {
+                case '功能权限':
+                    this.getServer(this.roleTreeRoleId);
+                    break;
+                
+                case '管理范围权限':
+                    this.getRange(this.roleTreeRoleId);
+                    break;
+                
+                case '字段权限':
+                    if (this.tableChecked || this.tableChecked === 0) {
+                        this.getTableCont(this.tableChecked);
+                    }
                     break;
             
                 default:
@@ -761,8 +795,10 @@ export default {
                 "roleId": this.roleTreeRoleId,
                 "tableId": tableId
             };
+            this.contLoading = true;
             base.log('s', '查询自定义表字段列表', send);
             role_api13(send, res => {
+                this.contLoading = false;
                 let d = res.data;
                 base.log('r', '查询自定义表字段列表', d);
                 if (d.success) {

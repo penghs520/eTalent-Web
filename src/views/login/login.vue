@@ -3,8 +3,7 @@
     display: flex;
     width: 1008px;
     height: 600px;
-    background: rgba(241, 242, 242, 1);
-     border-radius:12px;
+    border-radius: 12px;
     // 账号手机登陆
     .content {
         flex: 1;
@@ -12,7 +11,8 @@
         box-sizing: border-box;
         height: 600px;
         padding: 80px 88px 0px;
-        text-align: left;    
+        background: rgba(241, 242, 242, 1);
+        text-align: left;
         .code {
             position: absolute;
             top: 27px;
@@ -67,7 +67,7 @@
             font-size: 14px;
             .forget {
                 color: #ff8c58;
-                .vertical-line{
+                .vertical-line {
                     margin: 0px 10px;
                 }
                 span {
@@ -79,13 +79,15 @@
         .we_chat {
             .footer_line {
                 text-align: center;
-                background: url("../../assets/img/login/admin_line.png") no-repeat center center;
+                background: url("../../assets/img/login/admin_line.png")
+                    no-repeat center center;
                 i {
                     display: inline-block;
                     width: 16px;
                     height: 14px;
                     margin-right: 5px;
-                    background: url("../../assets/img/login/admin_weixin.png") center;
+                    background: url("../../assets/img/login/admin_weixin.png")
+                        center;
                 }
                 span {
                     font-size: 14px;
@@ -131,7 +133,7 @@
                     font-size: 14px;
                     cursor: pointer;
                 }
-                .vertical_line{
+                .vertical_line {
                     margin: 0px 10px;
                 }
             }
@@ -156,130 +158,128 @@
 }
 </style>
 <template>
-    <div id="login">
-        <div class="wrap">
-            <!-- 左边轮播图组件 -->
-            <div>
-                <swiper></swiper>
+    <div class="wrap">
+        <!-- 左边轮播图组件 -->
+        <div>
+            <swiper></swiper>
+        </div>
+        <!-- 手机登陆页面 -->
+        <div class="content" v-if="methodChange">
+            <div class="code" @click="methodChange = false">
+                <img src="../../assets/img/login/admin_qrcode.png" alt />
             </div>
-            <!-- 手机登陆页面 -->
-            <div class="content" v-if="methodChange">
-                <div class="code" @click="methodChange = false">
-                    <img src="../../assets/img/login/admin_qrcode.png" alt />
+            <h1>登录</h1>
+            <el-tabs v-model="activeName">
+                <!-- 普通登陆 -->
+                <el-tab-pane label="普通登陆" name="account_login" class="login_title">
+                    <el-form
+                        :model="loginForm"
+                        ref="loginForm"
+                        :rules="rules"
+                        class="loginForm"
+                        label-position="left"
+                        label-width="0"
+                    >
+                        <el-form-item prop="userName" class="formInput1">
+                            <el-input
+                                v-model="loginForm.userName"
+                                @focus="name = true"
+                                @blur="name = false"
+                                class="input-text"
+                                placeholder="电话/邮箱/用户名"
+                            ></el-input>
+                            <div class="line" :class="{active: name}"></div>
+                        </el-form-item>
+                        <el-form-item prop="password" class="formInput2">
+                            <el-input
+                                v-model="loginForm.password"
+                                type="password"
+                                @focus="name2 = true"
+                                @blur="name2 = false"
+                                placeholder="密码"
+                            ></el-input>
+                            <div class="line" :class="{active: name2}"></div>
+                        </el-form-item>
+                    </el-form>
+                </el-tab-pane>
+                <!-- 手机快捷登陆 -->
+                <el-tab-pane label="手机快捷登陆" name="mobile_login" class="login_title">
+                    <el-form
+                        :model="mobileForm"
+                        ref="mobileForm"
+                        :rules="rules"
+                        class="loginForm"
+                        label-position="left"
+                        label-width="0"
+                    >
+                        <el-form-item prop="phone" class="formInput1 mobileInput">
+                            <span class="number">
+                                <span>+86</span>
+                                <span class="small_line">|</span>
+                            </span>
+                            <el-input
+                                v-model="mobileForm.phone"
+                                placeholder="手机"
+                                class="mobile"
+                                @focus="name3 = true"
+                                @blur="name3 = false"
+                            ></el-input>
+                            <div class="line" :class="{active: name3}"></div>
+                        </el-form-item>
+                        <el-form-item prop="code" class="formInput2 codeInput">
+                            <el-input
+                                v-model="mobileForm.code"
+                                type="password"
+                                @focus="name4= true"
+                                @blur="name4 = false"
+                                placeholder="请输入验证码"
+                            ></el-input>
+                            <el-button
+                                class="codeBlock"
+                                @click="getCode"
+                                type="primary"
+                                size="mini"
+                                :disabled="isDisable"
+                            >{{codeTxt}}</el-button>
+                            <div class="line" :class="{active: name4}"></div>
+                        </el-form-item>
+                    </el-form>
+                </el-tab-pane>
+            </el-tabs>
+            <!-- 链接文本 -->
+            <div class="link_text">
+                <el-checkbox v-model="checked">记住我</el-checkbox>
+                <div class="forget">
+                    <span @click="$router.push('/findpassword')">忘记密码?</span>
+                    <span class="vertical-line">|</span>
+                    <span @click="$router.push('/register')" class="register">注册</span>
                 </div>
-                <h1>登录</h1>
-                <el-tabs v-model="activeName">
-                    <!-- 普通登陆 -->
-                    <el-tab-pane label="普通登陆" name="account_login" class="login_title">
-                        <el-form
-                            :model="loginForm"
-                            ref="loginForm"
-                            :rules="rules"
-                            class="loginForm"
-                            label-position="left"
-                            label-width="0"
-                        >
-                            <el-form-item prop="userName" class="formInput1">
-                                <el-input
-                                    v-model="loginForm.userName"
-                                    @focus="name = true"
-                                    @blur="name = false"
-                                    class="input-text"
-                                    placeholder="电话/邮箱/用户名"
-                                ></el-input>
-                                <div class="line" :class="{active: name}"></div>
-                            </el-form-item>
-                            <el-form-item prop="password" class="formInput2">
-                                <el-input
-                                    v-model="loginForm.password"
-                                    type="password"
-                                    @focus="name2 = true"
-                                    @blur="name2 = false"
-                                    placeholder="密码"
-                                ></el-input>
-                                <div class="line" :class="{active: name2}"></div>
-                            </el-form-item>
-                        </el-form>
-                    </el-tab-pane>
-                    <!-- 手机快捷登陆 -->
-                    <el-tab-pane label="手机快捷登陆" name="mobile_login" class="login_title">
-                        <el-form
-                            :model="mobileForm"
-                            ref="mobileForm"
-                            :rules="rules"
-                            class="loginForm"
-                            label-position="left"
-                            label-width="0"
-                        >
-                            <el-form-item prop="phone" class="formInput1 mobileInput">
-                                <span class="number">
-                                    <span>+86</span>
-                                    <span class="small_line">|</span>
-                                </span>
-                                <el-input
-                                    v-model="mobileForm.phone"
-                                    placeholder="手机"
-                                    class="mobile"
-                                    @focus="name3 = true"
-                                    @blur="name3 = false"
-                                ></el-input>
-                                <div class="line" :class="{active: name3}"></div>
-                            </el-form-item>
-                            <el-form-item prop="code" class="formInput2 codeInput">
-                                <el-input
-                                    v-model="mobileForm.code"
-                                    type="password"
-                                    @focus="name4= true"
-                                    @blur="name4 = false"
-                                    placeholder="请输入验证码"
-                                ></el-input>
-                                <el-button
-                                    class="codeBlock"
-                                    @click="getCode"
-                                    type="primary"
-                                    size="mini"
-                                    :disabled="isDisable"
-                                >{{codeTxt}}</el-button>
-                                <div class="line" :class="{active: name4}"></div>
-                            </el-form-item>
-                        </el-form>
-                    </el-tab-pane>
-                </el-tabs>
-                <!-- 链接文本 -->
-                <div class="link_text">
-                    <el-checkbox v-model="checked">记住我</el-checkbox>
-                    <div class="forget">
-                        <span @click="$router.push('/findpassword')">忘记密码?</span>
-                        <span class="vertical-line">|</span>
-                        <span @click="$router.push('/register')" class="register">注册</span>
-                    </div>
-                </div>
+            </div>
 
-                <el-button type="primary" @click="login">登录</el-button>
-                <!-- 登陆图标 -->
-                <div class="we_chat">
-                    <div class="footer_line">
-                        <i></i>
-                        <span @click="methodChange = false">微信登陆</span>
-                    </div>
+            <el-button type="primary" @click="login">登录</el-button>
+            <!-- 登陆图标 -->
+            <div class="we_chat">
+                <div class="footer_line">
+                    <i></i>
+                    <span @click="methodChange = false">微信登陆</span>
                 </div>
             </div>
-            <!-- 微信扫码登陆 -->
-            <div class="wechat_login" v-else>
-                <div class="code" @click="methodChange = true">
-                    <img src="../../assets/img/login/admin_computer.png" alt />
+        </div>
+        <!-- 微信扫码登陆 -->
+        <div class="wechat_login" v-else>
+            <div class="code" @click="methodChange = true">
+                <img src="../../assets/img/login/admin_computer.png" alt />
+            </div>
+            <div class="wechat_content">
+                <h1>微信登陆</h1>
+                <div class="wechat_code">
+                    <img src="../../assets/img/login/adimin_qrcode.png" alt />
                 </div>
-                <div class="wechat_content">
-                    <h1>微信登陆</h1>
-                    <div class="wechat_code">
-                        <img src="../../assets/img/login/adimin_qrcode.png" alt />
-                    </div>
-                    <p>已有账号,请使用微信扫描二维码登陆</p>
-                    <div class="footer_login">
-                        <span @click="methodChange = true">密码登陆</span>
-                        <span class="vertical_line">|</span>
-                        <span @click="$router.push('/register')">注册</span>
-                    </div>
+                <p>已有账号,请使用微信扫描二维码登陆</p>
+                <div class="footer_login">
+                    <span @click="methodChange = true">密码登陆</span>
+                    <span class="vertical_line">|</span>
+                    <span @click="$router.push('/register')">注册</span>
                 </div>
             </div>
         </div>
@@ -293,7 +293,7 @@ import {
     login_api1,
     login_api2,
     login_api3,
-    login_api4,
+    login_api4
 } from "../../request/api";
 
 import swiper from "../../components/swiper";
@@ -437,8 +437,13 @@ export default {
                 code: this.mobileForm.code
             };
             login_api4(send, res => {
-                this.$message.success("登陆成功");
-                this.$router.push("/qinjee/organization_repair");
+                if (res.data.success) {
+                    this.$message.success("登陆成功");
+                    localStorage.setItem("userInfo", JSON.stringify(res.data));
+                    this.$router.push("/qinjee/organization_repair");
+                } else {
+                    base.error(res.data);
+                }
             });
         },
         //普通登陆提交
@@ -453,8 +458,8 @@ export default {
                 base.log("r", "登录", d);
                 if (d.success) {
                     this.getMenu();
-                    console.log('成功登陆');                    
-                    localStorage.setItem('userInfo',JSON.stringify(d))                    
+                    console.log("成功登陆");
+                    localStorage.setItem("userInfo", JSON.stringify(d));
                 } else {
                     base.error(d);
                 }

@@ -172,6 +172,7 @@
 import swiper from "../../components/swiper";
 
 export default {
+    name:"findpassword",
     data() {
         return {
             activeName: "mobile_find",

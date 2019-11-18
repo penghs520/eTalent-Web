@@ -1,4 +1,6 @@
-<style lang="stylus" scoped></style>
+<style lang="stylus" scoped>
+
+</style>
 <template>
     <div id="organization_station">
         <h1>岗位维护</h1>

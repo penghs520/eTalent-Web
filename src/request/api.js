@@ -25,6 +25,9 @@ const login_api5 = (data, callback) => {request('post', `api/masterdata/userLogi
         const role_api12    = (data, callback) => {request('post', `api/masterdata/roleAuth/searchCustomArchiveTableList`, data, callback)};
         const role_api13    = (data, callback) => {request('post', `api/masterdata/roleAuth/searchCustomArchiveTableFieldListByTableId`, data, callback)};
 
+        // 用户授权
+        const user_api1    = (data, callback) => {request('post', `api/masterdata/archiveAuth/searchArchiveListByRoleId`, data, callback)};
+
 
 export {
     // 登录
@@ -35,4 +38,7 @@ export {
             // 角色授权
             role_api1, role_api2, role_api3, role_api4, role_api5, role_api6, role_api7, role_api8, role_api9, role_api10, role_api11,
             role_api12, role_api13,
+
+            // 用户授权
+            user_api1,
 }

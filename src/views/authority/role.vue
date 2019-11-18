@@ -83,6 +83,9 @@
     padding: 18px 24px;
     font-size: 14px;
 }
+.fieldTableHeader{
+    font-weight: 600;
+}
 </style>
 <style>
     #authority_role .serverTree .el-tree-node__content{
@@ -116,6 +119,12 @@
     #authority_role .rangeTree .el-checkbox{
         position: absolute;
         left: calc(300px + 20%);
+    }
+    #authority_role .fieldTableHeader th{
+        background-color: #FAFAFA;
+    }
+    #authority_role .fieldTableRow{
+        height: 54px;
     }
 
 </style>
@@ -204,6 +213,10 @@
                             <el-table
                                 ref="multipleTable"
                                 :data="fieldTableData"
+                                stripe
+                                :border="false"
+                                header-row-class-name="fieldTableHeader"
+                                row-class-name="fieldTableRow"
                                 tooltip-effect="dark"
                                 style="width: 100%">
                                 <!-- <el-table-column label="名称" width="120">
@@ -213,20 +226,20 @@
                                 <el-table-column prop="name" label="可读" width="120">
                                     <template slot-scope="scope">
                                         <!-- <el-checkbox v-model="scope.row.readWriteCode"  >备选项</el-checkbox> -->
-                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateRead" v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldcheckAllChange($event,'read')" ></el-checkbox>
-                                        <el-checkbox v-else v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldChange($event,'read',scope.row)" ></el-checkbox>
+                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateRead" v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldChangeAll($event,'read')" ></el-checkbox>
+                                        <el-checkbox v-else v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldChangeSingle($event,'read',scope.row)" ></el-checkbox>
                                     </template>
                                 </el-table-column>
                                 <el-table-column prop="name" label="新增可写" width="120">
                                     <template slot-scope="scope">
-                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateAddWrite" v-model="scope.row.isAddWrite" @change="fieldcheckAllChange($event,'addWrite')" ></el-checkbox>
-                                        <el-checkbox v-else v-model="scope.row.isAddWrite" @change="fieldChange($event,'addWrite',scope.row) "></el-checkbox>
+                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateAddWrite" v-model="scope.row.isAddWrite" @change="fieldChangeAll($event,'addWrite')" ></el-checkbox>
+                                        <el-checkbox v-else v-model="scope.row.isAddWrite" @change="fieldChangeSingle($event,'addWrite',scope.row) "></el-checkbox>
                                     </template>
                                 </el-table-column>
                                 <el-table-column prop="address" label="可写">
                                     <template slot-scope="scope">
-                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateWrite" v-model="scope.row.isWrite" @change="fieldcheckAllChange($event,'write')" ></el-checkbox>
-                                        <el-checkbox v-else v-model="scope.row.isWrite" @change="fieldChange($event,'write',scope.row)" ></el-checkbox>
+                                        <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateWrite" v-model="scope.row.isWrite" @change="fieldChangeAll($event,'write')" ></el-checkbox>
+                                        <el-checkbox v-else v-model="scope.row.isWrite" @change="fieldChangeSingle($event,'write',scope.row)" ></el-checkbox>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -892,7 +905,12 @@ export default {
             return result;
         },
 
-        // 权限改变
+        // 权限改变处理方法
+        /**
+         * @param {Boolean} 当前字段的权限： true/false
+         * @param {String}  权限类型：read/addWrite/write
+         * @param {Object}  当前行数据
+         */
         fieldChange(v,type,row) {
             switch (type) {
                 case 'read':
@@ -942,8 +960,13 @@ export default {
             this.fieldTableData[0].isIndeterminateWrite    = status.write[1];
         },
 
+        // 单个权限改变
+        fieldChangeSingle(v,type,row) {
+            this.fieldChange(v,type,row);
+        },
+
         // 全选改变
-        fieldcheckAllChange(v,type) {
+        fieldChangeAll(v,type) {
             this.fieldTableData.map(item => {
                 this.fieldChange(v,type,item);
             });

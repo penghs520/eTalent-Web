@@ -18,7 +18,9 @@ function request_get(url, data, callback) {
 }
 
 function request_post(url, data, callback) {
-    axios.post(url, data)
+    axios.post(url, qs.stringify(data), {headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }})
         .then(function (response) {
             callback(response);
         })

@@ -5,6 +5,8 @@
 <template>
     <div id="commonTable">
         <h1>commonTable</h1>
+
+        <!-- 操作栏 -->
         <ul>
             <li v-for="(item,index) in table.bar" :key="index" >
                 
@@ -18,18 +20,41 @@
 
                 <!-- 按钮 -->
                 <el-button v-if="item.type === 'button'" :type="item.btnType ? item.btnType : 'primary'" size="small" :icon="item.icon" @click="btnClick(item.method)" >{{item.text}}</el-button>
+
                 <!-- 二级按钮 -->
+                <el-dropdown v-if="item.type === 'buttons'" trigger="click" @command="buttonsClick" >
+                    <el-button :type="item.btnType ? item.btnType : 'primary'" size="small" :icon="item.icon">
+                        {{item.text}}
+                        <i v-show="!item.defaultIconHide" class="el-icon-arrow-down"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="(btn,btnIndex) in item.list" :key="btnIndex" :command="btn" :icon="btn.icon" >{{btn.text}}</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
             </li>
         </ul>
+
+        <!-- 表格 -->
         <el-table :data="data" style="width: 100%" @selection-change="selectChange" >
             <el-table-column v-if="table.showSelect" type="selection" width="55"></el-table-column>
             <el-table-column v-if="table.showRadio" width="55">
                 <template slot-scope="scope">
-                    <el-checkbox :checked="radioCheckedIndex === scope.$index" @change="radioClick($event,scope)" ></el-checkbox>
+                    <el-checkbox :value="radioCheckedIndex === scope.$index" @change="radioClick($event,scope)" ></el-checkbox>
                 </template>
             </el-table-column>
             <el-table-column v-for="(item,index) in head" :key="index" :prop="item.key" :label="item.name" :width="item.width" v-show="item.isShow" ></el-table-column>
         </el-table>
+
+        <!-- 页码 -->
+        <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="1"
+            :page-sizes="[100, 200, 300, 400]"
+            :page-size="100"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="400">
+        </el-pagination>
     </div>
 </template>
 
@@ -77,11 +102,8 @@ export default {
 
         // 单选框被点击
         radioClick(val,scope) {
-            console.log('行被点击')
-            console.log(val)
             this.radioCheckedIndex = val ? scope.$index : undefined;
             this.radioChecked = val ? scope.row : null;
-            console.log(this.radioCheckedIndex);
         },
 
         // 操作栏数据绑定初始化
@@ -92,17 +114,18 @@ export default {
                     case 'input':
                         // 输入框
                         val = item.defaultVal || item.defaultVal === 0 ? item.defaultVal : '';
+                        this.$set(this.barData, item.key, val);
                         break;
                     
                     case 'select':
                         // 单选下拉框
                         val = item.defaultVal || item.defaultVal === 0 ? item.defaultVal : '';
+                        this.$set(this.barData, item.key, val);
                         break;
                 
                     default:
                         break;
                 };
-                this.$set(this.barData, item.key, val);
             });
         },
 
@@ -119,6 +142,17 @@ export default {
                 callBack(this.barData, this.radioChecked, this.selectChecked);
             }
         },
+
+        // 更多按钮
+        buttonsClick(btn) {
+            if (btn.method) {
+                btn.method(this.barData, this.radioChecked, this.selectChecked);
+            }
+        },
+
+        // 页码
+        handleSizeChange() {},
+        handleCurrentChange() {},
     }
 }
 </script>

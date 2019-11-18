@@ -48,11 +48,23 @@ export default {
                         btnType: 'primary',
                         icon: 'el-icon-search',
                         method: this.search
+                    },
+                    {
+                        type: 'buttons',                 /* 下拉按钮 */
+                        text: '更多',
+                        btnType: 'primary',
+                        icon: '',
+                        defaultIconHide: false,         /* 非必须，默认图标是否不显示，默认显示，true-不显示，false-显示 */
+                        list: [
+                            {text: '按钮1', method: this.btn1, icon: 'el-icon-search'},
+                            {text: '按钮2', method: this.btn2}
+                        ]
                     }
                 ],
                 showSelect: true,                       /* 非必须，是否显示select勾选框 */
                 selectChange: this.selectChange,        /* 非必须，selcet选中改变时的回调，接收1个参数 */
                 showRadio: true,                        /* 非必须，是否显示单选框 */
+                page: {},
             },
         };
     },
@@ -86,6 +98,19 @@ export default {
 
         search(search,radio,checkbox) {
             console.log('查询')
+            console.log(search)
+            console.log(radio)
+            console.log(checkbox)
+        },
+
+        btn1(search,radio,checkbox) {
+            console.log('按钮1')
+            console.log(search)
+            console.log(radio)
+            console.log(checkbox)
+        },
+        btn2(search,radio,checkbox) {
+            console.log('按钮2')
             console.log(search)
             console.log(radio)
             console.log(checkbox)

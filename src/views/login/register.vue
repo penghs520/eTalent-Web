@@ -174,7 +174,8 @@
 import swiper from "../../components/swiper";
 
 export default {
-    data() {
+    name:"register",
+    data() {      
         return {
             regForm: {
                 mobile: "",

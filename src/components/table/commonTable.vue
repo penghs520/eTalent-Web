@@ -53,7 +53,7 @@
             <template v-if="table.perColumn && table.perColumn.length > 0">
                 <el-table-column  v-for="(item, index) in table.perColumn" :key="`perColumn_${index}`" :label="item.name" :width="item.width" >
                     <template slot-scope="scope">
-                        <el-button v-for="(btn, btnIndex) in item.btnList" :key="`perColumnBtn_${btnIndex}`" @click="perColumnBtnClick(btn.method, scope)" :type="btn.btnType ? btn.btnType : 'text'" :icon="btn.icon" >{{btn.text}}</el-button>
+                        <el-button v-for="(btn, btnIndex) in item.list" :key="`perColumnBtn_${btnIndex}`" @click="perColumnBtnClick(btn.method, scope)" :type="btn.btnType ? btn.btnType : 'text'" :icon="btn.icon" >{{btn.text}}</el-button>
                     </template>
                 </el-table-column>
             </template>
@@ -62,6 +62,7 @@
 
         <!-- 页码 -->
         <el-pagination
+            v-if="!table.pageHide"
             @size-change="pageSizeChange"
             @current-change="pageCurrentChange"
             :current-page="1"

@@ -29,7 +29,7 @@
             <el-card class="box-card">
                 <commonTable :table="table"></commonTable>
                 <el-dialog
-                    :visible.sync="roleTreeAddDialog"
+                    :visible.sync="showUserList"
                     class="qinjeeDialogSmall"
                     :append-to-body="true"
                     :close-on-click-modal="false"
@@ -39,8 +39,8 @@
                     <commonTable :table="addtable"></commonTable>
                     <div class="qinjeeDialogSmallCont"></div>
                     <span slot="footer" class="dialog-footer">
-                        <el-button @click="roleTreeAddDialog = false">取 消</el-button>
-                        <el-button type="primary" @click="roleTreeAddDialog = false">确 定</el-button>
+                        <el-button @click="showUserList = false">取 消</el-button>
+                        <el-button type="primary" @click="showUserList = false">确 定</el-button>
                     </span>
                 </el-dialog>
             </el-card>
@@ -82,6 +82,23 @@ export default {
                 ],
                 data: [] /* 必须，表格要渲染的数据，数组格式 */,
                 total: 0 /* 必须，数据的总条数，用于翻页 */,
+                perColumn: [
+                    /* 非必须，表格前置列配置，数组格式，数组中的每个元素就是一列 */
+                    {
+                        name: "角色" /* 必须，该列的表头名称 */,
+                        width: "200px" /* 非必须，该列的宽度 */,
+                        list: [
+                            /* 必须，该列中要渲染的按钮，数组格式，数组中每个元素就是一个按钮 */
+                            {
+                                type:
+                                    "primary" /* 非必须，按钮的样式，element-ui提供的按钮样式 */,
+                                text: "角色" /* 必须，按钮上显示的文字 */,
+                                method: this
+                                    .columnBtn /* 必须，按钮点击时的回调，该函数接收1个参数：该行的数据 */
+                            }
+                        ]
+                    }
+                ],
                 bar: [
                     /* 非必须，表格上面的操作栏配置 */
                     {
@@ -150,25 +167,25 @@ export default {
             pageSize: 4,
             searchVal: "",
             orgId: "",
-            roleTreeAddDialog: true,
+            showUserList: true,
             addtable: {
                 head: [
                     /* 必须，表格头配置 */
                     {
-                        name: "姓名" /* 必须，表格头所显示的文字 */,
+                        name: "角色列表" /* 必须，表格头所显示的文字 */,
                         key:
-                            "userName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
+                            "userList" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
                         isShow: true /* 必须，表格是否默认显示该列 */,
                         width: "200px" /* 非必须，该列的默认宽度 */
                     },
-                    { name: "工号", key: "employeeNumber", isShow: true }
                 ],
                 data: [] /* 必须，表格要渲染的数据，数组格式 */,
                 total: 0 /* 必须，数据的总条数，用于翻页 */,
                 bar: [] /* 非必须，表格上面的操作栏配置 */,
                 showSelect: true /* 非必须，是否显示select勾选框 */,
                 selectChange: this
-                    .selectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */
+                    .selectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
+                pageHide: true,
             },
             archiveId: ""
         };
@@ -179,14 +196,20 @@ export default {
         this.getUserList(this.archiveId);
     },
     methods: {
+        // 显示角色列表
+        columnBtn(node) {         
+            this.archiveId = node.archiveId;
+            this.getUserList(this.archiveId);         
+            this.showUserList= true
+            
+        },
         //获取角色列表
         getUserList(archiveId) {
-            console.log(archiveId);
             userCheck_api3(archiveId, res => {
                 let d = res.data;
                 base.log("r", "查询角色列表", d);
                 if (d.success) {
-                    
+                     this.table.addtable = d.result;                    
                 } else {
                     base.error(d);
                 }

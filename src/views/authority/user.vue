@@ -71,12 +71,12 @@ export default {
                         ]
                     }
                 ],
-                showSelect: true,                       /* 非必须，是否显示select勾选框 */
+                showSelect: false,                       /* 非必须，是否显示select勾选框 */
                 selectChange: this.selectChange,        /* 非必须，selcet选中改变时的回调，接收1个参数 */
                 showRadio: true,                        /* 非必须，是否显示单选框 */
                 page: {                                 /* 非必须，页码配置 */
-                    pageSizes: [1,2,3],                 /* 非必须，页码可选的每页数量 */
-                    pageSize: 2                         /* 非必须，默认每页显示的数量 */
+                    pageSizes: [10,20,30,40],                 /* 非必须，页码可选的每页数量 */
+                    pageSize: 20                         /* 非必须，默认每页显示的数量 */
                 },
                 pageHide: false,                        /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */
                 pageSizeChange: this.pageSizeChange,    /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */
@@ -131,6 +131,10 @@ export default {
             console.log(radio)
             console.log(checkbox)
         },
+        pageChange(page) {
+            console.log('88888888888')
+            console.log(page)
+        }
 
     }
 }

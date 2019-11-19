@@ -1,13 +1,21 @@
 <style scoped>
-
+.operateBar{
+    display: flex;
+    align-items: center;
+}
+.operateBar>li{
+    margin-right: 20px;
+}
+.table{
+    margin-bottom: 20px;
+    width: 100%;
+}
 </style>
 
 <template>
     <div id="commonTable">
-        <h1>commonTable</h1>
-
         <!-- 操作栏 -->
-        <ul>
+        <ul class="operateBar">
             <li v-for="(item,index) in table.bar" :key="index" >
                 
                 <!-- 输入框 -->
@@ -35,7 +43,7 @@
         </ul>
 
         <!-- 表格 -->
-        <el-table :data="data" style="width: 100%" @selection-change="selectChange" >
+        <el-table :data="data" class="table" @selection-change="selectChange" >
             <el-table-column v-if="table.showSelect" type="selection" width="55"></el-table-column>
             <el-table-column v-if="table.showRadio" width="55">
                 <template slot-scope="scope">
@@ -47,13 +55,13 @@
 
         <!-- 页码 -->
         <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
+            @size-change="pageSizeChange"
+            @current-change="pageCurrentChange"
             :current-page="1"
-            :page-sizes="[100, 200, 300, 400]"
-            :page-size="100"
+            :page-sizes="page.pageSizes"
+            :page-size="page.pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="400">
+            :total="total">
         </el-pagination>
     </div>
 </template>
@@ -72,12 +80,16 @@ export default {
             radioChecked: null,                 /* 单选框选中的行数据 */
             radioCheckedIndex: undefined,       /* 单选框选中的index */
             barData: {},                        /* 操作栏数据绑定变量 */
+            page: {
+                pageSizes: [10, 20, 50, 100, 200, 500, 1000],
+                pageSize: 10
+            },
         };
     },
     created() {
         // 变量初始化
         this.barModelInit(this.table.bar);
-        console.log(this.barData)
+        Object.assign(this.page, this.table.page);
     },
     computed: {
         head(){
@@ -150,9 +162,19 @@ export default {
             }
         },
 
-        // 页码
-        handleSizeChange() {},
-        handleCurrentChange() {},
+        // 页码--每页数量改变
+        pageSizeChange(size) {
+            if (this.table.pageSizeChange) {
+                this.table.pageSizeChange(size, this.barData, this.radioChecked, this.selectChecked)
+            }
+        },
+
+        // 页码--当前页改变
+        pageCurrentChange(index) {
+            if (this.table.pageSizeChange) {
+                this.table.pageChange(index, this.barData, this.radioChecked, this.selectChecked)
+            }
+        },
     }
 }
 </script>

@@ -19,18 +19,24 @@ export default {
     data() {
         return {
             table: {
-                head: [
-                    {name: '姓名', key: 'userName', isShow: true, width: '200px'}
+                head: [                                 /* 必须，表格头配置 */
+                    {
+                        name: '姓名',                   /* 必须，表格头所显示的文字 */
+                        key: 'userName',                /* 必须，该列要显示的数据所对应的变量的字符串格式 */
+                        isShow: true,                   /* 必须，表格是否默认显示该列 */
+                        width: '200px'                  /* 非必须，该列的默认宽度 */
+                    },
+                    {name: '工号', key: 'employeeNumber', isShow: true}
                 ],
-                data: [],
-                total: 0,
-                bar: [
+                data: [],                               /* 必须，表格要渲染的数据，数组格式 */
+                total: 0,                               /* 必须，数据的总条数，用于翻页 */
+                bar: [                                  /* 非必须，表格上面的操作栏配置 */
                     {
                         type: 'input',                  /* 输入框 */
-                        placeholder: '请输入',
-                        key: 'name',
-                        defaultVal: '',
-                        enter: this.search
+                        placeholder: '请输入',          /* 非必须，输入框提示语 */
+                        key: 'name',                    /* 必须，输入框绑定的变量字符串 */
+                        defaultVal: '',                 /* 非必须，默认值 */
+                        enter: this.search              /* 非必须，回车键的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
                     },
                     {
                         type: 'select',                 /* 单选下拉框 */
@@ -43,11 +49,11 @@ export default {
                         ]
                     },
                     {
-                        type: 'button',                 /* 按钮 */
-                        text: '查询',
-                        btnType: 'primary',
-                        icon: 'el-icon-search',
-                        method: this.search
+                        type: 'button',                 /* 必须，DOM类型：按钮 */
+                        text: '查询',                   /* 必须，按钮名称 */
+                        btnType: 'primary',             /* 非必须，element-ui提供的按钮样式 */
+                        icon: 'el-icon-search',         /* 非必须，icon图标 */
+                        method: this.search             /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
                     },
                     {
                         type: 'buttons',                 /* 下拉按钮 */
@@ -55,8 +61,12 @@ export default {
                         btnType: 'primary',
                         icon: '',
                         defaultIconHide: false,         /* 非必须，默认图标是否不显示，默认显示，true-不显示，false-显示 */
-                        list: [
-                            {text: '按钮1', method: this.btn1, icon: 'el-icon-search'},
+                        list: [                         /* 必须，更多按钮的数据组成的数组 */
+                            {
+                                text: '按钮1',          /* 必须，按钮名称 */
+                                method: this.btn1,      /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                                icon: 'el-icon-search'  /* 非必须，icon图标 */
+                            },
                             {text: '按钮2', method: this.btn2}
                         ]
                     }
@@ -64,7 +74,13 @@ export default {
                 showSelect: true,                       /* 非必须，是否显示select勾选框 */
                 selectChange: this.selectChange,        /* 非必须，selcet选中改变时的回调，接收1个参数 */
                 showRadio: true,                        /* 非必须，是否显示单选框 */
-                page: {},
+                page: {                                 /* 非必须，页码配置 */
+                    pageSizes: [1,2,3],                 /* 非必须，页码可选的每页数量 */
+                    pageSize: 2                         /* 非必须，默认每页显示的数量 */
+                },
+                pageHide: false,                        /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */
+                pageSizeChange: this.pageSizeChange,    /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */
+                pageChange: this.pageChange,            /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
             },
         };
     },

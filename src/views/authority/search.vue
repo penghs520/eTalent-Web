@@ -6,14 +6,14 @@
     background-color: #f0f0f0ff;
     .sideTree {
         width: 216px;
-        .el-card {
-            height: 100%;
-        }
+        height: 100%;
+        background-color: #fff;
     }
     .content {
         flex: 1;
         height: 100%;
         padding: 16px 0px 0px 16px;
+        height: 100%;
         .el-card {
             height: 100%;
         }
@@ -23,13 +23,26 @@
 <template>
     <div id="authority_search">
         <div class="sideTree">
-            <el-card class="box-card">
-                <tree :treeData="treeData"></tree>
-            </el-card>
+            <tree :treeData="treeData"></tree>
         </div>
         <div class="content">
             <el-card class="box-card">
                 <commonTable :table="table"></commonTable>
+                <el-dialog
+                    :visible.sync="roleTreeAddDialog"
+                    class="qinjeeDialogSmall"
+                    :append-to-body="true"
+                    :close-on-click-modal="false"
+                    center
+                >
+                    <span slot="title">新增</span>
+                    <commonTable :table="addtable"></commonTable>
+                    <div class="qinjeeDialogSmallCont"></div>
+                    <span slot="footer" class="dialog-footer">
+                        <el-button @click="roleTreeAddDialog = false">取 消</el-button>
+                        <el-button type="primary" @click="roleTreeAddDialog = false">确 定</el-button>
+                    </span>
+                </el-dialog>
             </el-card>
         </div>
     </div>
@@ -38,7 +51,11 @@
 import base from "../../assets/js/base";
 import tree from "../../components/tree/tree";
 import commonTable from "../../components/table/commonTable";
-import { userCheck_api1, userCheck_api2 } from "../../request/api";
+import {
+    userCheck_api1,
+    userCheck_api2,
+    userCheck_api3
+} from "../../request/api";
 
 export default {
     name: "search" /* 角色反查 */,
@@ -98,41 +115,108 @@ export default {
                 pageChange: this
                     .pageChange /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
             },
-            pageSize: 4,
-            searchVal: "Qj",
             treeData: {
                 data: [] /* 必须，树形结构数据 */,
                 props: {
                     /* 必须，树形结构数据绑字段配置 */
-                    children: String /* 必须，子集key */,
-                    label: String /* 必须，菜单节点要显示的文字对应的字段 */
+                    children: "childList" /* 必须，子集key */,
+                    label: "orgName" /* 必须，菜单节点要显示的文字对应的字段 */
                 },
                 icons: [
                     /* 非必须，树形结构层级图标配置 */
                     {
-                        key: String /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
-                        val: String /* 必须，key对应的值 */,
-                        icon: String /* 必须，图标类名 */
+                        key:
+                            "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
+                        val: "GROUP" /* 必须，key对应的值 */,
+                        icon: "el-icon-menu" /* 必须，图标类名 */
+                    },
+                    {
+                        key:
+                            "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
+                        val: "UNIT" /* 必须，key对应的值 */,
+                        icon: "el-icon-s-flag" /* 必须，图标类名 */
+                    },
+                    {
+                        key:
+                            "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
+                        val: "DEPT" /* 必须，key对应的值 */,
+                        icon: "el-icon-setting" /* 必须，图标类名 */
                     }
                 ],
                 showDefaultIcon: false /* 非必须，是否显示默认图标 */,
                 nodeClick: this
                     .nodeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
-            }
+            },
+            pageSize: 4,
+            searchVal: "",
+            orgId: "",
+            roleTreeAddDialog: true,
+            addtable: {
+                head: [
+                    /* 必须，表格头配置 */
+                    {
+                        name: "姓名" /* 必须，表格头所显示的文字 */,
+                        key:
+                            "userName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
+                        isShow: true /* 必须，表格是否默认显示该列 */,
+                        width: "200px" /* 非必须，该列的默认宽度 */
+                    },
+                    { name: "工号", key: "employeeNumber", isShow: true }
+                ],
+                data: [] /* 必须，表格要渲染的数据，数组格式 */,
+                total: 0 /* 必须，数据的总条数，用于翻页 */,
+                bar: [] /* 非必须，表格上面的操作栏配置 */,
+                showSelect: true /* 非必须，是否显示select勾选框 */,
+                selectChange: this
+                    .selectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */
+            },
+            archiveId: ""
         };
     },
     mounted() {
-        this.getTable(1, this.pageSize, this.searchVal);
+        //获取组织结构
+        this.getTree(1);
+        this.getUserList(this.archiveId);
     },
     methods: {
+        //获取角色列表
+        getUserList(archiveId) {
+            console.log(archiveId);
+            userCheck_api3(archiveId, res => {
+                let d = res.data;
+                base.log("r", "查询角色列表", d);
+                if (d.success) {
+                    
+                } else {
+                    base.error(d);
+                }
+            });
+        },
         // 获取树形结构
-        getTree(){
-            
+        getTree(isEnable) {
+            let send = {
+                isEnable
+            };
+            userCheck_api2(send, res => {
+                let d = res.data;
+                base.log("r", "查询树", d);
+                if (d.success) {
+                    this.treeData.data = d.result.list;
+                    this.orgId = d.result.list[0].orgId;
+                } else {
+                    base.error(d);
+                }
+            });
+        },
+        //点击节点获取数据
+        nodeClick(node) {
+            this.orgId = node.orgId;
         },
         // 获取表格数据
-        getTable(currentPage, pageSize, userName) {
+        getTable(currentPage, orgId, pageSize, userName) {
             let send = {
                 currentPage,
+                orgId,
                 pageSize,
                 userName
             };
@@ -151,16 +235,16 @@ export default {
         // 根据用户名和工号查询
         search(val) {
             this.searchVal = val.name;
-            this.getTable(1, this.pageSize, this.searchVal);
+            this.getTable(1, this.orgId, this.pageSize, this.searchVal);
         },
         //页码改变
         pageChange(page, search) {
-            this.getTable(page, this.pageSize, this.searchVal);
+            this.getTable(page, this.orgId, this.pageSize, this.searchVal);
         },
         // //页容量改变
         pageSizeChange(pageSize) {
             this.pageSize = pageSize;
-            this.getTable(1, this.pageSize, this.searchVal);
+            this.getTable(1, this.orgId, this.pageSize, this.searchVal);
         }
     }
 };

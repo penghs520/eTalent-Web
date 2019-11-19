@@ -27,7 +27,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const role_api14    = (data, callback) => {request('post', `api/masterdata/roleAuth/updateRoleCustomArchiveTableFieldAuth`, data, callback)};
 
         // 用户授权
-        const user_api1    = (data, callback) => {request('form', `api/masterdata/archiveAuth/searchArchiveListByRoleId`, data, callback)};
+        const user_api1    = (data, callback) => {request('form', `api/masterdata/archiveAuth/searchRoleTree`, data, callback)};
        
         // 角色反查
         const userCheck_api1    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchArchiveListByUserName`, data, callback)};

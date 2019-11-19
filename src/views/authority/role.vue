@@ -7,6 +7,7 @@
 }
 .tree{
     width: 216px;
+    background-color: #fff;
 }
 .cont{
     width: calc(100% - 216px);

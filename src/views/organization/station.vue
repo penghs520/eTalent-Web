@@ -4,17 +4,17 @@
 <template>
     <div id="organization_station">
         <h1>岗位维护a</h1>
-        <organization-chart :datasource="ds" :zoom="true" :pan="true" @node-clic="nodeClick" ></organization-chart>
+        <!-- <organization-chart :datasource="ds" :zoom="true" :pan="true" @node-clic="nodeClick" ></organization-chart> -->
     </div>
 </template>
 <script>
-import OrganizationChart from 'vue-organization-chart'
-import 'vue-organization-chart/dist/orgchart.css'
+// import OrganizationChart from 'vue-organization-chart'
+// import 'vue-organization-chart/dist/orgchart.css'
 
 export default {
     name: "station" /* 岗位维护 */,
     components: {
-        OrganizationChart
+        // OrganizationChart
     },
     data() {
         return {

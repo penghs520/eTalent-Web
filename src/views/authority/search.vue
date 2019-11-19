@@ -2,8 +2,8 @@
 #authority_search {
     display: flex;
     height: 100%;
-    box-sizing:  border-box;
-    text-align: left;
+    // box-sizing: border-box;
+    // text-align: left;
     .sideTree {
         width: 216px;
         height: 100%;
@@ -13,13 +13,12 @@
         flex: 1;
         height: 100%;
         padding: 16px 0px 0px 16px;
-        height: 100%;
         box-sizing: border-box;
         background-color: #f0f0f0ff;
         .content {
             height: 100%;
             padding: 20px;
-            box-sizing:  border-box;
+            box-sizing: border-box;
             overflow: auto;
             background-color: #fff;
         }
@@ -200,12 +199,29 @@ export default {
     mounted() {
         //获取组织结构
         this.getTree(1);
-        this.getUserList(this.archiveId);
+        this.eidtUser();
     },
     methods: {
         //修改用户角色
-        eidtUser() {},
-        // 显示角色列表
+        eidtUser() {
+            let dataQuery = 1;
+            let roleIdList= [0];
+
+            userCheck_api4(
+                roleIdList,
+                res => {
+                    base.log("s", "修改用户角色", roleIdList);
+                    let d = res.data;
+                    base.log("r", "修改用户角色", d);
+                    if (d.success) {
+                    } else {
+                        base.error(d);
+                    }
+                },
+                dataQuery
+            );
+        },
+        // 显示用户角色列表
         columnBtn(node) {
             this.archiveId = node.archiveId;
             this.getUserList(this.archiveId);

@@ -33,7 +33,8 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const userCheck_api1    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchArchiveListByUserName`, data, callback)};
         const userCheck_api2    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationTree`, data, callback)};
         const userCheck_api3    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchRoleListByArchiveId`, data, callback)};
-        const userCheck_api4    = (data, callback) => {request('post', `api/masterdata/roleSearch/updateArchiveRole`, data, callback)};
+        const userCheck_api4    = (data, callback,dataQuery) => {request('post', `api/masterdata/roleSearch/updateArchiveRole?archiveId=`+dataQuery, data, callback)};
+
 
 
 

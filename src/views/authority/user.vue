@@ -4,7 +4,20 @@
 <template>
     <div id="authority_user">
         <h1>用户授权</h1>
-        <commonTable :table="table" ></commonTable>
+        <!-- 大弹窗 -->
+        <el-dialog
+            :visible.sync="roleTreeAddDialog"
+            class="qinjeeDialogBig"
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            center>
+            <span slot="title" >新增</span>
+            <div class="qinjeeDialogBigCont"></div>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="roleTreeAddDialog = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="roleTreeAddsure = false">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -15,143 +28,14 @@ import {user_api1} from '../../request/api';
 
 export default {
     name: 'user',             /* 用户授权 */
-    components: {commonTable},
     data() {
         return {
-            table: {
-                head: [                                 /* 必须，表格头配置 */
-                    {
-                        name: '姓名',                   /* 必须，表格头所显示的文字 */
-                        key: 'userName',                /* 必须，该列要显示的数据所对应的变量的字符串格式 */
-                        isShow: true,                   /* 必须，表格是否默认显示该列 */
-                        width: '200px'                  /* 非必须，该列的默认宽度 */
-                    },
-                    {name: '工号', key: 'employeeNumber', isShow: true}
-                ],
-                data: [],                               /* 必须，表格要渲染的数据，数组格式 */
-                total: 0,                               /* 必须，数据的总条数，用于翻页 */
-                bar: [                                  /* 非必须，表格上面的操作栏配置 */
-                    {
-                        type: 'input',                  /* 输入框 */
-                        placeholder: '请输入',          /* 非必须，输入框提示语 */
-                        key: 'name',                    /* 必须，输入框绑定的变量字符串 */
-                        defaultVal: '',                 /* 非必须，默认值 */
-                        enter: this.search              /* 非必须，回车键的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: 'select',                 /* 单选下拉框 */
-                        placeholder: '请选择',
-                        key: 'type',
-                        defaultVal: '',
-                        list: [
-                            {label: '类型1', value: 1},
-                            {label: '类型2', value: 2},
-                        ]
-                    },
-                    {
-                        type: 'button',                 /* 必须，DOM类型：按钮 */
-                        text: '查询',                   /* 必须，按钮名称 */
-                        btnType: 'primary',             /* 非必须，element-ui提供的按钮样式 */
-                        icon: 'el-icon-search',         /* 非必须，icon图标 */
-                        method: this.search             /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: 'buttons',                 /* 下拉按钮 */
-                        text: '更多',
-                        btnType: 'primary',
-                        icon: '',
-                        defaultIconHide: false,         /* 非必须，默认图标是否不显示，默认显示，true-不显示，false-显示 */
-                        list: [                         /* 必须，更多按钮的数据组成的数组 */
-                            {
-                                text: '按钮1',          /* 必须，按钮名称 */
-                                method: this.btn1,      /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                                icon: 'el-icon-search'  /* 非必须，icon图标 */
-                            },
-                            {text: '按钮2', method: this.btn2}
-                        ]
-                    }
-                ],
-                showSelect: false,                       /* 非必须，是否显示select勾选框 */
-                selectChange: this.selectChange,        /* 非必须，selcet选中改变时的回调，接收1个参数 */
-                showRadio: true,                        /* 非必须，是否显示单选框 */
-                perColumn: [                            /* 非必须，表格前置列配置，数组格式，数组中的每个元素就是一列 */
-                    {
-                        name: '角色',                   /* 必须，该列的表头名称 */
-                        width: '200px',                 /* 非必须，该列的宽度 */
-                        btnList: [                      /* 必须，该列中要渲染的按钮，数组格式，数组中每个元素就是一个按钮 */
-                            {
-                                type: 'primary',        /* 非必须，按钮的样式，element-ui提供的按钮样式 */
-                                icon: '',               /* 非必须，按钮的icon */
-                                text: '角色',           /* 必须，按钮上显示的文字 */
-                                method: this.columnBtn        /* 必须，按钮点击时的回调，该函数接收1个参数：该行的数据 */
-                            }
-                        ]
-                    }
-                ],
-                page: {                                 /* 非必须，页码配置 */
-                    pageSizes: [10,20,30,40],                 /* 非必须，页码可选的每页数量 */
-                    pageSize: 20                         /* 非必须，默认每页显示的数量 */
-                },
-                pageHide: false,                        /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */
-                pageSizeChange: this.pageSizeChange,    /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */
-                pageChange: this.pageChange,            /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
-            },
+            roleTreeAddDialog: true,
         };
     },
     mounted() {
-        this.getTable();
     },
     methods: {
-        // 获取表格数据
-        getTable() {
-            let send = {
-                roleId: 1,
-                currentPage: 1,
-                pageSize: 10
-            };
-            base.log('s', '获取表格数据', send);
-            user_api1(send, res => {
-                let d = res.data;
-                base.log('r', '获取表格数据', d);
-                if (d.success) {
-                    this.table.data = d.result.list;
-                    this.table.total = d.result.total;
-                }else{
-                    base.error(d);
-                }
-            })
-        },
-
-        selectChange(val) {
-            console.log(val)
-        },
-
-        search(search,radio,checkbox) {
-            console.log('查询')
-            console.log(search)
-            console.log(radio)
-            console.log(checkbox)
-        },
-
-        btn1(search,radio,checkbox) {
-            console.log('按钮1')
-            console.log(search)
-            console.log(radio)
-            console.log(checkbox)
-        },
-        btn2(search,radio,checkbox) {
-            console.log('按钮2')
-            console.log(search)
-            console.log(radio)
-            console.log(checkbox)
-        },
-        pageChange(page) {
-            console.log('88888888888')
-            console.log(page)
-        },
-        columnBtn(row) {
-            console.log(row)
-        },
 
     }
 }

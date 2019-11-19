@@ -13,6 +13,7 @@ html,body,#app,.el-container{
 }
 .el-main{
     padding: 0 !important;
+    background-color: #F0F0F0;
 }
 
 

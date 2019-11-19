@@ -2,32 +2,32 @@
 import request from './http';
 
 // 登录
-const login_api1 = (data, callback) => {request('postForm', `api/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
-const login_api2 = (data, callback) => {request('postForm', `api/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
-const login_api3 = (data, callback) => {request('postForm', `api/masterdata/userLogin/sendCodeByPhone`, data, callback)};
-const login_api4 = (data, callback) => {request('postForm', `api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
-const login_api5 = (data, callback) => {request('postForm', `api/masterdata/userLogin/logout`, data, callback)};
+const login_api1 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
+const login_api2 = (data, callback) => {request('form', `api/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
+const login_api3 = (data, callback) => {request('form', `api/masterdata/userLogin/sendCodeByPhone`, data, callback)};
+const login_api4 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
+const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogin/logout`, data, callback)};
 
 // 系统管理
     // 权限管理
         // 角色授权
-        const role_api1     = (data, callback) => {request('postForm', `api/masterdata/roleAuth/searchRoleTree`, data, callback)};
-        const role_api2     = (data, callback) => {request('postForm', `api/masterdata/roleAuth/addRole`, data, callback)};
-        const role_api3     = (data, callback) => {request('postForm', `api/masterdata/roleAuth/addRoleGroup`, data, callback)};
-        const role_api4     = (data, callback) => {request('postForm', `api/masterdata/roleAuth/updateRole`, data, callback)};
-        const role_api5     = (data, callback) => {request('postForm', `api/masterdata/roleAuth/updateRoleGroup`, data, callback)};
-        const role_api6     = (data, callback) => {request('postForm', `api/masterdata/roleAuth/delRole`, data, callback)};
-        const role_api7     = (data, callback) => {request('postForm', `api/masterdata/roleAuth/delRoleGroup`, data, callback)};
-        const role_api8     = (data, callback) => {request('postForm', `api/masterdata/roleAuth/searchRoleAuthTree`, data, callback)};
-        const role_api9     = (data, callback) => {request('postForm', `api/masterdata/roleAuth/updateRoleMenuAuth`, data, callback)};
-        const role_api10    = (data, callback) => {request('postForm', `api/masterdata/roleAuth/searchOrgAuthTree`, data, callback)};
-        const role_api11    = (data, callback) => {request('postForm', `api/masterdata/roleAuth/updateRoleOrgAuth`, data, callback)};
-        const role_api12    = (data, callback) => {request('postForm', `api/masterdata/roleAuth/searchCustomArchiveTableList`, data, callback)};
-        const role_api13    = (data, callback) => {request('postForm', `api/masterdata/roleAuth/searchCustomArchiveTableFieldListByTableId`, data, callback)};
+        const role_api1     = (data, callback) => {request('form', `api/masterdata/roleAuth/searchRoleTree`, data, callback)};
+        const role_api2     = (data, callback) => {request('form', `api/masterdata/roleAuth/addRole`, data, callback)};
+        const role_api3     = (data, callback) => {request('form', `api/masterdata/roleAuth/addRoleGroup`, data, callback)};
+        const role_api4     = (data, callback) => {request('form', `api/masterdata/roleAuth/updateRole`, data, callback)};
+        const role_api5     = (data, callback) => {request('form', `api/masterdata/roleAuth/updateRoleGroup`, data, callback)};
+        const role_api6     = (data, callback) => {request('form', `api/masterdata/roleAuth/delRole`, data, callback)};
+        const role_api7     = (data, callback) => {request('form', `api/masterdata/roleAuth/delRoleGroup`, data, callback)};
+        const role_api8     = (data, callback) => {request('form', `api/masterdata/roleAuth/searchRoleAuthTree`, data, callback)};
+        const role_api9     = (data, callback) => {request('form', `api/masterdata/roleAuth/updateRoleMenuAuth`, data, callback)};
+        const role_api10    = (data, callback) => {request('form', `api/masterdata/roleAuth/searchOrgAuthTree`, data, callback)};
+        const role_api11    = (data, callback) => {request('form', `api/masterdata/roleAuth/updateRoleOrgAuth`, data, callback)};
+        const role_api12    = (data, callback) => {request('form', `api/masterdata/roleAuth/searchCustomArchiveTableList`, data, callback)};
+        const role_api13    = (data, callback) => {request('form', `api/masterdata/roleAuth/searchCustomArchiveTableFieldListByTableId`, data, callback)};
         const role_api14    = (data, callback) => {request('post', `api/masterdata/roleAuth/updateRoleCustomArchiveTableFieldAuth`, data, callback)};
 
         // 用户授权
-        const user_api1    = (data, callback) => {request('postForm', `api/masterdata/archiveAuth/searchArchiveListByRoleId`, data, callback)};
+        const user_api1    = (data, callback) => {request('form', `api/masterdata/archiveAuth/searchArchiveListByRoleId`, data, callback)};
        
         // 角色反查
         const userCheck_api1    = (data, callback) => {request('postForm', `api/masterdata/roleSearch/searchArchiveListByUserName`, data, callback)};

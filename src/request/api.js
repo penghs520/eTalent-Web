@@ -32,7 +32,8 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         // 角色反查
         const userCheck_api1    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchArchiveListByUserName`, data, callback)};
         const userCheck_api2    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationTree`, data, callback)};
-        const userCheck_api3    = (data, callback) => {request('post', `api/masterdata/roleSearch/searchRoleListByArchiveId`, data, callback)};
+        const userCheck_api3    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchRoleListByArchiveId`, data, callback)};
+        const userCheck_api4    = (data, callback) => {request('post', `api/masterdata/roleSearch/updateArchiveRole`, data, callback)};
 
 
 
@@ -59,7 +60,7 @@ export {
             user_api1,
 
             //角色反查
-            userCheck_api1,userCheck_api2,userCheck_api3,
+            userCheck_api1,userCheck_api2,userCheck_api3,userCheck_api4,
 
     // 组织中台
         // 职位管理

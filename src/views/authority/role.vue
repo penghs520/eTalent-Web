@@ -219,9 +219,7 @@
                                 row-class-name="fieldTableRow"
                                 tooltip-effect="dark"
                                 style="width: 100%">
-                                <!-- <el-table-column label="名称" width="120">
-                                    <template slot-scope="scope">{{ scope.row.date }}</template>
-                                </el-table-column> -->
+                                <el-table-column width="16"></el-table-column>
                                 <el-table-column prop="fieldName" label="名称" class="fieldTableFirstLine" width="120"></el-table-column>
                                 <el-table-column prop="name" label="可读" width="120">
                                     <template slot-scope="scope">

@@ -15,7 +15,7 @@
 <template>
     <div id="commonTable">
         <!-- 操作栏 -->
-        <ul class="operateBar">
+        <ul class="operateBar" v-if="table.bar && table.bar.length > 0" >
             <li v-for="(item,index) in table.bar" :key="index" >
                 
                 <!-- 输入框 -->
@@ -50,6 +50,13 @@
                     <el-checkbox :value="radioCheckedIndex === scope.$index" @change="radioClick($event,scope)" ></el-checkbox>
                 </template>
             </el-table-column>
+            <template v-if="table.perColumn && table.perColumn.length > 0">
+                <el-table-column  v-for="(item, index) in table.perColumn" :key="`perColumn_${index}`" :label="item.name" :width="item.width" >
+                    <template slot-scope="scope">
+                        <el-button v-for="(btn, btnIndex) in item.btnList" :key="`perColumnBtn_${btnIndex}`" @click="perColumnBtnClick(btn.method, scope)" :type="btn.btnType ? btn.btnType : 'text'" :icon="btn.icon" >{{btn.text}}</el-button>
+                    </template>
+                </el-table-column>
+            </template>
             <el-table-column v-for="(item,index) in head" :key="index" :prop="item.key" :label="item.name" :width="item.width" v-show="item.isShow" ></el-table-column>
         </el-table>
 
@@ -159,6 +166,13 @@ export default {
         buttonsClick(btn) {
             if (btn.method) {
                 btn.method(this.barData, this.radioChecked, this.selectChecked);
+            }
+        },
+
+        // 前置列按钮被点击
+        perColumnBtnClick(callBack, scope) {
+            if (callBack) {
+                callBack(scope.row);
             }
         },
 

@@ -73,7 +73,7 @@ export default function request(type, url, data, callback) {
             request_post(url, data, callback);
             break;
             
-        case 'postForm':
+        case 'form' || 'FORM':
             request_postForm(url, data, callback);
             break;
 

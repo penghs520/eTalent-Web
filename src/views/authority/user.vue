@@ -74,6 +74,20 @@ export default {
                 showSelect: false,                       /* 非必须，是否显示select勾选框 */
                 selectChange: this.selectChange,        /* 非必须，selcet选中改变时的回调，接收1个参数 */
                 showRadio: true,                        /* 非必须，是否显示单选框 */
+                perColumn: [                            /* 非必须，表格前置列配置，数组格式，数组中的每个元素就是一列 */
+                    {
+                        name: '角色',                   /* 必须，该列的表头名称 */
+                        width: '200px',                 /* 非必须，该列的宽度 */
+                        btnList: [                      /* 必须，该列中要渲染的按钮，数组格式，数组中每个元素就是一个按钮 */
+                            {
+                                type: 'primary',        /* 非必须，按钮的样式，element-ui提供的按钮样式 */
+                                icon: '',               /* 非必须，按钮的icon */
+                                text: '角色',           /* 必须，按钮上显示的文字 */
+                                method: this.columnBtn        /* 必须，按钮点击时的回调，该函数接收1个参数：该行的数据 */
+                            }
+                        ]
+                    }
+                ],
                 page: {                                 /* 非必须，页码配置 */
                     pageSizes: [10,20,30,40],                 /* 非必须，页码可选的每页数量 */
                     pageSize: 20                         /* 非必须，默认每页显示的数量 */
@@ -134,7 +148,10 @@ export default {
         pageChange(page) {
             console.log('88888888888')
             console.log(page)
-        }
+        },
+        columnBtn(row) {
+            console.log(row)
+        },
 
     }
 }

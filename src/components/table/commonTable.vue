@@ -171,7 +171,7 @@ export default {
 
         // 页码--当前页改变
         pageCurrentChange(index) {
-            if (this.table.pageSizeChange) {
+            if (this.table.pageChange) {
                 this.table.pageChange(index, this.barData, this.radioChecked, this.selectChecked)
             }
         },

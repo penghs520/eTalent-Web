@@ -337,7 +337,7 @@
 <script>
 import base from '../../assets/js/base';
 import {role_api1, role_api2, role_api3, role_api4, role_api5, role_api6, role_api7, role_api8, role_api9, role_api10, role_api11,
-        role_api12, role_api13} from '../../request/api';
+        role_api12, role_api13, role_api14} from '../../request/api';
 
 export default {
     name: 'role',             /* 角色授权 */
@@ -963,6 +963,10 @@ export default {
         // 单个权限改变
         fieldChangeSingle(v,type,row) {
             this.fieldChange(v,type,row);
+            let send = this.getSubmitData(row);
+            console.log('----------');
+            console.log(send)
+            this.fieldSubmit([send], '单个字段权限改变');
         },
 
         // 全选改变
@@ -970,6 +974,35 @@ export default {
             this.fieldTableData.map(item => {
                 this.fieldChange(v,type,item);
             });
+            let send = this.fieldTableData.map(item => {
+                return this.getSubmitData(item);
+            });
+            send.shift();
+            this.fieldSubmit(send, '全选字段权限改变');
+        },
+
+        // 处理数据，获取可提交数据
+        getSubmitData(data) {
+            let result = {
+                "roleId": this.roleTreeRoleId,
+                "fieldId": data.fieldId,
+                "readWriteCode": data.isWrite ? 'WRITE' : data.isAddWrite ? 'ADDWRITE' : data.isRead ? 'READ' : ''
+            };
+            return result;
+        },
+
+        // 权限提交
+        fieldSubmit(send, log) {
+            base.log('s', log, send);
+            this.contLoading = true;
+            role_api14(send, res => {
+                let d = res.data;
+                base.log('s', log, d);
+                this.contLoading = false;
+                if (!d.success) {
+                    base.error(d);
+                }
+            })
         },
     }
 }

@@ -2,20 +2,26 @@
 #authority_search {
     display: flex;
     height: 100%;
+    box-sizing:  border-box;
     text-align: left;
-    background-color: #f0f0f0ff;
     .sideTree {
         width: 216px;
         height: 100%;
         background-color: #fff;
     }
-    .content {
+    .wrap {
         flex: 1;
         height: 100%;
         padding: 16px 0px 0px 16px;
         height: 100%;
-        .el-card {
+        box-sizing: border-box;
+        background-color: #f0f0f0ff;
+        .content {
             height: 100%;
+            padding: 20px;
+            box-sizing:  border-box;
+            overflow: auto;
+            background-color: #fff;
         }
     }
 }
@@ -25,12 +31,12 @@
         <div class="sideTree">
             <tree :treeData="treeData"></tree>
         </div>
-        <div class="content">
-            <el-card class="box-card">
+        <div class="wrap">
+            <div class="content">
                 <commonTable :table="table"></commonTable>
                 <el-dialog
                     :visible.sync="showUserList"
-                    class="qinjeeDialogSmall"
+                    class="qinjeeDialogBig"
                     :append-to-body="true"
                     :close-on-click-modal="false"
                     center
@@ -39,11 +45,11 @@
                     <commonTable :table="addtable"></commonTable>
                     <div class="qinjeeDialogSmallCont"></div>
                     <span slot="footer" class="dialog-footer">
-                        <el-button @click="showUserList = false">取 消</el-button>
-                        <el-button type="primary" @click="showUserList = false">确 定</el-button>
+                        <el-button size="small" @click="showUserList = false">取 消</el-button>
+                        <el-button size="small" type="primary" @click="showUserList = false">确 定</el-button>
                     </span>
                 </el-dialog>
-            </el-card>
+            </div>
         </div>
     </div>
 </template>
@@ -54,7 +60,8 @@ import commonTable from "../../components/table/commonTable";
 import {
     userCheck_api1,
     userCheck_api2,
-    userCheck_api3
+    userCheck_api3,
+    userCheck_api4
 } from "../../request/api";
 
 export default {
@@ -167,17 +174,17 @@ export default {
             pageSize: 4,
             searchVal: "",
             orgId: "",
-            showUserList: true,
+            showUserList: false,
             addtable: {
                 head: [
                     /* 必须，表格头配置 */
                     {
                         name: "角色列表" /* 必须，表格头所显示的文字 */,
                         key:
-                            "userList" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
+                            "roleName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
                         isShow: true /* 必须，表格是否默认显示该列 */,
                         width: "200px" /* 非必须，该列的默认宽度 */
-                    },
+                    }
                 ],
                 data: [] /* 必须，表格要渲染的数据，数组格式 */,
                 total: 0 /* 必须，数据的总条数，用于翻页 */,
@@ -185,7 +192,7 @@ export default {
                 showSelect: true /* 非必须，是否显示select勾选框 */,
                 selectChange: this
                     .selectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
-                pageHide: true,
+                pageHide: true
             },
             archiveId: ""
         };
@@ -196,20 +203,25 @@ export default {
         this.getUserList(this.archiveId);
     },
     methods: {
+        //修改用户角色
+        eidtUser() {},
         // 显示角色列表
-        columnBtn(node) {         
+        columnBtn(node) {
             this.archiveId = node.archiveId;
-            this.getUserList(this.archiveId);         
-            this.showUserList= true
-            
+            this.getUserList(this.archiveId);
+            this.showUserList = true;
         },
         //获取角色列表
         getUserList(archiveId) {
-            userCheck_api3(archiveId, res => {
+            let send = {
+                archiveId
+            };
+            userCheck_api3(send, res => {
+                base.log("s", "查询角色列表", send);
                 let d = res.data;
                 base.log("r", "查询角色列表", d);
                 if (d.success) {
-                     this.table.addtable = d.result;                    
+                    this.addtable.data = d.result;
                 } else {
                     base.error(d);
                 }
@@ -239,7 +251,7 @@ export default {
         getTable(currentPage, orgId, pageSize, userName) {
             let send = {
                 currentPage,
-                orgId,
+                orgId: orgId,
                 pageSize,
                 userName
             };

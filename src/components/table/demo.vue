@@ -4,7 +4,7 @@
 
 <template>
     <div id="commonTableDemo">
-        <commonTable :table="table" ></commonTable>
+        <commonTable :table="table" :loading="tableLoading" ></commonTable>
     </div>
 </template>
 
@@ -16,6 +16,7 @@ export default {
     components: {commonTable},
     data() {
         return {
+            tableLoading: Boolean,                      /* 非必须，加载动画 */
             table: {
                 head: [                                 /* 必须，表格头配置 */
                     {
@@ -49,7 +50,7 @@ export default {
                     {
                         type: 'button',                 /* 必须，DOM类型：按钮 */
                         text: '查询',                   /* 必须，按钮名称 */
-                        btnType: 'primary',             /* 非必须，element-ui提供的按钮样式 */
+                        btnType: 'primary',             /* 非必须，element-ui提供的按钮样式，新增 plain */
                         icon: 'el-icon-search',         /* 非必须，icon图标 */
                         method: this.search             /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
                     },

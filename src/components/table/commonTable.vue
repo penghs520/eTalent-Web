@@ -1,10 +1,18 @@
 <style scoped>
+#commonTable{
+    background-color: #fff;
+}
 .operateBar{
     display: flex;
     align-items: center;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 .operateBar>li{
     margin-right: 20px;
+}
+.operateBar>li:last-child{
+    margin-right: 0;
 }
 .table{
     margin-bottom: 20px;
@@ -27,11 +35,18 @@
                 </el-select>
 
                 <!-- 按钮 -->
-                <el-button v-if="item.type === 'button'" :type="item.btnType ? item.btnType : 'primary'" size="small" :icon="item.icon" @click="btnClick(item.method)" >{{item.text}}</el-button>
+                <template v-if="item.type === 'button'">
+                    <el-button v-if="item.btnType === 'plain'" plain="" size="small" :icon="item.icon" @click="btnClick(item.method)" >{{item.text}}</el-button>
+                    <el-button v-else :type="item.btnType ? item.btnType : 'primary'" size="small" :icon="item.icon" @click="btnClick(item.method)" >{{item.text}}</el-button>
+                </template>
 
                 <!-- 二级按钮 -->
                 <el-dropdown v-if="item.type === 'buttons'" trigger="click" @command="buttonsClick" >
-                    <el-button :type="item.btnType ? item.btnType : 'primary'" size="small" :icon="item.icon">
+                    <el-button v-if="item.btnType === 'plain'" plain="" size="small" :icon="item.icon">
+                        {{item.text}}
+                        <i v-show="!item.defaultIconHide" class="el-icon-arrow-down"></i>
+                    </el-button>
+                    <el-button v-else :type="item.btnType ? item.btnType : 'primary'" size="small" :icon="item.icon">
                         {{item.text}}
                         <i v-show="!item.defaultIconHide" class="el-icon-arrow-down"></i>
                     </el-button>
@@ -43,7 +58,15 @@
         </ul>
 
         <!-- 表格 -->
-        <el-table :data="data" class="table" @selection-change="selectChange" >
+        <el-table 
+            :data="data" 
+            class="table" 
+            @selection-change="selectChange" 
+            v-loading='loading' 
+            element-loading-text="拼命加载中"
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="rgba(0, 0, 0, 0.5)" >
+            <el-table-column width="14"></el-table-column>
             <el-table-column v-if="table.showSelect" type="selection" width="55"></el-table-column>
             <el-table-column v-if="table.showRadio" width="55">
                 <template slot-scope="scope">
@@ -58,6 +81,7 @@
                 </el-table-column>
             </template>
             <el-table-column v-for="(item,index) in head" :key="index" :prop="item.key" :label="item.name" :width="item.width" v-show="item.isShow" ></el-table-column>
+            <el-table-column width="14"></el-table-column>
         </el-table>
 
         <!-- 页码 -->
@@ -81,6 +105,7 @@ export default {
     name: 'commonTable',            /* 公共表格组件 */
     props: {
         table: Object,
+        loading: Boolean
     },
     data() {
         return {

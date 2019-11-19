@@ -29,6 +29,9 @@ html,body,#app,.el-container{
 /* 登陆样式-----------结束 */
 
 /* 弹窗样式-----------开始 */
+.qinjeeDialogBig>div{
+    width: 944px !important;
+}
 .qinjeeDialogSmall>div{
     width: 560px !important;
 }

@@ -18,6 +18,17 @@ function request_get(url, data, callback) {
 }
 
 function request_post(url, data, callback) {
+    axios.post(url, data)
+        .then(function (response) {
+            callback(response);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+
+function request_postForm(url, data, callback) {
     axios.post(url, qs.stringify(data), {headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         }})
@@ -28,6 +39,8 @@ function request_post(url, data, callback) {
             console.log(error);
         });
 }
+
+
 
 // 请求拦截器
 axios.interceptors.request.use(function (config) {
@@ -58,6 +71,10 @@ export default function request(type, url, data, callback) {
 
         case 'post' || 'POST':
             request_post(url, data, callback);
+            break;
+            
+        case 'postForm':
+            request_postForm(url, data, callback);
             break;
 
         default:

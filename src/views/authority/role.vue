@@ -964,9 +964,7 @@ export default {
         fieldChangeSingle(v,type,row) {
             this.fieldChange(v,type,row);
             let send = this.getSubmitData(row);
-            console.log('----------');
-            console.log(send)
-            this.fieldSubmit([send], '单个字段权限改变');
+            this.fieldSubmit();
         },
 
         // 全选改变
@@ -974,11 +972,7 @@ export default {
             this.fieldTableData.map(item => {
                 this.fieldChange(v,type,item);
             });
-            let send = this.fieldTableData.map(item => {
-                return this.getSubmitData(item);
-            });
-            send.shift();
-            this.fieldSubmit(send, '全选字段权限改变');
+            this.fieldSubmit();
         },
 
         // 处理数据，获取可提交数据
@@ -992,12 +986,16 @@ export default {
         },
 
         // 权限提交
-        fieldSubmit(send, log) {
-            base.log('s', log, send);
+        fieldSubmit() {
+            let send = this.fieldTableData.map(item => {
+                return this.getSubmitData(item);
+            });
+            send.shift();
+            base.log('s', '字段权限改变', send);
             this.contLoading = true;
             role_api14(send, res => {
                 let d = res.data;
-                base.log('s', log, d);
+                base.log('s', '字段权限改变', d);
                 this.contLoading = false;
                 if (!d.success) {
                     base.error(d);

@@ -27,12 +27,20 @@ const login_api5 = (data, callback) => {request('post', `api/masterdata/userLogi
 
         // 用户授权
         const user_api1    = (data, callback) => {request('post', `api/masterdata/archiveAuth/searchArchiveListByRoleId`, data, callback)};
+       
+        // 角色反查
+        const userCheck_api1    = (data, callback) => {request('post', `api/masterdata/roleSearch/searchArchiveListByUserName`, data, callback)};
+       
+
+
 // 组织中台
     // 职位管理
         // 职位族设置
         const positionGroup_api1    = (data, callback) => {request('get', `api/positionGroup/getAllPositionGroup`, data, callback)};
 
-
+    // 组织机构
+        //机构维护
+        const organization_api1    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationTree`, data, callback)};
 
 export {
     // 登录
@@ -46,10 +54,16 @@ export {
 
             // 用户授权
             user_api1,
+
+            //角色反查
+            userCheck_api1,
+
     // 组织中台
         // 职位管理
             // 职位族设置
             positionGroup_api1,
+
+            
             
 
 }

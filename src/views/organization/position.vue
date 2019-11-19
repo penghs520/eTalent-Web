@@ -67,9 +67,14 @@
                             :data="tableData"
                             style="width: 100%"
                             :show-header="false"
-                            @select="select"
+                            @selection-change="handleSelectionChange"
                         >
-                            <el-table-column type="selection" width="108"></el-table-column>
+                            >
+                            <el-table-column width="108">
+                                <template>
+                                    <el-checkbox :v-model="checked"></el-checkbox>
+                                </template>
+                            </el-table-column>
                             <el-table-column label="职位族名称">
                                 <template slot-scope="scope">{{ scope.row.date }}</template>
                             </el-table-column>
@@ -161,6 +166,8 @@ export default {
                     }
                 ]
             },
+            checked: true,
+            index: "",
             clon_checked: [],
             //职位设置
             position_data: [
@@ -231,6 +238,14 @@ export default {
         // handleAvatarSuccess() {},
         // beforeAvatarUpload() {}
 
+        //单选框
+        handleSelectionChange(val) {
+            if (val.length > 1) {
+                this.$refs.Table.clearSelection();
+                this.$refs.Table.toggleRowSelection(val.pop());
+            } else {
+            }
+        },
         //树形控件
         handleNodeClick(data) {
             console.log(data);
@@ -259,18 +274,16 @@ export default {
         handleClick(tab, event) {
             //获取所有职位族
             console.log("切换tab栏");
-            
+
             if (tab.name == "positionGroup") {
                 let sendData = {
-                        currentPage: 1,
-                        pageSize: 10
-                    }
-                positionGroup_api1(sendData,                  
-                    res => {
-                        console.log('123456');                       
-                        console.log(res);
-                    }
-                );
+                    currentPage: 1,
+                    pageSize: 10
+                };
+                positionGroup_api1(sendData, res => {
+                    console.log("123456");
+                    console.log(res);
+                });
             }
         }
     }

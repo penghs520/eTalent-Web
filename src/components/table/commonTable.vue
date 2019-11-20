@@ -17,7 +17,7 @@
 }
 .table{
     margin-bottom: 20px;
-    width: 100%;
+    /* width: 100%; */
 }
 </style>
 <style>

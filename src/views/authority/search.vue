@@ -2,70 +2,74 @@
 #authority_search {
     display: flex;
     height: 100%;
-    // box-sizing: border-box;
-    // text-align: left;
     .sideTree {
         width: 216px;
         height: 100%;
         box-sizing: border-box;
-        padding: 13px 0px 0px 20px;
+        padding: 16px 10px 0px 20px;
         background-color: #fff;
         text-align: left;
         .switchTitle {
+            display: inline-block;
             font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 20px;
         }
     }
-    .wrap {
+    .content {
         flex: 1;
         height: 100%;
-        padding: 16px 15px 0px 16px;
+        padding: 20px;
+        border: 10px solid #f0f0f0;
         box-sizing: border-box;
-        background-color: #f0f0f0ff;
-        .content {
-            height: 100%;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow: auto;
-            background-color: #fff;
+        overflow: auto;
+        background-color: #fff;
+        .el-dialog__wrapper {
+            .el-dialog__body {
+               padding: 0px !important;
+               border: 1px soild #ccc !important;
+            }
         }
     }
 }
 </style>
 <template>
     <div id="authority_search">
+        <!-- 机构树 -->
         <div class="sideTree">
             <span class="switchTitle">显示封存:</span>
             <el-switch
                 v-model="value"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
+                active-color="#19ADE6"
+                inactive-color="#ccc"
                 @change="switchChange"
             ></el-switch>
+
             <tree :treeData="treeData"></tree>
         </div>
-        <div class="wrap">
-            <div class="content">
-                <commonTable :table="table"></commonTable>
-                <el-dialog
-                    :visible.sync="showUserList"
-                    class="qinjeeDialogSmall"
-                    :append-to-body="true"
-                    :close-on-click-modal="false"
-                    center
-                >
-                    <span slot="title">角色列表</span>
-                    <tree :treeData="addUserTree"></tree>
-                    <div class="qinjeeDialogSmallCont"></div>
-                    <span slot="footer" class="dialog-footer">
-                        <el-button size="small" @click="showUserList = false">取 消</el-button>
-                        <el-button
-                            size="small"
-                            type="primary"
-                            @click="showUserList = false;eidtUser()"
-                        >确 定</el-button>
-                    </span>
-                </el-dialog>
-            </div>
+
+        <!-- 角色列表 -->
+        <div class="content">
+            <commonTable :table="table"></commonTable>
+            <el-dialog
+                :visible.sync="showUserList"
+                class="qinjeeDialogSmall"
+                :append-to-body="true"
+                :close-on-click-modal="false"
+                center
+            >
+                <span slot="title">角色列表</span>
+                <tree :treeData="addUserTree"></tree>
+                <div class="qinjeeDialogSmallCont"></div>
+                <span slot="footer" class="dialog-footer">
+                    <el-button size="small" @click="showUserList = false">取 消</el-button>
+                    <el-button
+                        size="small"
+                        type="primary"
+                        @click="showUserList = false;eidtUser()"
+                    >确 定</el-button>
+                </span>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -233,16 +237,20 @@ export default {
     methods: {
         //多选用户角色
         checkClick(val, data) {
-            let editRoleIdList = data.checkedNodes.filter(item => item.roleType == "ROLE")
-            editRoleIdList = editRoleIdList.map(item=>item.roleGroupId)
+            let editRoleIdList = data.checkedNodes.filter(
+                item => item.roleType == "ROLE"
+            );
+            editRoleIdList = editRoleIdList.map(item => item.roleGroupId);
             this.editRoleIdList = editRoleIdList;
+            console.log(data);
+            console.log(this.editRoleIdList);
         },
         // 树形 封存开关
         switchChange() {
             this.getTree();
         },
         //修改用户角色
-        eidtUser() {           
+        eidtUser() {
             let send = {
                 archiveId: this.archiveId,
                 roleIdList: this.editRoleIdList
@@ -338,7 +346,7 @@ export default {
                     this.table.total = d.result.total;
                     this.table.loading = false;
 
-                    this.table.pageResize = false
+                    this.table.pageResize = false;
                 } else {
                     base.error(d);
                 }
@@ -348,7 +356,7 @@ export default {
         search(val) {
             this.searchVal = val.name;
             this.currentPage = 1;
-            this.table.pageResize = true
+            this.table.pageResize = true;
             this.getTable();
         },
         //页码改变
@@ -360,7 +368,7 @@ export default {
         pageSizeChange(pageSize) {
             this.pageSize = pageSize;
             this.currentPage = 1;
-            this.table.pageResize = true
+            this.table.pageResize = true;
             this.getTable();
         }
     }

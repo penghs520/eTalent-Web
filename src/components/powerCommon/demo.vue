@@ -18,6 +18,8 @@ export default {
                 roleTreeRoleId: String/Number,                              /* 必须,角色id */
                 loading: Boolean,                                           /* 非必须，加载动画 */
 
+                disabled: Boolean,                                          /* 非必须，是否禁止勾选，true-禁止勾选 */
+
                 // 功能权限
                 serverData: [],
                 serverProps:{

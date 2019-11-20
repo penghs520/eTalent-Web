@@ -4,6 +4,7 @@
 }
 .mian{
     display: flex;
+    background-color: #F0F0F0;
 }
 .tree{
     width: 216px;
@@ -11,12 +12,8 @@
 }
 .cont{
     width: calc(100% - 216px);
-    background-color: #F0F0F0;
-    padding: 10px;
-    box-sizing: border-box;
 }
 .cont>div{
-    background-color: #fff;
     height: 100%;
 }
 .tree nav{
@@ -46,7 +43,7 @@
     border-bottom: 2px solid #F1F2F2;
 }
 .tabCont{
-    height: calc(100% - 54px);
+    height: calc(100% - 65px);
 }
 .tabCont li{
     overflow: auto;
@@ -148,8 +145,8 @@
                     </span>
                 </el-tree>
             </div>
-            <div v-show="roleTreeRoleId" class="cont">
-                <div>
+            <div class="cont commonRightCont">
+                <div v-show="roleTreeRoleId">
                     <el-tabs class="tab" v-model="tabActive" @tab-click="tabClick" >
                         <el-tab-pane v-for="(item,index) in tabs" :key="index" :label="item.label" :name="item.name"></el-tab-pane>
                     </el-tabs>

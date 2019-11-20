@@ -7,6 +7,7 @@
     align-items: center;
     padding-left: 24px;
     padding-right: 24px;
+    margin-bottom: 16px;
 }
 .operateBar>li{
     margin-right: 20px;
@@ -18,6 +19,18 @@
     margin-bottom: 20px;
     width: 100%;
 }
+</style>
+<style>
+    #commonTable .tableHeader th{
+        background-color: #FAFAFA;
+        padding: 7px 0;
+        height: 54px;
+    }
+    #commonTable .el-table th,
+    #commonTable .el-table td{
+        padding: 7px 0;
+    }
+
 </style>
 
 <template>
@@ -61,6 +74,8 @@
         <el-table 
             :data="data" 
             class="table" 
+            stripe
+            header-row-class-name="tableHeader"
             @selection-change="selectChange" 
             v-loading='loading' 
             element-loading-text="拼命加载中"
@@ -89,7 +104,7 @@
             v-if="!table.pageHide"
             @size-change="pageSizeChange"
             @current-change="pageCurrentChange"
-            :current-page="1"
+            :current-page="currentPage"
             :page-sizes="page.pageSizes"
             :page-size="page.pageSize"
             layout="total, sizes, prev, pager, next, jumper"
@@ -104,8 +119,7 @@ import base from '../../assets/js/base';
 export default {
     name: 'commonTable',            /* 公共表格组件 */
     props: {
-        table: Object,
-        loading: Boolean
+        table: Object
     },
     data() {
         return {
@@ -117,6 +131,7 @@ export default {
                 pageSizes: [10, 20, 50, 100, 200, 500, 1000],
                 pageSize: 10
             },
+            currentPage: 1,
         };
     },
     created() {
@@ -134,6 +149,20 @@ export default {
         total(){
             return this.table.total;
         },
+        loading() {
+            return this.table.loading;
+        },
+    },
+    watch: {
+        table: {
+            handler: function(val) {
+                // 页码重置
+                if (val.pageResize) {
+                    this.currentPage = 1;
+                }
+            },
+            deep: true
+        }
     },
     mounted() {},
     methods: {

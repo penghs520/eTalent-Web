@@ -7,7 +7,13 @@
     .sideTree {
         width: 216px;
         height: 100%;
+        box-sizing: border-box;
+        padding: 13px 0px 0px 20px;
         background-color: #fff;
+        text-align: left;
+        .switchTitle {
+            font-size: 14px;
+        }
     }
     .wrap {
         flex: 1;
@@ -28,7 +34,13 @@
 <template>
     <div id="authority_search">
         <div class="sideTree">
-            <el-switch v-model="value" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+            <span class="switchTitle">显示封存:</span>
+            <el-switch
+                v-model="value"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                @change="switchChange"
+            ></el-switch>
             <tree :treeData="treeData"></tree>
         </div>
         <div class="wrap">
@@ -41,12 +53,16 @@
                     :close-on-click-modal="false"
                     center
                 >
-                    <span slot="title">新增</span>
-                    <commonTable :table="addtable"></commonTable>
+                    <span slot="title">角色列表</span>
+                    <tree :treeData="addUserTree"></tree>
                     <div class="qinjeeDialogSmallCont"></div>
                     <span slot="footer" class="dialog-footer">
                         <el-button size="small" @click="showUserList = false">取 消</el-button>
-                        <el-button size="small" type="primary" @click="showUserList = false">确 定</el-button>
+                        <el-button
+                            size="small"
+                            type="primary"
+                            @click="showUserList = false;eidtUser()"
+                        >确 定</el-button>
                     </span>
                 </el-dialog>
             </div>
@@ -128,12 +144,15 @@ export default {
                 ],
                 selectChange: this
                     .selectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
+                loading: false,
+                pageResize: false,
                 page: {
                     /* 非必须，页码配置 */
                     pageSizes: [4, 8, 12] /* 非必须，页码可选的每页数量 */,
                     pageSize: 4 /* 非必须，默认每页显示的数量 */
                 },
                 pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
+                pageResize: false,
                 pageSizeChange: this
                     .pageSizeChange /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */,
                 pageChange: this
@@ -176,43 +195,60 @@ export default {
             searchVal: "",
             orgId: "35",
             showUserList: false,
-            addtable: {
-                head: [
-                    /* 必须，表格头配置 */
-                    {
-                        name: "角色列表" /* 必须，表格头所显示的文字 */,
-                        key:
-                            "roleName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
-                        isShow: true /* 必须，表格是否默认显示该列 */,
-                        width: "200px" /* 非必须，该列的默认宽度 */
-                    }
-                ],
-                data: [] /* 必须，表格要渲染的数据，数组格式 */,
-                total: 0 /* 必须，数据的总条数，用于翻页 */,
-                bar: [] /* 非必须，表格上面的操作栏配置 */,
-                showSelect: true /* 非必须，是否显示select勾选框 */,
-                selectChange: this
-                    .selectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
-                pageHide: true
+            archiveId: "", //人员id
+            value: "true",
+            addUserTree: {
+                data: [] /* 必须，树形结构数据 */,
+                nodeKey: "searchPageId",
+                props: {
+                    /* 必须，树形结构数据绑字段配置 */
+                    children: "childRoleGroupList" /* 必须，子集key */,
+                    label:
+                        "roleGroupName" /* 必须，菜单节点要显示的文字对应的字段 */
+                },
+                showDefaultIcon: false /* 非必须，是否显示默认图标 */,
+                showCheckbox: true,
+                checkClick: this.checkClick,
+                showAllNode: true,
+                nodeClick: this
+                    .addNodeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */,
+                defaultChecked: {
+                    /* 非必须,默认勾选配置 */
+                    nodeTypeKey:
+                        "roleType" /* 必须,根据此字段来筛选我们想要的节点 */,
+                    nodeTypeVal:
+                        "ROLE" /* 必须,与 nodeTypeKey 对应的值,如果节点中nodeTypeKey的值与该值相等,该节点就是我们想要的节点 */,
+                    childKey: "childRoleGroupList" /* 必须,子集字段 */,
+                    hasKey:
+                        "hasRole" /* 必须,如果节点中该字段的值经过 Boolean() 格式化后为true,就默认勾选 */
+                }
             },
-            archiveId: "",
-            value:"",
+            editRoleIdList: []
         };
     },
     mounted() {
         //获取组织结构
-        this.getTree(1);
-        this.eidtUser();
+        this.getTree();
     },
     methods: {
+        //多选用户角色
+        checkClick(val, data) {
+            let editRoleIdList = data.checkedNodes.filter(item => item.roleType == "ROLE")
+            editRoleIdList = editRoleIdList.map(item=>item.roleGroupId)
+            this.editRoleIdList = editRoleIdList;
+        },
+        // 树形 封存开关
+        switchChange() {
+            this.getTree();
+        },
         //修改用户角色
-        eidtUser() {
+        eidtUser() {           
             let send = {
-                archiveId: 1,
-                roleIdList: [1]
+                archiveId: this.archiveId,
+                roleIdList: this.editRoleIdList
             };
             userCheck_api4(send, res => {
-                base.log("s", "修改用户角色", roleIdList);
+                base.log("s", "修改用户角色", send);
                 let d = res.data;
                 base.log("r", "修改用户角色", d);
                 if (d.success) {
@@ -221,13 +257,13 @@ export default {
                 }
             });
         },
-        // 显示用户角色列表
+        // 点击角色显示用户角色列表窗口
         columnBtn(node) {
             this.archiveId = node.archiveId;
             this.getUserList(this.archiveId);
             this.showUserList = true;
         },
-        //获取角色列表
+        //获取用户角色列表
         getUserList(archiveId) {
             let send = {
                 archiveId
@@ -237,18 +273,39 @@ export default {
                 let d = res.data;
                 base.log("r", "查询角色列表", d);
                 if (d.success) {
-                    this.addtable.data = d.result;
+                    // 给节点加Id
+                    let list = JSON.parse(JSON.stringify(d.result));
+                    this.addId(list);
+                    this.addUserTree.data = list;
                 } else {
                     base.error(d);
                 }
             });
         },
+        addId(list, startIndex = 0, result) {
+            let n = startIndex;
+            for (let i = 0; i < list.length; i++) {
+                n++;
+                const item = list[i];
+                if (
+                    item.hasOwnProperty("childRoleGroupList") &&
+                    item.childRoleGroupList &&
+                    item.childRoleGroupList.length > 0
+                ) {
+                    item.searchPageId = n;
+                    this.addId(item.childRoleGroupList, n);
+                } else {
+                    item.searchPageId = n;
+                }
+            }
+        },
         // 获取树形结构
-        getTree(isEnable) {
+        getTree() {
             let send = {
-                isEnable
+                isEnable: this.value ? 1 : 0
             };
             userCheck_api2(send, res => {
+                base.log("s", "查询树", send);
                 let d = res.data;
                 base.log("r", "查询树", d);
                 if (d.success) {
@@ -259,17 +316,18 @@ export default {
                 }
             });
         },
-        //点击节点获取数据
+        //点击树形节点获取数据
         nodeClick(node) {
             // this.orgId = node.orgId;
         },
         // 获取表格数据
         getTable() {
+            this.table.loading = true;
             let send = {
                 currentPage: this.currentPage,
                 orgId: this.orgId,
                 pageSize: this.pageSize,
-                userName: this.userName
+                userName: this.searchVal
             };
             base.log("s", "查询表格数据", send);
             userCheck_api1(send, res => {
@@ -278,15 +336,19 @@ export default {
                 if (d.success) {
                     this.table.data = d.result.list;
                     this.table.total = d.result.total;
+                    this.table.loading = false;
+
+                    this.table.pageResize = false
                 } else {
                     base.error(d);
                 }
             });
         },
-        // 根据用户名和工号查询
+        // 根据用户名和工号查询用户列表
         search(val) {
             this.searchVal = val.name;
             this.currentPage = 1;
+            this.table.pageResize = true
             this.getTable();
         },
         //页码改变
@@ -298,6 +360,7 @@ export default {
         pageSizeChange(pageSize) {
             this.pageSize = pageSize;
             this.currentPage = 1;
+            this.table.pageResize = true
             this.getTable();
         }
     }

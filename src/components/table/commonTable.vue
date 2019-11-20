@@ -74,7 +74,9 @@
         <el-table 
             :data="data" 
             class="table" 
+            :show-header="!table.hideHeader"
             stripe
+            ref="tableDom"
             header-row-class-name="tableHeader"
             @selection-change="selectChange" 
             v-loading='loading' 
@@ -162,10 +164,31 @@ export default {
                 }
             },
             deep: true
+        },
+        data: {
+            handler: function() {
+                console.log('666')
+                this.selected();
+            },
+            deep: true
         }
     },
-    mounted() {},
+    mounted() {
+    },
     methods: {
+        // 默认勾选行
+        selected() {
+            let rule = this.table.selected;
+            if (rule) {
+                this.data.forEach(item => {
+                    if (item[rule.key] === rule.value) {
+                        setTimeout(() => {
+                            this.$refs.tableDom.toggleRowSelection(item);
+                        });
+                    }
+                });
+            }
+        },
         // 多选框改变
         selectChange(val) {
             this.selectChecked = val;

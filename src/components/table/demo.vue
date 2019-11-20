@@ -4,7 +4,7 @@
 
 <template>
     <div id="commonTableDemo">
-        <commonTable :table="table" :loading="tableLoading" :pageResize="pageResize" ></commonTable>
+        <commonTable :table="table" ></commonTable>
     </div>
 </template>
 
@@ -26,6 +26,7 @@ export default {
                     },
                     {name: '工号', key: 'employeeNumber', isShow: true}
                 ],
+                hideHeader: Boolean,                    /* 非必须,是否不显示表格头 */
                 data: [],                               /* 必须，表格要渲染的数据，数组格式 */
                 total: 0,                               /* 必须，数据的总条数，用于翻页 */
                 bar: [                                  /* 非必须，表格上面的操作栏配置 */
@@ -70,6 +71,10 @@ export default {
                     }
                 ],
                 showSelect: true,                       /* 非必须，是否显示select勾选框 */
+                selected: {                             /* 非必须, 默认勾选的行 */
+                    key: '',
+                    value: ''
+                },
                 selectChange: this.selectChange,        /* 非必须，selcet选中改变时的回调，接收1个参数 */
                 showRadio: true,                        /* 非必须，是否显示单选框 */
                 perColumn: [                            /* 非必须，表格前置列配置，数组格式，数组中的每个元素就是一列 */

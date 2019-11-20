@@ -29,11 +29,12 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         // 用户授权
         const user_api1    = (data, callback) => {request('form', `api/masterdata/archiveAuth/searchRoleTree`, data, callback)};
         const user_api2    = (data, callback) => {request('post', `api/masterdata/archiveAuth/searchArchiveListByRoleId`, data, callback)};
+        const user_api3    = (data, callback) => {request('post', `api/masterdata/archiveAuth/delArchiveRole`, data, callback)};
        
         // 角色反查
         const userCheck_api1    = (data, callback) => {request('post', `api/masterdata/roleSearch/searchArchiveListByUserName`, data, callback)};
         const userCheck_api2    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationTree`, data, callback)};
-        const userCheck_api3    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchRoleListByArchiveId`, data, callback)};
+        const userCheck_api3    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchRoleTreeByArchiveId`, data, callback)};
         const userCheck_api4    = (data, callback) => {request('post', `api/masterdata/roleSearch/updateArchiveRole`, data, callback)};
 
 
@@ -59,7 +60,7 @@ export {
             role_api12, role_api13, role_api14,
 
             // 用户授权
-            user_api1, user_api2,
+            user_api1, user_api2,user_api3,
 
             //角色反查
             userCheck_api1,userCheck_api2,userCheck_api3,userCheck_api4,

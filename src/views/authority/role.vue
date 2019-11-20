@@ -696,6 +696,7 @@ export default {
         },
 
         // 获取已有权限的节点
+        
         getHasMenu(list, nodeTypeKey, nodeTypeVal, childKey, hasKey) {
             let nodeList = new Array();
             this.getNode(list, nodeList, nodeTypeKey, nodeTypeVal, childKey);
@@ -719,7 +720,6 @@ export default {
         // 功能权限树选中值改变
         serverCheck() {
             let list = this.$refs.serverTree.getCheckedNodes(false,true);
-            console.log(list)
             let send = {
                 "roleId": this.roleTreeNode.roleGroupId,
                 "menuIdList": list.map(item => {return item.menuId}),

@@ -36,6 +36,12 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const userCheck_api3    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchRoleListByArchiveId`, data, callback)};
         const userCheck_api4    = (data, callback) => {request('post', `api/masterdata/roleSearch/updateArchiveRole`, data, callback)};
 
+        // 权限移交
+        const power_api1    = (data, callback) => {request('post', `api/masterdata/authHandover/searchArchiveListByUserNameOrJobNumber`, data, callback)};
+        const power_api2    = (data, callback) => {request('form', `api/masterdata/authHandover/searchRoleListByArchiveId`, data, callback)};
+        const power_api3    = (data, callback) => {request('form', `api/masterdata/authHandover/searchRoleAuthTree`, data, callback)};
+        const power_api4    = (data, callback) => {request('form', `api/masterdata/authHandover/searchOrgAuthTree`, data, callback)};
+
 
 
 
@@ -63,6 +69,9 @@ export {
 
             //角色反查
             userCheck_api1,userCheck_api2,userCheck_api3,userCheck_api4,
+
+            // 权限移交
+            power_api1, power_api2, power_api3, power_api4,
 
     // 组织中台
         // 职位管理

@@ -107,3 +107,12 @@ html,body,#app,.el-container{
     background-color: rgba(0, 0, 0, 0) !important;
 }
 /* element-ui tab样式修改-----------结束 */
+
+/* 右侧内容区样式 */
+.commonRightCont{
+    border: 10px solid #F0F0F0;
+    border-bottom: none;
+    box-sizing: border-box;
+    background-color: #fff;
+}
+/* 右侧内容区样式 */

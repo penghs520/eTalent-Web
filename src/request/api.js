@@ -19,7 +19,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const role_api6     = (data, callback) => {request('form', `api/masterdata/roleAuth/delRole`, data, callback)};
         const role_api7     = (data, callback) => {request('form', `api/masterdata/roleAuth/delRoleGroup`, data, callback)};
         const role_api8     = (data, callback) => {request('form', `api/masterdata/roleAuth/searchRoleAuthTree`, data, callback)};
-        const role_api9     = (data, callback) => {request('form', `api/masterdata/roleAuth/updateRoleMenuAuth`, data, callback)};
+        const role_api9     = (data, callback) => {request('post', `api/masterdata/roleAuth/updateRoleMenuAuth`, data, callback)};
         const role_api10    = (data, callback) => {request('form', `api/masterdata/roleAuth/searchOrgAuthTree`, data, callback)};
         const role_api11    = (data, callback) => {request('form', `api/masterdata/roleAuth/updateRoleOrgAuth`, data, callback)};
         const role_api12    = (data, callback) => {request('form', `api/masterdata/roleAuth/searchCustomArchiveTableList`, data, callback)};
@@ -28,7 +28,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
 
         // 用户授权
         const user_api1    = (data, callback) => {request('form', `api/masterdata/archiveAuth/searchRoleTree`, data, callback)};
-        const user_api2    = (data, callback) => {request('form', `api/masterdata/archiveAuth/searchArchiveListByRoleId`, data, callback)};
+        const user_api2    = (data, callback) => {request('post', `api/masterdata/archiveAuth/searchArchiveListByRoleId`, data, callback)};
        
         // 角色反查
         const userCheck_api1    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchArchiveListByUserName`, data, callback)};

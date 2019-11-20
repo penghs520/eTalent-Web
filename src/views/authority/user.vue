@@ -41,7 +41,7 @@
             </div>
             <div class="cont">
                 <div class="title" v-if="roleNode">{{roleNode.roleGroupName}}</div>
-                <commonTable v-show="roleNode" :table="table" :loading="tableLoading" ></commonTable>
+                <commonTable v-show="roleNode" :table="table" ></commonTable>
             </div>
         </div>
     </div>
@@ -123,12 +123,13 @@ export default {
                         ]
                     }
                 ],
+                loading: false,
+                pageResize: false,
                 pageSizeChange: this.pageSizeChange,    /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */
                 pageChange: this.pageChange,            /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
             },
             currentPage: 1,
             pageSize: 10,
-            tableLoading: false,
         };
     },
     mounted() {
@@ -164,11 +165,11 @@ export default {
                 "currentPage": this.currentPage,
                 "pageSize": this.pageSize
             };
-            this.tableLoading = true;
+            this.table.loading = true;
             base.log('s', '查询用户列表', send);
             user_api2(send, res => {
                 let d = res.data;
-                this.tableLoading = false;
+                this.table.loading = false;
                 base.log('r', '查询用户列表', d);
                 if (d.success) {
                     this.table.data = d.result.list;
@@ -180,17 +181,29 @@ export default {
         },
 
         // 新增
-        add() {},
+        add() {
+            this.table.pageResize = true;
+        },
 
         // 删除
-        delet() {},
+        delet() {
+            this.table.pageResize = false;
+        },
 
         // 授权
-        power(row) {},
+        power(row) {
+            console.log(row)
+        },
 
         // 页码
-        pageSizeChange() {},
-        pageChange() {},
+        pageSizeChange(pageSize) {
+            this.pageSize = pageSize;
+            this.getUserTable(this.roleNode.parentRoleGroupId);
+        },
+        pageChange(index) {
+            this.currentPage = index;
+            this.getUserTable(this.roleNode.parentRoleGroupId);
+        },
     }
 }
 </script>

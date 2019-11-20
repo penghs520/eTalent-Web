@@ -12,7 +12,7 @@
     .wrap {
         flex: 1;
         height: 100%;
-        padding: 16px 0px 0px 16px;
+        padding: 16px 15px 0px 16px;
         box-sizing: border-box;
         background-color: #f0f0f0ff;
         .content {
@@ -28,6 +28,7 @@
 <template>
     <div id="authority_search">
         <div class="sideTree">
+            <el-switch v-model="value" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
             <tree :treeData="treeData"></tree>
         </div>
         <div class="wrap">
@@ -35,7 +36,7 @@
                 <commonTable :table="table"></commonTable>
                 <el-dialog
                     :visible.sync="showUserList"
-                    class="qinjeeDialogBig"
+                    class="qinjeeDialogSmall"
                     :append-to-body="true"
                     :close-on-click-modal="false"
                     center
@@ -151,28 +152,29 @@ export default {
                         key:
                             "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
                         val: "GROUP" /* 必须，key对应的值 */,
-                        icon: "el-icon-menu" /* 必须，图标类名 */
+                        icon: "qj-jituan" /* 必须，图标类名 */
                     },
                     {
                         key:
                             "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
                         val: "UNIT" /* 必须，key对应的值 */,
-                        icon: "el-icon-s-flag" /* 必须，图标类名 */
+                        icon: "qj-danwei" /* 必须，图标类名 */
                     },
                     {
                         key:
                             "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
                         val: "DEPT" /* 必须，key对应的值 */,
-                        icon: "el-icon-setting" /* 必须，图标类名 */
+                        icon: "qj-nav_client" /* 必须，图标类名 */
                     }
                 ],
                 showDefaultIcon: false /* 非必须，是否显示默认图标 */,
                 nodeClick: this
                     .nodeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
             },
+            currentPage: "1",
             pageSize: 4,
             searchVal: "",
-            orgId: "",
+            orgId: "35",
             showUserList: false,
             addtable: {
                 head: [
@@ -193,7 +195,8 @@ export default {
                     .selectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
                 pageHide: true
             },
-            archiveId: ""
+            archiveId: "",
+            value:"",
         };
     },
     mounted() {
@@ -204,22 +207,19 @@ export default {
     methods: {
         //修改用户角色
         eidtUser() {
-            let dataQuery = 1;
-            let roleIdList= [0];
-
-            userCheck_api4(
-                roleIdList,
-                res => {
-                    base.log("s", "修改用户角色", roleIdList);
-                    let d = res.data;
-                    base.log("r", "修改用户角色", d);
-                    if (d.success) {
-                    } else {
-                        base.error(d);
-                    }
-                },
-                dataQuery
-            );
+            let send = {
+                archiveId: 1,
+                roleIdList: [1]
+            };
+            userCheck_api4(send, res => {
+                base.log("s", "修改用户角色", roleIdList);
+                let d = res.data;
+                base.log("r", "修改用户角色", d);
+                if (d.success) {
+                } else {
+                    base.error(d);
+                }
+            });
         },
         // 显示用户角色列表
         columnBtn(node) {
@@ -253,7 +253,7 @@ export default {
                 base.log("r", "查询树", d);
                 if (d.success) {
                     this.treeData.data = d.result.list;
-                    this.orgId = d.result.list[0].orgId;
+                    // this.orgId = d.result.list[0].orgId;
                 } else {
                     base.error(d);
                 }
@@ -261,15 +261,15 @@ export default {
         },
         //点击节点获取数据
         nodeClick(node) {
-            this.orgId = node.orgId;
+            // this.orgId = node.orgId;
         },
         // 获取表格数据
-        getTable(currentPage, orgId, pageSize, userName) {
+        getTable() {
             let send = {
-                currentPage,
-                orgId: orgId,
-                pageSize,
-                userName
+                currentPage: this.currentPage,
+                orgId: this.orgId,
+                pageSize: this.pageSize,
+                userName: this.userName
             };
             base.log("s", "查询表格数据", send);
             userCheck_api1(send, res => {
@@ -286,16 +286,19 @@ export default {
         // 根据用户名和工号查询
         search(val) {
             this.searchVal = val.name;
-            this.getTable(1, this.orgId, this.pageSize, this.searchVal);
+            this.currentPage = 1;
+            this.getTable();
         },
         //页码改变
-        pageChange(page, search) {
-            this.getTable(page, this.orgId, this.pageSize, this.searchVal);
+        pageChange(page) {
+            this.currentPage = page;
+            this.getTable();
         },
         // //页容量改变
         pageSizeChange(pageSize) {
             this.pageSize = pageSize;
-            this.getTable(1, this.orgId, this.pageSize, this.searchVal);
+            this.currentPage = 1;
+            this.getTable();
         }
     }
 };

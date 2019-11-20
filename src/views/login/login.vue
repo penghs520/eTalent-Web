@@ -102,6 +102,7 @@
         position: relative;
         padding: 80px 88px 0px;
         text-align: left;
+        background: rgba(241, 242, 242, 1);
         .code {
             position: absolute;
             top: 27px;

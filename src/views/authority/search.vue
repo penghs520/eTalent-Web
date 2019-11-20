@@ -206,10 +206,10 @@ export default {
                     label:
                         "roleGroupName" /* 必须，菜单节点要显示的文字对应的字段 */
                 },
-                showDefaultIcon: false /* 非必须，是否显示默认图标 */,
+                showDefaultIcon: true /* 非必须，是否显示默认图标 */,
                 showCheckbox: true,
                 checkClick: this.checkClick,
-                showAllNode: true,
+                showAllNode: false,
                 nodeClick: this
                     .addNodeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */,
                 defaultChecked: {

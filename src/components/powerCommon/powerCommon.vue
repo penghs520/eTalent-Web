@@ -234,6 +234,10 @@ export default {
         },
 
         serverData() {
+            // 添加禁止勾选
+            if (this.data.disabled) {
+                this.addTreeDisabled(this.data.serverData,this.serverProps['children']);
+            }
             return this.data.serverData;
         },
         serverProps() {
@@ -241,6 +245,7 @@ export default {
         },
 
         rangeData() {
+            this.addTreeDisabled(this.data.rangeData,this.rangeProps['children']);
             return this.data.rangeData;
         },
         rangeProps() {
@@ -528,6 +533,21 @@ export default {
             if (this.data.fieldSubmit) {
                 this.data.fieldSubmit(send);
             }
+        },
+
+        // 给树形结构添加禁止勾选
+        addTreeDisabled(list,key) {
+            if (!list) {
+                return false;
+            };
+            list.forEach(item => {
+                if (item[key]) {
+                    item.disabled = true;
+                    this.addTreeDisabled(item[key],key);
+                }else{
+                    item.disabled = true;
+                }
+            });
         },
     }
 }

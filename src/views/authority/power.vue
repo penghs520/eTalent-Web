@@ -17,6 +17,9 @@
     margin-left: 16px;
     margin-right: 24px;
 }
+.moveDialogIpt{
+    width: 100%;
+}
 </style>
 <template>
     <div id="authority_power">
@@ -31,7 +34,7 @@
                         remote
                         size="small"
                         reserve-keyword
-                        @change="personChange"
+                        @change="personChange($event,true)"
                         placeholder="请输入姓名和或工号"
                         :remote-method="remoteMethod"
                         :loading="personLoading">
@@ -60,7 +63,7 @@
                     <el-button size="small" type="primary">托管</el-button>
                 </el-col>
                 <el-col :span=".5" class="btn">
-                    <el-button size="small">移交</el-button>
+                    <el-button size="small" @click="move" :disabled="!acceptRole" >移交</el-button>
                 </el-col>
                 <el-col :span=".5" class="btn">
                     <el-button size="small">回收</el-button>
@@ -69,6 +72,46 @@
         </div>
 
         <powerCommon :data="powerData" ></powerCommon>
+
+        <!-- 权限移交 -->
+        <el-dialog
+            :visible.sync="moveDialog"
+            class="qinjeeDialogSmall"
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            center>
+            <span slot="title" >权限移交</span>
+            <div class="qinjeeDialogSmallCont">
+                <el-row type="flex" align="middle">
+                    <el-col :span="3" >目标人：</el-col>
+                    <el-col :span="21" >
+                        <el-select
+                            class="ipt moveDialogIpt"
+                            v-model="movePerson"
+                            filterable
+                            remote
+                            size="small"
+                            reserve-keyword
+                            @change="personChange($event,false)"
+                            placeholder="请输入姓名和或工号"
+                            :remote-method="remoteMethod"
+                            :loading="personLoading">
+                            <el-option
+                                v-for="item in personList"
+                                :key="item.archiveId"
+                                :disabled="handoverPerson === item.archiveId"
+                                :label="`${item.userName} (${item.employeeNumber})`"
+                                :value="item.archiveId">
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                </el-row>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="moveDialog = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="moveSure" :disabled="!movePerson" >确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -113,6 +156,9 @@ export default {
                 fieldTableData: [],
             },
             requestOverNum: 0,
+
+            moveDialog: false,
+            movePerson: '',
         };
     },
     mounted() {
@@ -146,9 +192,11 @@ export default {
             })
         },
         // 交接人选择改变的时候
-        personChange(v) {
-            this.roleList = [];
-            this.acceptRole = '';
+        personChange(v,clear) {
+            if (clear) {
+                this.roleList = [];
+                this.acceptRole = '';
+            }
             let send = {
                 "archiveId": v
             };
@@ -209,6 +257,15 @@ export default {
                 }
             })
         },
+
+        // 移交
+        move() {
+            this.movePerson = '';
+            this.moveDialog = true;
+        },
+
+        // 移交--确定
+        moveSure() {}
     }
 }
 </script>

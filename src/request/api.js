@@ -33,6 +33,8 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const user_api4    = (data, callback) => {request('form', `api/masterdata/archiveAuth/getOrganizationArchiveTree`, data, callback)};
         const user_api5    = (data, callback) => {request('post', `api/masterdata/archiveAuth/searchArchiveListByUserNameOrJobNumber`, data, callback)};
         const user_api6    = (data, callback) => {request('post', `api/masterdata/archiveAuth/addArchiveRole`, data, callback)};
+        const user_api7    = (data, callback) => {request('form', `api/masterdata/archiveAuth/searchOrgAuthTreeByArchiveIdAndRoleId`, data, callback)};
+        const user_api8    = (data, callback) => {request('post', `api/masterdata/archiveAuth/updateArchiveOrgAuth`, data, callback)};
        
         // 角色反查
         const userCheck_api1    = (data, callback) => {request('post', `api/masterdata/roleSearch/searchArchiveListByUserName`, data, callback)};
@@ -69,7 +71,7 @@ export {
             role_api12, role_api13, role_api14,
 
             // 用户授权
-            user_api1, user_api2,user_api3,user_api4,user_api5,user_api6,
+            user_api1, user_api2,user_api3,user_api4,user_api5,user_api6, user_api7, user_api8,
 
             //角色反查
             userCheck_api1,userCheck_api2,userCheck_api3,userCheck_api4,

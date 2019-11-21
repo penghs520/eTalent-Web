@@ -2,10 +2,12 @@
 #authority_user,
 .mian,
 .tree,
-.cont {
+.cont,
+.isPowering {
     height: 100%;
+    background-color: #fff;
 }
-.mian {
+.mian .mainCont {
     display: flex;
 }
 .tree {
@@ -51,65 +53,121 @@
         overflow: auto;
     }
 }
+.checkbox{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    .el-checkbox{
+        width: 100%;
+    }
+    .text{
+        width: calc(100% - 60px);
+        font-size: 14px;
+        color: #767A7CFF;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    };
+    .company{
+        width: 60px;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #D0D0D0FF;
+    };
+}
+.isPowering{
+    text-align: left;
+}
+
+</style>
+<style>
+.authority_user_searchResult .el-checkbox{
+    width: 100%;
+}
+.authority_user_searchResult .el-checkbox__label{
+    width: calc(100% - 24px);
+}
 </style>
 <template>
     <div id="authority_user">
         <div class="mian">
-            <div class="tree">
-                <nav>用户授权</nav>
-                <tree :treeData="treeData"></tree>
+            <div class="mainCont" v-show="!isPowering">
+                <div class="tree">
+                    <nav>用户授权</nav>
+                    <tree :treeData="treeData"></tree>
+                </div>
+                <div class="cont">
+                    <div class="title" v-if="roleNode">{{roleNode.roleGroupName}}</div>
+                    <commonTable v-show="roleNode" :table="table"></commonTable>
+                    <el-dialog
+                        :visible.sync="addAuthority"
+                        class="qinjeeDialogBig"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">人员选择</span>
+                        <div class="qinjeeDialogBigCont">
+                            <div class="addAuthorityTree">
+                                <el-input
+                                    class="addAuthorityInput"
+                                    v-model="searchVal"
+                                    placeholder="请输入工号或姓名"
+                                    size="small"
+                                    clearable=""
+                                    @keyup.enter.native="searchUser"
+                                ></el-input>
+                                <tree :treeData="addAuthorityTree" v-if="searchVal== ''"></tree>
+                                <div class="searchResult authority_user_searchResult" v-if="showSearchResult">
+                                    <el-checkbox-group v-model="checkedList" @change="changeResult">
+                                        <div v-for="item in resultList" :key="item.archiveId">
+                                            <el-checkbox :label="item">
+                                                <div class="checkbox">
+                                                    <span class="text">{{item.userName}} ({{item.employeeNumber}})</span>
+                                                    <span class="company">{{item.deptFullName}}</span>
+                                                </div>
+                                            </el-checkbox>
+                                        </div>
+                                    </el-checkbox-group>
+                                </div>
+                                <!-- <commonTable :table="searchResultTable" v-if="showSearchResult"></commonTable> -->
+                            </div>
+                            <!-- 新增人员选择列表 -->
+                            <div class="addAuthorityTable">
+                                <el-table
+                                    :data="addAuthorityTable"
+                                    style="width: 100%"
+                                    max-height="470"
+                                >
+                                    <el-table-column prop="userName" label="姓名" width="120"></el-table-column>
+                                    <el-table-column prop="employeeNumber" label="工号" width="120"></el-table-column>
+                                    <el-table-column prop="orgFullName" label="机构全称" width="120"></el-table-column>
+                                    <el-table-column prop="postName" label="岗位" width="120"></el-table-column>
+                                    <el-table-column fixed="right" label="删除" width="120">
+                                        <template slot-scope="scope">
+                                            <el-button
+                                                @click.native.prevent="deleteRow(scope.$index, addAuthorityTable)"
+                                                type="text"
+                                                size="small"
+                                            >移除</el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="addAuthority = false">取 消</el-button>
+                            <el-button size="small" type="primary" @click="addAuthorityClick">确 定</el-button>
+                        </span>
+                    </el-dialog>
+                </div>
             </div>
-            <div class="cont">
-                <div class="title" v-if="roleNode">{{roleNode.roleGroupName}}</div>
-                <commonTable v-show="roleNode" :table="table"></commonTable>
-                <el-dialog
-                    :visible.sync="addAuthority"
-                    class="qinjeeDialogBig"
-                    :append-to-body="true"
-                    :close-on-click-modal="false"
-                    center
-                >
-                    <span slot="title">人员选择</span>
-                    <div class="qinjeeDialogBigCont">
-                        <div class="addAuthorityTree">
-                            <el-input
-                                class="addAuthorityInput"
-                                v-model="searchVal"
-                                placeholder="请输入工号或姓名"
-                                size="small"
-                                @keyup.enter.native="searchUser"
-                            ></el-input>
-                            <tree :treeData="addAuthorityTree" v-if="searchVal== ''"></tree>
-                            <commonTable :table="searchResultTable" v-if="showSearchResult"></commonTable>
-                        </div>
-                        <!-- 新增人员选择列表 -->
-                        <div class="addAuthorityTable">
-                            <el-table
-                                :data="addAuthorityTable"
-                                style="width: 100%"
-                                max-height="470"
-                            >
-                                <el-table-column prop="userName" label="姓名" width="120"></el-table-column>
-                                <el-table-column prop="employeeNumber" label="工号" width="120"></el-table-column>
-                                <el-table-column prop="orgFullName" label="机构全称" width="120"></el-table-column>
-                                <el-table-column prop="postName" label="岗位" width="120"></el-table-column>
-                                <el-table-column fixed="right" label="删除" width="120">
-                                    <template slot-scope="scope">
-                                        <el-button
-                                            @click.native.prevent="deleteRow(scope.$index, addAuthorityTable)"
-                                            type="text"
-                                            size="small"
-                                        >移除</el-button>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </div>
-                    </div>
-                    <span slot="footer" class="dialog-footer">
-                        <el-button size="small" @click="addAuthority = false">取 消</el-button>
-                        <el-button size="small" type="primary" @click="addAuthorityClick">确 定</el-button>
-                    </span>
-                </el-dialog>
+            <div v-show="isPowering" class="isPowering">
+                <el-button type="text" @click="isPowering = false" style="margin-left: 24px;" >返回</el-button>
+                <powerCommon :data="powerData" ></powerCommon>
             </div>
         </div>
     </div>
@@ -119,18 +177,21 @@
 import base from "../../assets/js/base";
 import commonTable from "../../components/table/commonTable";
 import tree from "../../components/tree/tree";
+import powerCommon from '../../components/powerCommon/powerCommon';
 import {
     user_api1,
     user_api2,
     user_api3,
     user_api4,
     user_api5,
-    user_api6
+    user_api6,
+    user_api7,
+    user_api8
 } from "../../request/api";
 
 export default {
     name: "user" /* 用户授权 */,
-    components: { tree, commonTable },
+    components: { tree, commonTable, powerCommon },
     data() {
         return {
             treeData: {
@@ -262,40 +323,27 @@ export default {
                 // nodeClick: this.nodeClick,   /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
             },
             addAuthorityTable: [],
-            searchResultTable: {
-                head: [
-                    /* 必须，表格头配置 */
-                    {
-                        name: "姓名" /* 必须，表格头所显示的文字 */,
-                        key:
-                            "userName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
-                        isShow: true /* 必须，表格是否默认显示该列 */,
-                        with: "20px"
-                    },
-                    {
-                        name: "工号",
-                        key: "employeeNumber",
-                        isShow: true,
-                        with: "20px"
-                    },
-                    {
-                        name: "公司",
-                        key: "deptFullName",
-                        isShow: true,
-                        with: "20px"
-                    }
-                ],
-                bar: [],
-                hideHeader: true /* 非必须,是否不显示表格头 */,
-                data: [] /* 必须，表格要渲染的数据，数组格式 */,
-                total: 0 /* 必须，数据的总条数，用于翻页 */,
-                showSelect: true /* 非必须，是否显示select勾选框 */,
-                selectChange: this
-                    .selectResult /* 非必须，selcet选中改变时的回调，接收1个参数 */,
-                pageHide: true
-            },
             showSearchResult: false,
-            roleGroupId: ""
+            roleGroupId: "",
+            resultList: [],
+            checkedList: [],
+
+            isPowering: false,
+            powerData: {
+                showTab: ['管理范围权限'],          /* 必须，要显示的tab */
+                tabActive: '管理范围权限',                                      /* 非必须，默认显示哪个tab */
+                loading: false,                                           /* 非必须，加载动画 */
+                roleTreeRoleId: 1,
+
+                // 管理范围权限
+                rangeData: [],
+                rangeProps:{
+                    children: 'childOrganizationList',
+                    label: 'orgName'
+                },
+                rangeCheck: this.rangeCheck
+            },
+            rowArchiveId: undefined,
         };
     },
     mounted() {
@@ -320,15 +368,15 @@ export default {
                 this.table.loading = false;
                 base.log("r", "确定添加角色", d);
                 if (d.success) {
+                    base.success(d);
                 } else {
                     base.error(d);
                 }
             });
         },
-        //弹出框搜索结果添加
-        selectResult(data) {
-            console.log(data);          
-            data.forEach(sec => {
+        changeResult(val) {
+            console.log(val);
+            val.forEach(sec => {
                 let judge = true;
                 this.addAuthorityTable.forEach(item => {
                     if (sec.archiveId == item.archiveId) {
@@ -344,7 +392,7 @@ export default {
         checkClick(val, data) {
             console.log(val);
             console.log(data);
-            
+
             let userList = data.checkedNodes.filter(item => item.archiveId);
             userList.forEach(sec => {
                 let judge = true;
@@ -380,8 +428,7 @@ export default {
                 let d = res.data;
                 base.log("r", "查询用户列表", d);
                 if (d.success) {
-                    this.searchResultTable.data = d.result.list;
-                    console.log(this.searchResultTable.data);
+                    this.resultList = d.result.list;
                 } else {
                     base.error(d);
                 }
@@ -439,7 +486,7 @@ export default {
         // 获取新增角色的树形
         add() {
             // this.table.pageResize = true;
-            this.addAuthorityTable = []
+            this.addAuthorityTable = [];
             this.addAuthority = true;
             user_api4(null, res => {
                 let d = res.data;
@@ -489,7 +536,7 @@ export default {
                 let d = res.data;
                 this.table.loading = false;
                 base.log("r", "删除用户列表", d);
-                if (d.success) {    
+                if (d.success) {
                     this.table.data = this.table.data.filter(
                         item => !archiveIdList.includes(item.archiveId)
                     );
@@ -502,6 +549,48 @@ export default {
         // 授权
         power(row) {
             console.log(row);
+            this.rowArchiveId = row.archiveId;
+            // let send = {
+            //     "roleId": this.roleGroupId,
+            //     "archiveId": row.archiveId
+            // };
+            let send = {
+                "roleId": 1,
+                "archiveId": 1
+            };
+            base.log('s', '获取机构树', send);
+            this.powerData.loading = true;
+            user_api7(send, res => {
+                this.powerData.loading = false;
+                let d = res.data;
+                base.log('r', '获取机构树', d);
+                if (d.success) {
+                    this.powerData.rangeData = d.result;
+                    this.isPowering = true;
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 授权提交
+        rangeCheck(list) {
+            let idList = list.map(item => item.orgId);
+            let send = {
+                "orgIdList": idList,
+                "roleId": this.roleGroupId,
+                "archiveId": this.rowArchiveId
+            };
+            base.log('s', '修改机构权限', send);
+            this.powerData.loading = true;
+            user_api8(send, res => {
+                let d = res.data;
+                base.log('r', '修改机构权限', d);
+                this.powerData.loading = false;
+                if (!d.success) {
+                    base.error(d);
+                }
+            })
         },
 
         // 页码

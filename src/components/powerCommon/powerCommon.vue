@@ -245,7 +245,9 @@ export default {
         },
 
         rangeData() {
-            this.addTreeDisabled(this.data.rangeData,this.rangeProps['children']);
+            if (this.data.disabled) {
+                this.addTreeDisabled(this.data.rangeData,this.rangeProps['children']);
+            }
             return this.data.rangeData;
         },
         rangeProps() {

@@ -34,13 +34,20 @@
     border-bottom: 1px solid #f1f2f2;
     margin-bottom: 16px;
 }
-.qinjeeDialogBigCont{
+.qinjeeDialogBigCont {
     display: flex;
-    .addAuthorityTree{
+    .addAuthorityTree {
         width: 216px;
+        overflow-x: hidden;
+        box-sizing: border-box;
+        .addAuthorityInput {
+            margin-bottom: 20px;
+        }
     }
-    .addAuthorityTable{
-        flex: 1;
+    .addAuthorityTable {
+        width: 600px;
+        height: 470px;
+        margin-left: 64px;
         overflow: auto;
     }
 }
@@ -65,16 +72,42 @@
                     <span slot="title">人员选择</span>
                     <div class="qinjeeDialogBigCont">
                         <div class="addAuthorityTree">
-                            <el-input v-model="searchVal" placeholder="请输入工号或姓名" size="small" @keyup.enter.native="searchUser"></el-input>
-                            <tree :treeData="treeData"></tree>
+                            <el-input
+                                class="addAuthorityInput"
+                                v-model="searchVal"
+                                placeholder="请输入工号或姓名"
+                                size="small"
+                                @keyup.enter.native="searchUser"
+                            ></el-input>
+                            <tree :treeData="addAuthorityTree" v-if="searchVal== ''"></tree>
+                            <commonTable :table="searchResultTable" v-if="showSearchResult"></commonTable>
                         </div>
+                        <!-- 新增人员选择列表 -->
                         <div class="addAuthorityTable">
-                             <commonTable v-show="roleNode" :table="table"></commonTable>
+                            <el-table
+                                :data="addAuthorityTable"
+                                style="width: 100%"
+                                max-height="470"
+                            >
+                                <el-table-column prop="userName" label="姓名" width="120"></el-table-column>
+                                <el-table-column prop="employeeNumber" label="工号" width="120"></el-table-column>
+                                <el-table-column prop="orgFullName" label="机构全称" width="120"></el-table-column>
+                                <el-table-column prop="postName" label="岗位" width="120"></el-table-column>
+                                <el-table-column fixed="right" label="删除" width="120">
+                                    <template slot-scope="scope">
+                                        <el-button
+                                            @click.native.prevent="deleteRow(scope.$index, addAuthorityTable)"
+                                            type="text"
+                                            size="small"
+                                        >移除</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
                         </div>
                     </div>
                     <span slot="footer" class="dialog-footer">
                         <el-button size="small" @click="addAuthority = false">取 消</el-button>
-                        <el-button size="small" type="primary" @click="addAuthority = false">确 定</el-button>
+                        <el-button size="small" type="primary" @click="addAuthorityClick">确 定</el-button>
                     </span>
                 </el-dialog>
             </div>
@@ -86,7 +119,14 @@
 import base from "../../assets/js/base";
 import commonTable from "../../components/table/commonTable";
 import tree from "../../components/tree/tree";
-import { user_api1, user_api2, user_api3 } from "../../request/api";
+import {
+    user_api1,
+    user_api2,
+    user_api3,
+    user_api4,
+    user_api5,
+    user_api6
+} from "../../request/api";
 
 export default {
     name: "user" /* 用户授权 */,
@@ -194,14 +234,163 @@ export default {
             currentPage: 1,
             pageSize: 10,
             delList: [],
-            addAuthority:false,
-            searchVal:"",
+            addAuthority: false,
+            searchVal: "",
+            addAuthorityTree: {
+                data: [] /* 必须，树形结构数据 */,
+                // nodeKey: "orgCode" /* 必须, 节点数据中某个字段,一般是id字段 */,
+                props: {
+                    /* 必须，树形结构数据绑字段配置 */
+                    children: "childOrgList" /* 必须，子集key */,
+                    label:
+                        "orgFullName" /* 必须，菜单节点要显示的文字对应的字段 */
+                },
+                icons: [
+                    /* 非必须，树形结构层级图标配置 */
+                    {
+                        key:
+                            "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
+                        val: "GROUP" /* 必须，key对应的值 */,
+                        icon: "qj-wenjianjia" /* 必须，图标类名 */
+                    }
+                ],
+                showCheckbox: true /* 非必须，是否显示多选框 */,
+                checkClick: this
+                    .checkClick /* 非必须，点击多选框事件,接收两个参数,当前选中的节点数据,树中选中的所有节点*/,
+                showDefaultIcon: true /* 非必须，是否显示默认图标 */,
+                showAllNode: false /* 非必须，是否展开所有的子节点*/
+                // nodeClick: this.nodeClick,   /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
+            },
+            addAuthorityTable: [],
+            searchResultTable: {
+                head: [
+                    /* 必须，表格头配置 */
+                    {
+                        name: "姓名" /* 必须，表格头所显示的文字 */,
+                        key:
+                            "userName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
+                        isShow: true /* 必须，表格是否默认显示该列 */,
+                        with: "20px"
+                    },
+                    {
+                        name: "工号",
+                        key: "employeeNumber",
+                        isShow: true,
+                        with: "20px"
+                    },
+                    {
+                        name: "公司",
+                        key: "deptFullName",
+                        isShow: true,
+                        with: "20px"
+                    }
+                ],
+                bar: [],
+                hideHeader: true /* 非必须,是否不显示表格头 */,
+                data: [] /* 必须，表格要渲染的数据，数组格式 */,
+                total: 0 /* 必须，数据的总条数，用于翻页 */,
+                showSelect: true /* 非必须，是否显示select勾选框 */,
+                selectChange: this
+                    .selectResult /* 非必须，selcet选中改变时的回调，接收1个参数 */,
+                pageHide: true
+            },
+            showSearchResult: false,
+            roleGroupId: ""
         };
     },
     mounted() {
         this.getRoleTree();
     },
     methods: {
+        // 弹出框 确定添加角色
+        addAuthorityClick() {
+            console.log("弹出层确定添加角色");
+
+            this.addAuthority = false;
+            let addAuthorityList = this.addAuthorityTable.map(
+                item => item.archiveId
+            );
+            let send = {
+                archiveIdList: addAuthorityList,
+                roleId: this.roleGroupId
+            };
+            user_api6(send, res => {
+                base.log("s", "确定添加角色", send);
+                let d = res.data;
+                this.table.loading = false;
+                base.log("r", "确定添加角色", d);
+                if (d.success) {
+                } else {
+                    base.error(d);
+                }
+            });
+        },
+        //弹出框搜索结果添加
+        selectResult(data) {
+            console.log(data);          
+            data.forEach(sec => {
+                let judge = true;
+                this.addAuthorityTable.forEach(item => {
+                    if (sec.archiveId == item.archiveId) {
+                        judge = false;
+                    }
+                });
+                if (judge) {
+                    this.addAuthorityTable.push(sec);
+                }
+            });
+        },
+        //弹出框树形点击多选框添加人员
+        checkClick(val, data) {
+            console.log(val);
+            console.log(data);
+            
+            let userList = data.checkedNodes.filter(item => item.archiveId);
+            userList.forEach(sec => {
+                let judge = true;
+                this.addAuthorityTable.forEach(item => {
+                    if (sec.archiveId == item.archiveId) {
+                        judge = false;
+                    }
+                });
+                if (judge) {
+                    this.addAuthorityTable.push(sec);
+                }
+            });
+            // this.addAuthorityTable = userList
+        },
+        //弹出框点击搜索
+        searchUser() {
+            if (this.searchVal.length == 0) {
+                this.$message.error("请输入搜索内容");
+                return;
+            }
+            this.searchPersonList();
+            this.showSearchResult = true;
+        },
+        //弹出框根据工号和姓名点击搜索
+        searchPersonList() {
+            let send = {
+                userName: this.searchVal,
+                currentPage: 1,
+                pageSize: 10
+            };
+            user_api5(send, res => {
+                base.log("s", "查询用户列表", send);
+                let d = res.data;
+                base.log("r", "查询用户列表", d);
+                if (d.success) {
+                    this.searchResultTable.data = d.result.list;
+                    console.log(this.searchResultTable.data);
+                } else {
+                    base.error(d);
+                }
+            });
+        },
+        //弹出框移除新增人员表格列
+        deleteRow(index, rows) {
+            rows.splice(index, 1);
+        },
         // 获取角色树
         getRoleTree() {
             user_api1(null, res => {
@@ -218,9 +407,10 @@ export default {
         // 角色树节点被点击
         roleNodeClick(node) {
             console.log(node);
+            this.roleGroupId = node.roleGroupId;
             if (node.roleType === "ROLE") {
                 this.roleNode = node;
-                this.getUserTable(node.parentRoleGroupId);
+                this.getUserTable(node.roleGroupId);
             }
         },
 
@@ -246,16 +436,43 @@ export default {
             });
         },
 
-        // 新增
+        // 获取新增角色的树形
         add() {
-            this.table.pageResize = true;
+            // this.table.pageResize = true;
+            this.addAuthorityTable = []
             this.addAuthority = true;
+            user_api4(null, res => {
+                let d = res.data;
+                base.log("r", "获取机构档案树", d);
+                if (d.success) {
+                    let newTreeData = JSON.parse(JSON.stringify(d.result));
+                    this.getTreeData(newTreeData);
+                    this.addAuthorityTree.data = newTreeData;
+                } else {
+                    base.error(d);
+                }
+            });
         },
 
-        //查询用户
-        searchUser(){
-            console.log(123456);
-            
+        //获取新的树形结构方法
+        getTreeData(newTreeData) {
+            for (let i = 0; i < newTreeData.length; i++) {
+                let temp = newTreeData[i];
+                if (temp.childOrgList) {
+                    this.getTreeData(temp.childOrgList);
+                    if (temp.childArchiveList) {
+                        temp.childArchiveList.forEach(item => {
+                            item.orgFullName = item.userName;
+                        });
+                        temp.childOrgList.push(...temp.childArchiveList);
+                    }
+                } else if (!temp.childOrgList && temp.childArchiveList) {
+                    temp.childArchiveList.forEach(item => {
+                        item.orgFullName = item.userName;
+                    });
+                    temp.childOrgList = temp.childArchiveList;
+                }
+            }
         },
 
         // 删除
@@ -264,7 +481,7 @@ export default {
             let archiveIdList = this.delList.map(item => item.archiveId);
             let send = {
                 archiveIdList,
-                roleId: this.roleNode.parentRoleGroupId
+                roleId: this.roleNode.roleGroupId
             };
             this.table.loading = true;
             base.log("s", "删除用户列表", send);
@@ -272,7 +489,7 @@ export default {
                 let d = res.data;
                 this.table.loading = false;
                 base.log("r", "删除用户列表", d);
-                if (d.success) {
+                if (d.success) {    
                     this.table.data = this.table.data.filter(
                         item => !archiveIdList.includes(item.archiveId)
                     );
@@ -290,7 +507,7 @@ export default {
         // 页码
         pageSizeChange(pageSize) {
             this.pageSize = pageSize;
-            this.getUserTable(this.roleNode.parentRoleGroupId);
+            this.getUserTable(this.roleNode.roleGroupId);
         },
         pageChange(index) {
             this.currentPage = index;
@@ -299,7 +516,13 @@ export default {
         //多选删除
         selectChange(val) {
             this.delList = val;
-            console.log("1111", val);
+        }
+    },
+    watch: {
+        searchVal(newVal) {
+            if (newVal.length == 0) {
+                this.showSearchResult = false;
+            }
         }
     }
 };

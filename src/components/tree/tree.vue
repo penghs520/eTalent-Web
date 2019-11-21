@@ -81,8 +81,9 @@ export default {
             let result = isShow ? "" : "hideDefaultIcon";
             return result;
         },
-        checkClick(data, checkedData) {
-            //多选框点击
+
+        //多选框点击
+        checkClick(data, checkedData) {           
             if (this.treeData.checkClick) {
                 this.treeData.checkClick(data, checkedData);
             }

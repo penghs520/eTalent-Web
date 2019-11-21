@@ -197,7 +197,7 @@ export default {
             currentPage: "1",
             pageSize: 4,
             searchVal: "",
-            orgId: "35",
+            orgId: "82",
             showUserList: false,
             archiveId: "", //人员id
             value: "true",
@@ -227,7 +227,9 @@ export default {
                         "hasRole" /* 必须,如果节点中该字段的值经过 Boolean() 格式化后为true,就默认勾选 */
                 }
             },
-            editRoleIdList: []
+            editRoleIdList: [],
+            
+            
         };
     },
     mounted() {
@@ -326,6 +328,8 @@ export default {
         },
         //点击树形节点获取数据
         nodeClick(node) {
+            console.log(node);
+            
             // this.orgId = node.orgId;
         },
         // 获取表格数据

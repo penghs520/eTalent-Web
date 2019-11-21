@@ -12,6 +12,7 @@
         height: 600px;
         padding: 80px 88px 0px;
         background: rgba(241, 242, 242, 1);
+        border-radius: 12px;
         text-align: left;
         .code {
             position: absolute;

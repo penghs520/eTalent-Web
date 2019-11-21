@@ -495,7 +495,7 @@ export default {
                     let o = {
                         chName: sideItem.menuName
                     };
-                    if (sideItem.childMenuList) {
+                    if (sideItem.childMenuList.length > 0) {
                         o.children = new Array();
                         for (
                             let j = 0;
@@ -522,6 +522,8 @@ export default {
             // 存储菜单
             localStorage.setItem("topMenu", JSON.stringify(topMenu));
             localStorage.setItem("sideMenu", JSON.stringify(sideMenu));
+            localStorage.setItem("topMenuIndex", '');
+            localStorage.setItem("leftMenuActive", '');
         }
     }
 };

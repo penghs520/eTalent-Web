@@ -80,6 +80,23 @@
 .headerSelect {
     cursor: pointer;
 }
+.menuTitle{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+}
+.menuTitle .text{
+    color: #FFFFFF;
+    font-size: 16px;
+    line-height: 16px;
+}
+.menuTitle .icon{
+    color: #fff;
+    font-size: 14px;
+    line-height: 14px;
+    cursor: pointer;
+}
 </style>
 
 <template>
@@ -91,7 +108,7 @@
                     <img src="@/assets/img/logo.png" alt />
                 </div>
                 <el-menu
-                    default-active="0"
+                    :default-active="String(topMenuIndex)"
                     class="topMenu"
                     mode="horizontal"
                     background-color="#666C7B"
@@ -128,11 +145,19 @@
             <el-container class="section">
                 <!-- 左侧菜单 -->
                 <el-aside width="240px">
+                    <div class="menuTitle">
+                        <span class="text">导航栏</span>
+                        <span class="qj-drawer icon"></span>
+                    </div>
                     <el-menu
-                        default-active="organization_repair"
+                        :default-active="activeMenu"
                         :router="true"
+                        v-if="resizeMenu"
                         background-color="#666C7B"
                         text-color="#fff"
+                        @select="menuSelect"
+                        :collapse-transition="false"
+                        :collapse="sideMenuCollapse"
                         active-text-color="#FF8C58"
                     >
                         <div v-for="(item,index) in sideMenu" :key="index">
@@ -176,6 +201,10 @@ export default {
                 组织管理: []
             },
             topMenuIndex: 0,
+            sideMenu: [],
+            activeMenu: '',
+            resizeMenu: true,
+            sideMenuCollapse: false,
             userInfo: {
                 userName: "",
                 companyName: ""
@@ -191,22 +220,58 @@ export default {
         } catch (error) {
             this.$message.warning("请先登录");
             this.$router.push("/");
-        }
-    },
-    computed: {
-        sideMenu() {
-            return this.sideMenuTotal[this.topMenu[this.topMenuIndex]];
-        }
+        };
+        this.init();
     },
     mounted() {
-        this.topMenu = JSON.parse(localStorage.getItem("topMenu"));
-        this.sideMenuTotal = JSON.parse(localStorage.getItem("sideMenu"));
-        console.log(this.topMenu);
-        console.log(this.sideMenuTotal);
     },
     methods: {
         topSelect(index) {
-            this.topMenuIndex = Number(index);
+            this.resizeMenu = false;
+            this.sideMenu = [];
+            // 存顶部当前激活菜单index值
+            localStorage.setItem('topMenuIndex',String(index));
+            // 取侧边显示的菜单
+            this.sideMenu = this.sideMenuTotal[this.topMenu[Number(index)]];
+            // 设置侧边菜单的默认激活节点
+            this.setActiveFromTop();
+            setTimeout(() => {
+                this.resizeMenu = true;
+            },0);
+            // 跳转到侧边菜单的默认激活节点上
+            this.$router.push(`${this.activeMenu}`);
+        },
+        init() {
+            // 取顶部菜单
+            this.topMenu = JSON.parse(localStorage.getItem("topMenu"));
+            // 取侧边总菜单
+            this.sideMenuTotal = JSON.parse(localStorage.getItem("sideMenu"));
+            // 取顶部当前激活菜单index值
+            this.topMenuIndex = localStorage.getItem('topMenuIndex') ? Number(localStorage.getItem('topMenuIndex')) : 0;
+            // 取侧边显示的菜单
+            this.sideMenu = this.sideMenuTotal[this.topMenu[this.topMenuIndex]];
+            // 取侧边显示菜单的当前激活节点
+            this.setCurrentPath();
+        },
+        setCurrentPath() {
+            let leftMenuActive = localStorage.getItem('leftMenuActive');
+            if (leftMenuActive) {
+                this.activeMenu = leftMenuActive;
+            }else{
+                this.setActiveFromTop();
+            }
+        },
+        // 根据顶部菜单设置侧边菜单的默认激活节点
+        setActiveFromTop() {
+            if (this.sideMenu[0].children) {
+                this.activeMenu =  this.sideMenu[0].children[0].path;
+            }else{
+                this.activeMenu =  this.sideMenu[0].path;
+            }
+        },
+        menuSelect(index) {
+            // 存侧边菜单当前节点
+            localStorage.setItem('leftMenuActive', index);
         },
         //退出登陆
         handleCommand(command) {
@@ -215,6 +280,11 @@ export default {
                     localStorage.removeItem("userInfo");
                     this.$message.success("已退出");
                     this.$router.push("/");
+                    // 清空存储的数据
+                    localStorage.setItem("topMenu", '');
+                    localStorage.setItem("sideMenu", '');
+                    localStorage.setItem("topMenuIndex", '');
+                    localStorage.setItem("leftMenuActive", '');
                 });
             }
         }

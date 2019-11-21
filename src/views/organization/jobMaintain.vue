@@ -2,7 +2,7 @@
 
 </style>
 <template>
-    <div id="organization_station">
+    <div id="organization_jobMaintain">
         <h1>岗位维护a</h1>
         <!-- <organization-chart :datasource="ds" :zoom="true" :pan="true" @node-clic="nodeClick" ></organization-chart> -->
     </div>
@@ -12,7 +12,7 @@
 // import 'vue-organization-chart/dist/orgchart.css'
 
 export default {
-    name: "station" /* 岗位维护 */,
+    name: "jobMaintain" /* 岗位维护 */,
     components: {
         // OrganizationChart
     },

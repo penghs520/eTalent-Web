@@ -47,6 +47,9 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const power_api2    = (data, callback) => {request('form', `api/masterdata/authHandover/searchRoleListByArchiveId`, data, callback)};
         const power_api3    = (data, callback) => {request('form', `api/masterdata/authHandover/searchRoleAuthTree`, data, callback)};
         const power_api4    = (data, callback) => {request('form', `api/masterdata/authHandover/searchOrgAuthTree`, data, callback)};
+        const power_api5    = (data, callback) => {request('post', `api/masterdata/authHandover/roleHandoverByArchiveId`, data, callback)};
+        const power_api6    = (data, callback) => {request('post', `api/masterdata/authHandover/roleTrusteeshipByArchiveId`, data, callback)};
+        const power_api7    = (data, callback) => {request('post', `api/masterdata/authHandover/roleRecoveryByArchiveId`, data, callback)};
 
 
 
@@ -77,7 +80,7 @@ export {
             userCheck_api1,userCheck_api2,userCheck_api3,userCheck_api4,
 
             // 权限移交
-            power_api1, power_api2, power_api3, power_api4,
+            power_api1, power_api2, power_api3, power_api4, power_api5, power_api6, power_api7,
 
     // 组织中台
         // 职位管理

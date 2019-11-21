@@ -2,6 +2,9 @@
 #powerCommon,.mian,.tree,.cont{
     height: 100%;
 }
+#powerCommon{
+    background-color: #fff;
+}
 .mian{
     display: flex;
     background-color: #F0F0F0;

@@ -1,14 +1,14 @@
 // 组织管理
+const organization_jobDescription    = () => import(/* webpackChunkName: "group-organization" */ '../views/organization/jobDescription.vue');
+const organization_jobMaintain       = () => import(/* webpackChunkName: "group-organization" */ '../views/organization/jobMaintain.vue');
+
 const organization_repair    = () => import(/* webpackChunkName: "group-organization" */ '../views/organization/repair.vue');
 const organization_position  = () => import(/* webpackChunkName: "group-organization" */ '../views/organization/position.vue');
-const organization_station   = () => import(/* webpackChunkName: "group-organization" */ '../views/organization/station.vue');
 // const organization_user      = () => import(/* webpackChunkName: "group-organization" */ '@/src/views/organization/organizationUser.vue');
 
 // 员工管理
-// const staff_info             = () => import(/* webpackChunkName: "group-staff" */ '@/src/views/staff/staffInfo.vue');
-// const staff_ledger           = () => import(/* webpackChunkName: "group-staff" */ '@/src/views/staff/staffLedger.vue');
-// const staff_annex            = () => import(/* webpackChunkName: "group-staff" */ '@/src/views/staff/staffAnnex.vue');
-const staff_jobNumber           = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/jobNumber.vue');
+const staff_jobEntry         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/entry.vue');
+const staff_jobNumber        = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/jobNumber.vue');
 
 // 权限管理
 const authority_role         = () => import(/* webpackChunkName: "group-authority" */ '../views/authority/role.vue');
@@ -17,14 +17,17 @@ const authority_search       = () => import(/* webpackChunkName: "group-authorit
 const authority_power        = () => import(/* webpackChunkName: "group-authority" */ '../views/authority/power.vue');
 
 let path = {
-    // 组织管理
-    organization_repair,
-    organization_position,
-    organization_station,
+    // 组织中台
+        // 岗位管理
+        organization_jobDescription,
+        organization_jobMaintain,
+        
+        organization_repair,
+        organization_position,
     // organization_user,
 
     // 员工管理
-    // staff_info, staff_ledger, staff_annex,
+    staff_jobEntry,
     staff_jobNumber,
 
     // 权限管理

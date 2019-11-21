@@ -4,7 +4,7 @@
 
 <template>
     <div id="commonTableDemo">
-        <commonTable :table="table" ></commonTable>
+        <commonTable :table="table" ref="commonTable" ></commonTable>
     </div>
 </template>
 
@@ -107,6 +107,13 @@ export default {
     created() {},
     mounted() {},
     methods: {
+        // 组件提供的一些方法---------------------开始
+            // 重置操作栏
+            method_1() {
+                this.$$refs.commonTable.resizeOperationBar();
+            },
+        // 组件提供的一些方法---------------------结束
+        
         selectChange(val) {
             console.log(val)
         },

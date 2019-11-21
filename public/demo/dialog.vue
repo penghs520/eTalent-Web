@@ -47,7 +47,7 @@
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button size="small" @click="roleTreeDeleteDialog = false">取 消</el-button>
-                <el-button size="small" type="primary" @click="roleTreeDeletesure('editForm')" :loading="editRoleLoading" >确 定</el-button>
+                <el-button size="small" type="primary" @click="roleTreeDeletesure" :loading="editRoleLoading" >确 定</el-button>
             </span>
         </el-dialog>
     </div>

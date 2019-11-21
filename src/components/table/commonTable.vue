@@ -167,7 +167,6 @@ export default {
         },
         data: {
             handler: function() {
-                console.log('666')
                 this.selected();
             },
             deep: true
@@ -176,6 +175,10 @@ export default {
     mounted() {
     },
     methods: {
+        // 重置操作栏
+        resizeOperationBar() {
+            this.barModelInit(this.table.bar);
+        },
         // 默认勾选行
         selected() {
             let rule = this.table.selected;

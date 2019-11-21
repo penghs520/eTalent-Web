@@ -419,7 +419,6 @@ export default {
         };
     },
     mounted() {
-        console.clear();
         this.getRoleTree();
         this.getTable();
     },

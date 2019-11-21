@@ -19,7 +19,6 @@
     .content {
         flex: 1;
         height: 100%;
-        padding: 20px;
         border: 10px solid #f0f0f0;
         box-sizing: border-box;
         overflow: auto;
@@ -29,6 +28,15 @@
                padding: 0px !important;
                border: 1px soild #ccc !important;
             }
+        };
+        .title {
+            padding: 20px 24px;
+            font-size: 16px;
+            line-height: 16px;
+            text-align: left;
+            color: #676b6d;
+            border-bottom: 1px solid #f1f2f2;
+            margin-bottom: 16px;
         }
     }
 }
@@ -50,7 +58,8 @@
 
         <!-- 角色列表 -->
         <div class="content">
-            <commonTable :table="table"></commonTable>
+            <div class="title">角色反查</div>
+            <commonTable ref="commonTable" :table="table"></commonTable>
             <el-dialog
                 :visible.sync="showUserList"
                 class="qinjeeDialogSmall"
@@ -197,7 +206,7 @@ export default {
             currentPage: "1",
             pageSize: 4,
             searchVal: "",
-            orgId: "35",
+            orgId: "82",
             showUserList: false,
             archiveId: "", //人员id
             value: "true",
@@ -326,7 +335,10 @@ export default {
         },
         //点击树形节点获取数据
         nodeClick(node) {
-            // this.orgId = node.orgId;
+            this.orgId = node.orgId;
+            // 重置表格操作栏
+            this.$refs.commonTable.resizeOperationBar();
+            this.search({name: ''})
         },
         // 获取表格数据
         getTable() {

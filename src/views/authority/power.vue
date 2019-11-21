@@ -20,6 +20,18 @@
 .moveDialogIpt{
     width: 100%;
 }
+.commonPower{
+    margin-top: 16px;
+}
+.trusteeshipDatePickerBox{
+    margin-top: 24px;
+}
+.trusteeshipTitle{
+    text-align: right;
+}
+.trusteeshipDatePicker{
+    width: 100%;
+}
 </style>
 <template>
     <div id="authority_power">
@@ -34,7 +46,7 @@
                         remote
                         size="small"
                         reserve-keyword
-                        @change="personChange($event,true)"
+                        @change="personChange"
                         placeholder="请输入姓名和或工号"
                         :remote-method="remoteMethod"
                         :loading="personLoading">
@@ -60,18 +72,73 @@
             </el-row>
             <el-row type="flex" align="middle">
                 <el-col :span=".5" class="btn">
-                    <el-button size="small" type="primary">托管</el-button>
+                    <el-button size="small" @click="trusteeship" type="primary" :disabled="!acceptRole">托管</el-button>
                 </el-col>
                 <el-col :span=".5" class="btn">
-                    <el-button size="small" @click="move" :disabled="!acceptRole" >移交</el-button>
+                    <el-button size="small" @click="move" :disabled="!acceptRole" plain="" >移交</el-button>
                 </el-col>
                 <el-col :span=".5" class="btn">
-                    <el-button size="small">回收</el-button>
+                    <el-button size="small" @click="recovery" :disabled="!acceptRole" plain="">回收</el-button>
                 </el-col>
             </el-row>
         </div>
 
-        <powerCommon :data="powerData" ></powerCommon>
+        <powerCommon class="commonPower" :data="powerData" ></powerCommon>
+
+        <!-- 权限托管 -->
+        <el-dialog
+            :visible.sync="trusteeshipDialog"
+            class="qinjeeDialogSmall"
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            center>
+            <span slot="title" >权限托管</span>
+            <div class="qinjeeDialogSmallCont">
+                <el-row type="flex" align="middle">
+                    <el-col :span="4" class="trusteeshipTitle">目标人：</el-col>
+                    <el-col :span="20" >
+                        <el-select
+                            class="ipt moveDialogIpt"
+                            v-model="trusteeshipPerson"
+                            filterable
+                            remote
+                            size="small"
+                            reserve-keyword
+                            placeholder="请输入姓名和或工号"
+                            :remote-method="remoteMethod"
+                            :loading="personLoading">
+                            <el-option
+                                v-for="item in personList"
+                                :key="item.archiveId"
+                                :disabled="handoverPerson === item.archiveId"
+                                :label="`${item.userName} (${item.employeeNumber})`"
+                                :value="item.archiveId">
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                </el-row>
+                <el-row type="flex" align="middle" class="trusteeshipDatePickerBox">
+                    <el-col :span="4" class="trusteeshipTitle">托管时间：</el-col>
+                    <el-col :span="20" >
+                        <el-date-picker
+                            v-model="trusteeshipTime"
+                            class="trusteeshipDatePicker"
+                            type="daterange"
+                            :editable="false"
+                            size="small"
+                            value-format="yyyy-MM-dd"
+                            range-separator="-"
+                            start-placeholder="开始时间"
+                            end-placeholder="结束时间">
+                        </el-date-picker>
+                    </el-col>
+                </el-row>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="trusteeshipDialog = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="trusteeshipSure" :disabled="!trusteeshipPerson || !trusteeshipTime" :loading="trusteeshipLoading" >确 定</el-button>
+            </span>
+        </el-dialog>
 
         <!-- 权限移交 -->
         <el-dialog
@@ -92,7 +159,6 @@
                             remote
                             size="small"
                             reserve-keyword
-                            @change="personChange($event,false)"
                             placeholder="请输入姓名和或工号"
                             :remote-method="remoteMethod"
                             :loading="personLoading">
@@ -109,7 +175,26 @@
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button size="small" @click="moveDialog = false">取 消</el-button>
-                <el-button size="small" type="primary" @click="moveSure" :disabled="!movePerson" >确 定</el-button>
+                <el-button size="small" type="primary" @click="moveSure" :disabled="!movePerson" :loading="moveLoading" >确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <!-- 回收 -->
+        <el-dialog
+            :visible.sync="recoveryDialog"
+            v-if="recoveryDialog"
+            class="qinjeeDialogMini"
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            center>
+            <span slot="title" >权限回收</span>
+            <div class="qinjeeDialogMiniCont">
+                <i class="el-icon-warning warning icon" ></i>
+                <span>确定回收 {{personName}} 的 {{roleName}} 权限？</span>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="recoveryDialog = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="recoverySure" :loading="recoveryLoading" >确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -117,7 +202,7 @@
 
 <script>
 import base from '../../assets/js/base';
-import {power_api1, power_api2, power_api3, power_api4} from '../../request/api';
+import {power_api1, power_api2, power_api3, power_api4, power_api5, power_api6, power_api7} from '../../request/api';
 import powerCommon from '../../components/powerCommon/powerCommon';
 
 export default {
@@ -136,6 +221,7 @@ export default {
                 tabActive: '功能权限',                                      /* 非必须，默认显示哪个tab */
                 loading: false,                                           /* 非必须，加载动画 */
                 roleTreeRoleId: undefined,
+                disabled: true,
 
                 // 功能权限
                 serverData: [],
@@ -157,9 +243,44 @@ export default {
             },
             requestOverNum: 0,
 
+            // 托管
+            trusteeshipDialog: false,
+            trusteeshipPerson: '',
+            trusteeshipLoading: false,
+            trusteeshipTime: '',
+
+            // 移交
             moveDialog: false,
             movePerson: '',
+            moveLoading: false,
+
+            // 回收
+            recoveryDialog: false,
+            recoveryLoading: false,
+
         };
+    },
+    computed: {
+        personName() {
+            let result = '';
+            if (this.handoverPerson) {
+                let list = this.personList.filter(item => {
+                    return item.archiveId === this.handoverPerson;
+                });
+                result = `${list[0].userName}(${list[0].employeeNumber})`;
+            };
+            return result;
+        },
+        roleName() {
+            let result = '';
+            if (this.acceptRole) {
+                let list = this.roleList.filter(item => {
+                    return item.roleId === this.acceptRole;
+                });
+                result = `${list[0].roleName}`;
+            };
+            return result;
+        },
     },
     mounted() {
         this.getPersionList();
@@ -192,13 +313,11 @@ export default {
             })
         },
         // 交接人选择改变的时候
-        personChange(v,clear) {
-            if (clear) {
-                this.roleList = [];
-                this.acceptRole = '';
-            }
+        personChange(id) {
+            this.roleList = [];
+            this.acceptRole = '';
             let send = {
-                "archiveId": v
+                "archiveId": id
             };
             base.log('s', '查询角色列表', send);
             power_api2(send, res => {
@@ -214,7 +333,6 @@ export default {
         // 要交接的角色改变
         acceptRoleChange(role) {
             this.powerData.roleTreeRoleId = role;
-            console.log(role);
             this.requestOverNum = 0;
             this.powerData.loading = true;
             this.getServerTree(role);
@@ -265,7 +383,94 @@ export default {
         },
 
         // 移交--确定
-        moveSure() {}
+        moveSure() {
+            let send = {
+                "handoverArchiveId": this.handoverPerson,
+                "acceptArchiveId": this.movePerson,
+                "roleIdList": [this.acceptRole],
+            };
+            base.log('s', '移交', send);
+            this.moveLoading = true;
+            power_api5(send, res => {
+                this.moveLoading = false;
+                let d = res.data;
+                base.log('r', '移交', d);
+                if (d.success) {
+                    base.success(d);
+                    this.moveDialog = false;
+
+                    // 刷新所选人的角色下拉框数据
+                    this.personChange(this.handoverPerson);
+                    // 清空权限数据
+                    this.powerData.serverData = [];
+                    this.powerData.rangeData = [];
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 托管
+        trusteeship() {
+            this.trusteeshipPerson = '';
+            this.trusteeshipDialog = true;
+        },
+
+        // 托管--确定
+        trusteeshipSure() {
+            let send = {
+                "trusteeshipArchiveId": this.handoverPerson,
+                "acceptArchiveId": this.trusteeshipPerson,
+                "roleIdList": [this.acceptRole],
+                "trusteeshipBeginTime": this.trusteeshipTime[0],
+                "trusteeshipEndTime": this.trusteeshipTime[1]
+            };
+            base.log('s', '托管', send);
+            this.trusteeshipLoading = true;
+            power_api6(send, res => {
+                this.trusteeshipLoading = false;
+                let d = res.data;
+                base.log('r', '托管', d);
+                if (d.success) {
+                    base.success(d);
+                    this.trusteeshipDialog = false;
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 回收
+        recovery() {
+            this.recoveryDialog = true;
+        },
+
+        // 回收--确定
+        recoverySure() {
+            let send = {
+                "archiveId": this.handoverPerson,
+                "roleIdList": [this.acceptRole],
+            };
+            base.log('s', '回收', send);
+            this.recoveryLoading = true;
+            power_api7(send, res => {
+                this.recoveryLoading = false;
+                let d = res.data;
+                base.log('s', '回收', d);
+                if (d.success) {
+                    base.success(d);
+                    this.recoveryDialog = false;
+
+                    // 刷新所选人的角色下拉框数据
+                    this.personChange(this.handoverPerson);
+                    // 清空权限数据
+                    this.powerData.serverData = [];
+                    this.powerData.rangeData = [];
+                }else{
+                    base.error(d);
+                }
+            })
+        },
     }
 }
 </script>

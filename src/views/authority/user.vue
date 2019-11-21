@@ -3,7 +3,8 @@
 .mian,
 .tree,
 .cont,
-.isPowering {
+.isPowering,
+.mainCont {
     height: 100%;
     background-color: #fff;
 }

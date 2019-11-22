@@ -97,7 +97,7 @@
                     </template>
                 </el-table-column>
             </template>
-            <el-table-column v-for="(item,index) in head" :key="index" :prop="item.key" :label="item.name" :width="item.width" v-show="item.isShow" ></el-table-column>
+            <el-table-column v-for="(item,index) in head" :key="index" :prop="item.key" :label="item.name" :width="item.width" :formatter="columnFormatter" v-show="item.isShow" ></el-table-column>
             <el-table-column width="14"></el-table-column>
         </el-table>
 
@@ -269,6 +269,17 @@ export default {
             if (this.table.pageChange) {
                 this.table.pageChange(index, this.barData, this.radioChecked, this.selectChecked)
             }
+        },
+
+        // 表格列格式化
+        columnFormatter(row, column, cellValue, index) {
+            let key = column.property;
+            if (this.table.formatter) {
+                let result = this.table.formatter(key, cellValue, index, column, row);
+                return result;
+            }else{
+                return cellValue;
+            };
         },
     }
 }

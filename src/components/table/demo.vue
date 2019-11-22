@@ -101,7 +101,10 @@ export default {
                 pageHide: false,                        /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */
                 pageSizeChange: this.pageSizeChange,    /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */
                 pageChange: this.pageChange,            /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
+                formatter: Function,                    /* 非必须，格式化表格列，返回格式化后的内容即可，String格式，该方法接收5个参数：key(该列的字段), cellValue（单元格的值）, rowIndex（行序号）, column（列数据）, row（行数据） */
             },
+            currentPage: 1,                             /* 页面要用到的页码变量 */
+            pageSize: 10,                               /* 页面要用到的页码变量 */
         };
     },
     created() {},

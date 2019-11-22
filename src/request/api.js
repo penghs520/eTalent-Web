@@ -8,6 +8,12 @@ const login_api3 = (data, callback) => {request('form', `api/masterdata/userLogi
 const login_api4 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
 const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogin/logout`, data, callback)};
 
+// 员工管理
+    // 入职管理
+    const entry_api1     = (data, callback) => {request('form', `api/masterdata/staffpre/selectPreEmployment`, data, callback)};
+    const entry_api2     = (data, callback) => {request('post', `api/masterdata/staffpre/selectPreEmployment`, data, callback)};
+
+
 // 系统管理
     // 权限管理
         // 角色授权
@@ -68,6 +74,10 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
 export {
     // 登录
     login_api1, login_api2,login_api3,login_api4,login_api5,
+
+    // 员工管理
+        // 入职管理
+        entry_api1, entry_api2,
 
     // 系统管理
         // 权限管理

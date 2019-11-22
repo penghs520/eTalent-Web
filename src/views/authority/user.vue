@@ -370,6 +370,10 @@ export default {
                 base.log("r", "确定添加角色", d);
                 if (d.success) {
                     base.success(d);
+                    this.currentPage = 1;
+                    this.pageSize = 10;
+                    this.table.pageResize = true;
+                    this.getUserTable(this.roleGroupId);
                 } else {
                     base.error(d);
                 }
@@ -455,8 +459,8 @@ export default {
         // 角色树节点被点击
         roleNodeClick(node) {
             console.log(node);
-            this.roleGroupId = node.roleGroupId;
             if (node.roleType === "ROLE") {
+                this.roleGroupId = node.roleGroupId;
                 this.roleNode = node;
                 this.getUserTable(node.roleGroupId);
             }
@@ -472,6 +476,7 @@ export default {
             this.table.loading = true;
             base.log("s", "查询用户列表", send);
             user_api2(send, res => {
+                this.table.pageResize = false;
                 let d = res.data;
                 this.table.loading = false;
                 base.log("r", "查询用户列表", d);
@@ -551,13 +556,9 @@ export default {
         power(row) {
             console.log(row);
             this.rowArchiveId = row.archiveId;
-            // let send = {
-            //     "roleId": this.roleGroupId,
-            //     "archiveId": row.archiveId
-            // };
             let send = {
-                "roleId": 1,
-                "archiveId": 1
+                "roleId": this.roleGroupId,
+                "archiveId": row.archiveId
             };
             base.log('s', '获取机构树', send);
             this.powerData.loading = true;
@@ -596,7 +597,9 @@ export default {
 
         // 页码
         pageSizeChange(pageSize) {
+            this.currentPage = 1;
             this.pageSize = pageSize;
+            this.table.pageResize = true;
             this.getUserTable(this.roleNode.roleGroupId);
         },
         pageChange(index) {

@@ -180,19 +180,19 @@
                         <el-table-column prop="name" label="可读" width="120">
                             <template slot-scope="scope">
                                 <!-- <el-checkbox v-model="scope.row.readWriteCode"  >备选项</el-checkbox> -->
-                                <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateRead" v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldChangeAll($event,'read')" ></el-checkbox>
+                                <el-checkbox v-if="scope.$index === 0" :disabled="data.disabled" :indeterminate="scope.row.isIndeterminateRead" v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldChangeAll($event,'read')" ></el-checkbox>
                                 <el-checkbox v-else v-model="scope.row.isRead" :checked="scope.row.isRead" @change="fieldChangeSingle($event,'read',scope.row)" ></el-checkbox>
                             </template>
                         </el-table-column>
                         <el-table-column prop="name" label="新增可写" width="120">
                             <template slot-scope="scope">
-                                <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateAddWrite" v-model="scope.row.isAddWrite" @change="fieldChangeAll($event,'addWrite')" ></el-checkbox>
+                                <el-checkbox v-if="scope.$index === 0" :disabled="data.disabled" :indeterminate="scope.row.isIndeterminateAddWrite" v-model="scope.row.isAddWrite" @change="fieldChangeAll($event,'addWrite')" ></el-checkbox>
                                 <el-checkbox v-else v-model="scope.row.isAddWrite" @change="fieldChangeSingle($event,'addWrite',scope.row) "></el-checkbox>
                             </template>
                         </el-table-column>
                         <el-table-column prop="address" label="可写">
                             <template slot-scope="scope">
-                                <el-checkbox v-if="scope.$index === 0" :indeterminate="scope.row.isIndeterminateWrite" v-model="scope.row.isWrite" @change="fieldChangeAll($event,'write')" ></el-checkbox>
+                                <el-checkbox v-if="scope.$index === 0" :disabled="data.disabled" :indeterminate="scope.row.isIndeterminateWrite" v-model="scope.row.isWrite" @change="fieldChangeAll($event,'write')" ></el-checkbox>
                                 <el-checkbox v-else v-model="scope.row.isWrite" @change="fieldChangeSingle($event,'write',scope.row)" ></el-checkbox>
                             </template>
                         </el-table-column>
@@ -402,6 +402,9 @@ export default {
 
         // 添加全选行
         addCheckAllRow(list) {
+            if (list.length === 0) {
+                return [];
+            }
             // this.tableList
             // tableChecked
             let select = this.tableList.filter(item => {

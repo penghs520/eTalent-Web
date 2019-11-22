@@ -62,6 +62,7 @@
             <commonTable ref="commonTable" :table="table"></commonTable>
             <el-dialog
                 :visible.sync="showUserList"
+                v-if="showUserList"
                 class="qinjeeDialogSmall"
                 :append-to-body="true"
                 :close-on-click-modal="false"
@@ -159,11 +160,6 @@ export default {
                     .selectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
                 loading: false,
                 pageResize: false,
-                page: {
-                    /* 非必须，页码配置 */
-                    pageSizes: [4, 8, 12] /* 非必须，页码可选的每页数量 */,
-                    pageSize: 4 /* 非必须，默认每页显示的数量 */
-                },
                 pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
                 pageResize: false,
                 pageSizeChange: this
@@ -203,8 +199,8 @@ export default {
                 nodeClick: this
                     .nodeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
             },
-            currentPage: "1",
-            pageSize: 4,
+            currentPage: 1,
+            pageSize: 10,
             searchVal: "",
             orgId: "82",
             showUserList: false,
@@ -271,6 +267,7 @@ export default {
                 let d = res.data;
                 base.log("r", "修改用户角色", d);
                 if (d.success) {
+                    base.success(d);
                 } else {
                     base.error(d);
                 }
@@ -353,6 +350,7 @@ export default {
             };
             base.log("s", "查询表格数据", send);
             userCheck_api1(send, res => {
+                this.table.pageResize = false;
                 let d = res.data;
                 base.log("r", "查询表格数据", d);
                 if (d.success) {
@@ -360,7 +358,6 @@ export default {
                     this.table.total = d.result.total;
                     this.table.loading = false;
 
-                    this.table.pageResize = false;
                 } else {
                     base.error(d);
                 }
@@ -370,6 +367,7 @@ export default {
         search(val) {
             this.searchVal = val.name;
             this.currentPage = 1;
+            this.pageSize = 10;
             this.table.pageResize = true;
             this.getTable();
         },

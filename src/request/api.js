@@ -21,7 +21,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const role_api8     = (data, callback) => {request('form', `api/masterdata/roleAuth/searchRoleAuthTree`, data, callback)};
         const role_api9     = (data, callback) => {request('post', `api/masterdata/roleAuth/updateRoleMenuAuth`, data, callback)};
         const role_api10    = (data, callback) => {request('form', `api/masterdata/roleAuth/searchOrgAuthTree`, data, callback)};
-        const role_api11    = (data, callback) => {request('form', `api/masterdata/roleAuth/updateRoleOrgAuth`, data, callback)};
+        const role_api11    = (data, callback) => {request('post', `api/masterdata/roleAuth/updateRoleOrgAuth`, data, callback)};
         const role_api12    = (data, callback) => {request('form', `api/masterdata/roleAuth/searchCustomArchiveTableList`, data, callback)};
         const role_api13    = (data, callback) => {request('form', `api/masterdata/roleAuth/searchCustomArchiveTableFieldListByTableId`, data, callback)};
         const role_api14    = (data, callback) => {request('post', `api/masterdata/roleAuth/updateRoleCustomArchiveTableFieldAuth`, data, callback)};
@@ -38,7 +38,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
        
         // 角色反查
         const userCheck_api1    = (data, callback) => {request('post', `api/masterdata/roleSearch/searchArchiveListByUserName`, data, callback)};
-        const userCheck_api2    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationTree`, data, callback)};
+        const userCheck_api2    = (data, callback) => {request('get', `api/masterdata/roleSearch/getOrganizationTree`, data, callback)};
         const userCheck_api3    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchRoleTreeByArchiveId`, data, callback)};
         const userCheck_api4    = (data, callback) => {request('post', `api/masterdata/roleSearch/updateArchiveRole`, data, callback)};
 
@@ -50,6 +50,8 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const power_api5    = (data, callback) => {request('post', `api/masterdata/authHandover/roleHandoverByArchiveId`, data, callback)};
         const power_api6    = (data, callback) => {request('post', `api/masterdata/authHandover/roleTrusteeshipByArchiveId`, data, callback)};
         const power_api7    = (data, callback) => {request('post', `api/masterdata/authHandover/roleRecoveryByArchiveId`, data, callback)};
+        const power_api8    = (data, callback) => {request('post', `api/masterdata/authHandover/searchCustomArchiveTableList`, data, callback)};
+        const power_api9    = (data, callback) => {request('form', `api/masterdata/authHandover/searchCustomArchiveTableFieldListByTableId`, data, callback)};
 
 
 
@@ -80,7 +82,7 @@ export {
             userCheck_api1,userCheck_api2,userCheck_api3,userCheck_api4,
 
             // 权限移交
-            power_api1, power_api2, power_api3, power_api4, power_api5, power_api6, power_api7,
+            power_api1, power_api2, power_api3, power_api4, power_api5, power_api6, power_api7, power_api8, power_api9,
 
     // 组织中台
         // 职位管理

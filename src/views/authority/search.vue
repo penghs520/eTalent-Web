@@ -2,14 +2,14 @@
 #authority_search {
     display: flex;
     height: 100%;
-    .sideTree {
+    .side_tree {
         width: 216px;
         height: 100%;
         box-sizing: border-box;
         padding: 16px 10px 0px 20px;
         background-color: #fff;
         text-align: left;
-        .switchTitle {
+        .switch_title {
             display: inline-block;
             font-size: 14px;
             margin-right: 10px;
@@ -20,9 +20,10 @@
         flex: 1;
         height: 100%;
         border: 10px solid #f0f0f0;
+        border-bottom: none;
         box-sizing: border-box;
         overflow: auto;
-        background-color: #fff;
+        background-color: #fff;       
         .el-dialog__wrapper {
             .el-dialog__body {
                padding: 0px !important;
@@ -44,8 +45,8 @@
 <template>
     <div id="authority_search">
         <!-- 机构树 -->
-        <div class="sideTree">
-            <span class="switchTitle">显示封存:</span>
+        <div class="side_tree">
+            <span class="switch_title">显示封存:</span>
             <el-switch
                 v-model="value"
                 active-color="#19ADE6"
@@ -236,9 +237,7 @@ export default {
                         "hasRole" /* 必须,如果节点中该字段的值经过 Boolean() 格式化后为true,就默认勾选 */
                 }
             },
-            editRoleIdList: [],
-            
-            
+            editRoleIdList: [],            
         };
     },
     mounted() {
@@ -329,7 +328,7 @@ export default {
                 base.log("r", "查询树", d);
                 if (d.success) {
                     this.treeData.data = d.result.list;
-                    // this.orgId = d.result.list[0].orgId;
+                    this.orgId = d.result.list[0].orgId;
                 } else {
                     base.error(d);
                 }

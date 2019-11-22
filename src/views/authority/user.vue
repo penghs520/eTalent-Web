@@ -54,41 +54,40 @@
         overflow: auto;
     }
 }
-.checkbox{
+.checkbox {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    .el-checkbox{
+    .el-checkbox {
         width: 100%;
     }
-    .text{
+    .text {
         width: calc(100% - 60px);
         font-size: 14px;
-        color: #767A7CFF;
+        color: #767a7cff;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    };
-    .company{
+    }
+    .company {
         width: 60px;
         font-size: 12px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        color: #D0D0D0FF;
-    };
+        color: #d0d0d0ff;
+    }
 }
-.isPowering{
+.isPowering {
     text-align: left;
 }
-
 </style>
 <style>
-.authority_user_searchResult .el-checkbox{
+.authority_user_searchResult .el-checkbox {
     width: 100%;
 }
-.authority_user_searchResult .el-checkbox__label{
+.authority_user_searchResult .el-checkbox__label {
     width: calc(100% - 24px);
 }
 </style>
@@ -118,16 +117,21 @@
                                     v-model="searchVal"
                                     placeholder="请输入工号或姓名"
                                     size="small"
-                                    clearable=""
+                                    clearable
                                     @keyup.enter.native="searchUser"
                                 ></el-input>
                                 <tree :treeData="addAuthorityTree" v-if="searchVal== ''"></tree>
-                                <div class="searchResult authority_user_searchResult" v-if="showSearchResult">
+                                <div
+                                    class="searchResult authority_user_searchResult"
+                                    v-if="showSearchResult"
+                                >
                                     <el-checkbox-group v-model="checkedList" @change="changeResult">
                                         <div v-for="item in resultList" :key="item.archiveId">
                                             <el-checkbox :label="item">
                                                 <div class="checkbox">
-                                                    <span class="text">{{item.userName}} ({{item.employeeNumber}})</span>
+                                                    <span
+                                                        class="text"
+                                                    >{{item.userName}} ({{item.employeeNumber}})</span>
                                                     <span class="company">{{item.deptFullName}}</span>
                                                 </div>
                                             </el-checkbox>
@@ -167,8 +171,8 @@
                 </div>
             </div>
             <div v-show="isPowering" class="isPowering">
-                <el-button type="text" @click="isPowering = false" style="margin-left: 24px;" >返回</el-button>
-                <powerCommon :data="powerData" ></powerCommon>
+                <el-button type="text" @click="isPowering = false" style="margin-left: 24px;">返回</el-button>
+                <powerCommon :data="powerData"></powerCommon>
             </div>
         </div>
     </div>
@@ -178,7 +182,7 @@
 import base from "../../assets/js/base";
 import commonTable from "../../components/table/commonTable";
 import tree from "../../components/tree/tree";
-import powerCommon from '../../components/powerCommon/powerCommon';
+import powerCommon from "../../components/powerCommon/powerCommon";
 import {
     user_api1,
     user_api2,
@@ -331,21 +335,28 @@ export default {
 
             isPowering: false,
             powerData: {
-                showTab: ['管理范围权限'],          /* 必须，要显示的tab */
-                tabActive: '管理范围权限',                                      /* 非必须，默认显示哪个tab */
-                loading: false,                                           /* 非必须，加载动画 */
+                showTab: ["管理范围权限"] /* 必须，要显示的tab */,
+                tabActive: "管理范围权限" /* 非必须，默认显示哪个tab */,
+                loading: false /* 非必须，加载动画 */,
                 roleTreeRoleId: 1,
 
                 // 管理范围权限
                 rangeData: [],
-                rangeProps:{
-                    children: 'childOrganizationList',
-                    label: 'orgName'
+                rangeProps: {
+                    children: "childOrganizationList",
+                    label: "orgName"
                 },
                 rangeCheck: this.rangeCheck
             },
-            rowArchiveId: undefined,
+            rowArchiveId: undefined
         };
+    },
+    watch: {
+        searchVal(newVal) {
+            if (newVal.length == 0) {
+                this.showSearchResult = false;
+            }
+        }
     },
     mounted() {
         this.getRoleTree();
@@ -556,42 +567,42 @@ export default {
             //     "archiveId": row.archiveId
             // };
             let send = {
-                "roleId": 1,
-                "archiveId": 1
+                roleId: 1,
+                archiveId: 1
             };
-            base.log('s', '获取机构树', send);
+            base.log("s", "获取机构树", send);
             this.powerData.loading = true;
             user_api7(send, res => {
                 this.powerData.loading = false;
                 let d = res.data;
-                base.log('r', '获取机构树', d);
+                base.log("r", "获取机构树", d);
                 if (d.success) {
                     this.powerData.rangeData = d.result;
                     this.isPowering = true;
-                }else{
+                } else {
                     base.error(d);
                 }
-            })
+            });
         },
 
         // 授权提交
         rangeCheck(list) {
             let idList = list.map(item => item.orgId);
             let send = {
-                "orgIdList": idList,
-                "roleId": this.roleGroupId,
-                "archiveId": this.rowArchiveId
+                orgIdList: idList,
+                roleId: this.roleGroupId,
+                archiveId: this.rowArchiveId
             };
-            base.log('s', '修改机构权限', send);
+            base.log("s", "修改机构权限", send);
             this.powerData.loading = true;
             user_api8(send, res => {
                 let d = res.data;
-                base.log('r', '修改机构权限', d);
+                base.log("r", "修改机构权限", d);
                 this.powerData.loading = false;
                 if (!d.success) {
                     base.error(d);
                 }
-            })
+            });
         },
 
         // 页码
@@ -606,13 +617,6 @@ export default {
         //多选删除
         selectChange(val) {
             this.delList = val;
-        }
-    },
-    watch: {
-        searchVal(newVal) {
-            if (newVal.length == 0) {
-                this.showSearchResult = false;
-            }
         }
     }
 };

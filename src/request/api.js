@@ -38,7 +38,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
        
         // 角色反查
         const userCheck_api1    = (data, callback) => {request('post', `api/masterdata/roleSearch/searchArchiveListByUserName`, data, callback)};
-        const userCheck_api2    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationTree`, data, callback)};
+        const userCheck_api2    = (data, callback) => {request('get', `api/masterdata/roleSearch/getOrganizationTree`, data, callback)};
         const userCheck_api3    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchRoleTreeByArchiveId`, data, callback)};
         const userCheck_api4    = (data, callback) => {request('post', `api/masterdata/roleSearch/updateArchiveRole`, data, callback)};
 
@@ -57,10 +57,19 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
 // 组织中台
     // 职位管理
         // 职位族设置
-        const positionGroup_api1    = (data, callback) => {request('get', `api/positionGroup/getAllPositionGroup`, data, callback)};
+        const positionGroup_api1    = (data, callback) => {request('get', `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
+        const positionGroup_api2    = (data, callback) => {request('get', `api/masterdata/positionGroup/addPositionGroup`, data, callback)};
+        const positionGroup_api3    = (data, callback) => {request('form', `api/masterdata/positionGroup/deletePositionGroup`, data, callback)};
+        const positionGroup_api4    = (data, callback) => {request('get', `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
+
+        // 职级设置
+        const positionLevel_api1    = (data, callback) => {request('get', `api/masterdata/positionLevel/getPositionLevelList`, data, callback)};
         
+
     // 组织机构
         //机构维护
+        const orgRepair_api1    = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        
        
 
 export {
@@ -85,10 +94,14 @@ export {
     // 组织中台
         // 职位管理
             // 职位族设置
-            positionGroup_api1,
+            positionGroup_api1,positionGroup_api2,positionGroup_api3,positionGroup_api4,
+            
+            //职级设置
+            positionLevel_api1,
         
         // 组织机构
             //机构维护
+            orgRepair_api1,
 
             
             

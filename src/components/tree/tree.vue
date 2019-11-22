@@ -65,7 +65,7 @@ export default {
                    setTimeout(() => {
                        let checkedNodeList = this.getHasMenu(val.data,val.defaultChecked.nodeTypeKey,val.defaultChecked.nodeTypeVal,val.defaultChecked.childKey,val.defaultChecked.hasKey);
                        this.$refs.serverTree.setCheckedKeys(checkedNodeList.map(item => {return item[this.treeData.nodeKey]}));
-                   });
+                   },0);
                }
            },
            deep: true

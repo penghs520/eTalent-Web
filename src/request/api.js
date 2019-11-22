@@ -8,6 +8,12 @@ const login_api3 = (data, callback) => {request('form', `api/masterdata/userLogi
 const login_api4 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
 const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogin/logout`, data, callback)};
 
+// 员工管理
+    // 入职管理
+    const entry_api1     = (data, callback) => {request('form', `api/masterdata/staffpre/selectPreEmployment`, data, callback)};
+    const entry_api2     = (data, callback) => {request('post', `api/masterdata/staffpre/selectPreEmployment`, data, callback)};
+
+
 // 系统管理
     // 权限管理
         // 角色授权
@@ -21,7 +27,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const role_api8     = (data, callback) => {request('form', `api/masterdata/roleAuth/searchRoleAuthTree`, data, callback)};
         const role_api9     = (data, callback) => {request('post', `api/masterdata/roleAuth/updateRoleMenuAuth`, data, callback)};
         const role_api10    = (data, callback) => {request('form', `api/masterdata/roleAuth/searchOrgAuthTree`, data, callback)};
-        const role_api11    = (data, callback) => {request('form', `api/masterdata/roleAuth/updateRoleOrgAuth`, data, callback)};
+        const role_api11    = (data, callback) => {request('post', `api/masterdata/roleAuth/updateRoleOrgAuth`, data, callback)};
         const role_api12    = (data, callback) => {request('form', `api/masterdata/roleAuth/searchCustomArchiveTableList`, data, callback)};
         const role_api13    = (data, callback) => {request('form', `api/masterdata/roleAuth/searchCustomArchiveTableFieldListByTableId`, data, callback)};
         const role_api14    = (data, callback) => {request('post', `api/masterdata/roleAuth/updateRoleCustomArchiveTableFieldAuth`, data, callback)};
@@ -50,6 +56,8 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const power_api5    = (data, callback) => {request('post', `api/masterdata/authHandover/roleHandoverByArchiveId`, data, callback)};
         const power_api6    = (data, callback) => {request('post', `api/masterdata/authHandover/roleTrusteeshipByArchiveId`, data, callback)};
         const power_api7    = (data, callback) => {request('post', `api/masterdata/authHandover/roleRecoveryByArchiveId`, data, callback)};
+        const power_api8    = (data, callback) => {request('post', `api/masterdata/authHandover/searchCustomArchiveTableList`, data, callback)};
+        const power_api9    = (data, callback) => {request('form', `api/masterdata/authHandover/searchCustomArchiveTableFieldListByTableId`, data, callback)};
 
 
 
@@ -76,6 +84,10 @@ export {
     // 登录
     login_api1, login_api2,login_api3,login_api4,login_api5,
 
+    // 员工管理
+        // 入职管理
+        entry_api1, entry_api2,
+
     // 系统管理
         // 权限管理
             // 角色授权
@@ -89,7 +101,7 @@ export {
             userCheck_api1,userCheck_api2,userCheck_api3,userCheck_api4,
 
             // 权限移交
-            power_api1, power_api2, power_api3, power_api4, power_api5, power_api6, power_api7,
+            power_api1, power_api2, power_api3, power_api4, power_api5, power_api6, power_api7, power_api8, power_api9,
 
     // 组织中台
         // 职位管理

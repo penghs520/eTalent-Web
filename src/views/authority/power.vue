@@ -202,7 +202,7 @@
 
 <script>
 import base from '../../assets/js/base';
-import {power_api1, power_api2, power_api3, power_api4, power_api5, power_api6, power_api7} from '../../request/api';
+import {power_api1, power_api2, power_api3, power_api4, power_api5, power_api6, power_api7, power_api8, power_api9} from '../../request/api';
 import powerCommon from '../../components/powerCommon/powerCommon';
 
 export default {
@@ -217,7 +217,7 @@ export default {
             roleList: [],                       /* 要交接的角色供选值 */
 
             powerData: {
-                showTab: ['功能权限', '管理范围权限'],          /* 必须，要显示的tab */
+                showTab: ['功能权限', '管理范围权限', '字段权限'],          /* 必须，要显示的tab */
                 tabActive: '功能权限',                                      /* 非必须，默认显示哪个tab */
                 loading: false,                                           /* 非必须，加载动画 */
                 roleTreeRoleId: undefined,
@@ -240,8 +240,10 @@ export default {
                 // 自定义字段表
                 tableList: [],
                 fieldTableData: [],
+                fieldSelectChange: this.fieldSelectChange
             },
             requestOverNum: 0,
+            roleId: undefined,
 
             // 托管
             trusteeshipDialog: false,
@@ -257,7 +259,6 @@ export default {
             // 回收
             recoveryDialog: false,
             recoveryLoading: false,
-
         };
     },
     computed: {
@@ -332,11 +333,13 @@ export default {
         },
         // 要交接的角色改变
         acceptRoleChange(role) {
+            this.roleId = role;
             this.powerData.roleTreeRoleId = role;
             this.requestOverNum = 0;
             this.powerData.loading = true;
             this.getServerTree(role);
             this.getRange(role);
+            this.getTableList();
         },
 
         // 查询功能权限树
@@ -359,7 +362,10 @@ export default {
         },
         // 查询管理范围权限
         getRange(roleId) {
-            let send = {"roleId": roleId};
+            let send = {
+                "archiveId": this.handoverPerson,
+                "roleId": roleId
+            };
             base.log('s', '查询管理范围权限', send);
             power_api4(send, res => {
                 this.requestOverNum ++;
@@ -370,6 +376,36 @@ export default {
                 base.log('r', '查询管理范围权限', d);
                 if (d.success) {
                     this.powerData.rangeData = d.result;
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+        // 查询自定义表列表
+        getTableList() {
+            power_api8(null, res => {
+                let d = res.data;
+                base.log('r', '自定义表列表', d);
+                if (d.success) {
+                    this.powerData.tableList = d.result;
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+        fieldSelectChange(v) {
+            let send = {
+                "roleId": this.roleId,
+                "tableId": v
+            };
+            base.log('s', '查询自定义表', send);
+            this.powerData.loading = true;
+            power_api9(send, res => {
+                this.powerData.loading = false;
+                let d = res.data;
+                base.log('r', '查询自定义表', d);
+                if (d.success) {
+                    this.powerData.fieldTableData = d.result;
                 }else{
                     base.error(d);
                 }

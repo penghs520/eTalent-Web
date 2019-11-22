@@ -8,8 +8,13 @@ let pageRoute = {
         '职位体系': 'organization_position',
 
     // 员工管理 staff
-        // 参数设置
+        // 入职管理
         '入职管理': 'staff_jobEntry',
+
+        // 档案管理
+        '信息维护': 'staff_archives_info',
+
+        // 参数设置
         '工号规则': 'staff_jobNumber',
 
     // 系统管理 authority

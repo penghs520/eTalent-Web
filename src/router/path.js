@@ -7,8 +7,14 @@ const organization_position  = () => import(/* webpackChunkName: "group-organiza
 // const organization_user      = () => import(/* webpackChunkName: "group-organization" */ '@/src/views/organization/organizationUser.vue');
 
 // 员工管理
-const staff_jobEntry         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/entry.vue');
-const staff_jobNumber        = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/jobNumber.vue');
+    // 入职管理
+    const staff_jobEntry                = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/entry.vue');
+
+    // 档案管理
+    const staff_archives_info           = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_info.vue');
+
+    // 参数设置
+    const staff_jobNumber               = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/jobNumber.vue');
 
 // 权限管理
 const authority_role         = () => import(/* webpackChunkName: "group-authority" */ '../views/authority/role.vue');
@@ -27,8 +33,13 @@ let path = {
     // organization_user,
 
     // 员工管理
-    staff_jobEntry,
-    staff_jobNumber,
+        // 入职管理
+        staff_jobEntry,
+
+        // 档案管理
+        staff_archives_info,
+
+        staff_jobNumber,
 
     // 权限管理
     authority_role,

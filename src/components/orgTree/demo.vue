@@ -26,17 +26,32 @@
 </style>
 <template>
     <div id="organization_jobMaintain">
-        <div class="side_tree">树形</div>
-        <div class="content">123464789</div>
+        <div class="side_tree">
+            <orgTree :orgTree="orgTreeData"></orgTree>
+        </div>
     </div>
 </template>
 <script>
+import orgTree from "./orgTree";
+
 export default {
-    name: "jobMaintain" /* 岗位维护 */,
+    name: "orgTreeDemo" /* 岗位维护 */,
+    components: {
+        orgTree
+    },
     data() {
-        return {};
+        return {
+            orgTreeData: {
+                nodeClick: this.orgTreeNodeClick      //点击节点时触发,接收一个参数,节点的数据
+            }
+        };
     },
     mounted() {},
-    methods: {}
+    methods: {
+        orgTreeNodeClick(node) { 
+            console.log(node);
+        }
+    }
 };
 </script>
+

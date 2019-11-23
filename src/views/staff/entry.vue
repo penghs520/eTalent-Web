@@ -294,7 +294,7 @@ export default {
                     base.error(d);
                 }
             })
-        },
+        }, 
 
         // 单元格格式化
         formatter(key,val) {

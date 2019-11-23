@@ -179,26 +179,25 @@ export default {
                     /* 非必须，树形结构层级图标配置 */
                     {
                         key:
-                            "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
-                        val: "GROUP" /* 必须，key对应的值 */,
-                        icon: "qj-jituan" /* 必须，图标类名 */
+                            "orgType"        /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
+                        val: "GROUP"         /* 必须，key对应的值 */,
+                        icon: "qj-jituan"    /* 必须，图标类名 */
                     },
                     {
                         key:
-                            "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
-                        val: "UNIT" /* 必须，key对应的值 */,
-                        icon: "qj-danwei" /* 必须，图标类名 */
+                            "orgType"       /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
+                        val: "UNIT"         /* 必须，key对应的值 */,
+                        icon: "qj-danwei"   /* 必须，图标类名 */
                     },
                     {
                         key:
-                            "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
-                        val: "DEPT" /* 必须，key对应的值 */,
-                        icon: "qj-nav_client" /* 必须，图标类名 */
+                            "orgType"            /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
+                        val: "DEPT"              /* 必须，key对应的值 */,
+                        icon: "qj-nav_client"    /* 必须，图标类名 */
                     }
                 ],
-                showDefaultIcon: false /* 非必须，是否显示默认图标 */,
-                nodeClick: this
-                    .nodeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
+                showDefaultIcon: false          /* 非必须，是否显示默认图标 */,
+                nodeClick: this.nodeClick,
             },
             currentPage: 1,
             pageSize: 10,

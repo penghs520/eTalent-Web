@@ -1,4 +1,4 @@
-<style scoped>
+<style scoped lang="scss">
 .tree {
     width: 100%;
 }
@@ -11,15 +11,33 @@
     font-size: 14px;
     color: #676b6d;
 }
+.title{
+    // margin: 0 auto;
+    .switch_title {
+            display: inline-block;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 20px;
+        }
+}
 </style>
 
 <template>
     <div id="componentsTree">
+        <div class="title" v-if="treeData.switchOpen">
+            <span class="switch_title">显示封存:</span>
+            <el-switch
+                v-model="switchValue"
+                active-color="#19ADE6"
+                inactive-color="#ccc"
+                @change="switchChange"
+            ></el-switch>
+        </div>
         <el-tree
             class="tree"
             :data="treeData.data"
             :props="treeData.props"
-            ref="serverTree" 
+            ref="serverTree"
             :node-key="treeData.nodeKey"
             @node-click="treeNodeClick"
             @check="checkClick"
@@ -50,7 +68,8 @@ export default {
     },
     data() {
         return {
-            icons: [] /* icon图标 */
+            icons: [], /* icon图标 */
+            switchValue:""
         };
     },
     created() {
@@ -59,19 +78,35 @@ export default {
         }
     },
     watch: {
-       treeData: {
-           handler: function(val) {
-               if (val.data && val.defaultChecked && this.treeData.nodeKey) {
-                   setTimeout(() => {
-                       let checkedNodeList = this.getHasMenu(val.data,val.defaultChecked.nodeTypeKey,val.defaultChecked.nodeTypeVal,val.defaultChecked.childKey,val.defaultChecked.hasKey);
-                       this.$refs.serverTree.setCheckedKeys(checkedNodeList.map(item => {return item[this.treeData.nodeKey]}));
-                   },0);
-               }
-           },
-           deep: true
-       } 
+        treeData: {
+            handler: function(val) {
+                if (val.data && val.defaultChecked && this.treeData.nodeKey) {
+                    setTimeout(() => {
+                        let checkedNodeList = this.getHasMenu(
+                            val.data,
+                            val.defaultChecked.nodeTypeKey,
+                            val.defaultChecked.nodeTypeVal,
+                            val.defaultChecked.childKey,
+                            val.defaultChecked.hasKey
+                        );
+                        this.$refs.serverTree.setCheckedKeys(
+                            checkedNodeList.map(item => {
+                                return item[this.treeData.nodeKey];
+                            })
+                        );
+                    }, 0);
+                }
+            },
+            deep: true
+        }
     },
     methods: {
+        //封存的回调
+        switchChange(newVal) {
+            if (this.treeData.switchChange) {
+                this.treeData.switchChange(newVal);
+            }
+        },
         treeNodeClick(node) {
             if (this.treeData.nodeClick) {
                 this.treeData.nodeClick(node);
@@ -83,7 +118,7 @@ export default {
         },
 
         //多选框点击
-        checkClick(data, checkedData) {           
+        checkClick(data, checkedData) {
             if (this.treeData.checkClick) {
                 this.treeData.checkClick(data, checkedData);
             }
@@ -107,15 +142,15 @@ export default {
         },
 
         // 获取权限node节点
-        getNode(list,resultList, nodeTypeKey, nodeTypeVal, childKey) {
+        getNode(list, resultList, nodeTypeKey, nodeTypeVal, childKey) {
             list.forEach(item => {
                 if (item[nodeTypeKey] === nodeTypeVal) {
                     resultList.push(item);
-                }else{
-                    this.getNode(item[childKey],resultList);
+                } else {
+                    this.getNode(item[childKey], resultList);
                 }
             });
-        },
+        }
     }
 };
 </script>

@@ -209,25 +209,27 @@ export default {
 
         // 操作栏数据绑定初始化
         barModelInit(list) {
-            list.forEach(item => {
-                let val;
-                switch (item.type) {
-                    case 'input':
-                        // 输入框
-                        val = item.defaultVal || item.defaultVal === 0 ? item.defaultVal : '';
-                        this.$set(this.barData, item.key, val);
-                        break;
+            if (list) {
+                list.forEach(item => {
+                    let val;
+                    switch (item.type) {
+                        case 'input':
+                            // 输入框
+                            val = item.defaultVal || item.defaultVal === 0 ? item.defaultVal : '';
+                            this.$set(this.barData, item.key, val);
+                            break;
+                        
+                        case 'select':
+                            // 单选下拉框
+                            val = item.defaultVal || item.defaultVal === 0 ? item.defaultVal : '';
+                            this.$set(this.barData, item.key, val);
+                            break;
                     
-                    case 'select':
-                        // 单选下拉框
-                        val = item.defaultVal || item.defaultVal === 0 ? item.defaultVal : '';
-                        this.$set(this.barData, item.key, val);
-                        break;
-                
-                    default:
-                        break;
-                };
-            });
+                        default:
+                            break;
+                    };
+                });
+            }
         },
 
         // 输入框回车键

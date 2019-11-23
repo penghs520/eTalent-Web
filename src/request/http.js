@@ -1,6 +1,8 @@
 // axios请求配置
 import axios from 'axios';
-import qs from 'qs'
+import qs from 'qs';
+import router from '../router/index'
+
 
 function request_get(url, data, callback) {
     axios.get(url, {
@@ -54,6 +56,19 @@ axios.interceptors.request.use(function (config) {
     // 对请求错误做些什么
     return Promise.reject(error);
 });
+
+
+//响应拦截
+axios.interceptors.response.use(function (response) {
+    
+    return response;
+  }, function (error) { 
+      //cookies失效后对页面操作返回登陆页
+    if(error.response.data.code === 10101){
+        router.push('/')
+    }   
+    return Promise.reject(error);
+  });
 
 
 /**

@@ -82,6 +82,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         //机构维护
         const orgRepair_api1    = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
         const orgRepair_api2     = (data, callback) => {request('post', `api/masterdata/organization/getOrganizationPageList`, data, callback)};
+        const orgRepair_api3     = (data, callback) => {request('form', `api/masterdata/sysDict/searchSysDictListByDictType`, data, callback)};
         
        
 
@@ -121,5 +122,5 @@ export {
         
         // 组织机构
             //机构维护
-            orgRepair_api1,orgRepair_api2,
+            orgRepair_api1,orgRepair_api2,orgRepair_api3,
 }

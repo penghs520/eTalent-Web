@@ -35,10 +35,15 @@
         }
     }
 }
+.el-select {
+    width: 100%;
+}
 </style>
+
 
 <template>
     <div id="organization_repair">
+        <!-- 左侧树形 -->
         <div class="side_tree">
             <span class="switch_title">显示封存:</span>
             <el-switch
@@ -49,6 +54,7 @@
             ></el-switch>
             <tree :treeData="treeData"></tree>
         </div>
+        <!-- 右侧表格 -->
         <div class="content">
             <el-tabs v-if="orgParentId" v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane name="orgForm">
@@ -56,6 +62,55 @@
                         <i class="qj-form"></i>机构表
                     </span>
                     <commonTable :table="orgTable" class="org_table"></commonTable>
+                    <!-- 新增机构弹窗 -->
+                    <el-dialog
+                        :visible.sync="addOrgDialog"
+                        class="qinjeeDialogSmall"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">新增机构</span>
+                        <div class="qinjeeDialogSmallCont">
+                            <el-form
+                                :model="addOrgForm"
+                                :rules="rules"
+                                ref="addOrgForm"
+                                label-width="100px"
+                                class="demo-ruleForm"
+                            >
+                                <el-form-item label="机构编码" prop="orgCode">
+                                    <el-input v-model="addOrgForm.orgCode" placeholder="请输入"></el-input>
+                                </el-form-item>
+                                <el-form-item label="机构名称" prop="orgName">
+                                    <el-input v-model="addOrgForm.orgName" placeholder="请输入"></el-input>
+                                </el-form-item>
+                                <el-form-item label="机构类型" prop="orgType">
+                                    <el-select v-model="addOrgForm.orgType" placeholder="请选择">
+                                        <div v-for = "item in orgTypeList" :key="item.id">
+                                        <el-option  :label="item.dictValue" :value="item.dictCode"></el-option>
+                                        </div>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="上级机构" prop="orgParentId">
+                                    <el-select v-model="addOrgForm.orgParentId" placeholder="请选择">
+                                        <el-option label="区域一" value="shanghai"></el-option>
+                                        <el-option label="区域二" value="beijing"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="机构负责人" prop="orgManagerId">
+                                    <el-select v-model="addOrgForm.orgManagerId" placeholder="请选择">
+                                        <el-option label="区域一" value="shanghai"></el-option>
+                                        <el-option label="区域二" value="beijing"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="addOrgDialog = false">取 消</el-button>
+                            <el-button size="small" type="primary" @click="addOrgDialog = false">确 定</el-button>
+                        </span>
+                    </el-dialog>
                 </el-tab-pane>
                 <el-tab-pane name="orgPic">
                     <span slot="label">
@@ -69,7 +124,11 @@
 
 <script>
 import base from "../../assets/js/base";
-import { orgRepair_api1, orgRepair_api2 } from "../../request/api";
+import {
+    orgRepair_api1,
+    orgRepair_api2,
+    orgRepair_api3
+} from "../../request/api";
 import tree from "../../components/tree/tree";
 import commonTable from "../../components/table/commonTable";
 
@@ -156,7 +215,7 @@ export default {
                             { text: "排序", method: this.btn2 },
                             { text: "模板下载", method: this.btn2 },
                             { text: "导入", method: this.btn2 },
-                            { text: "导出", method: this.btn2 },
+                            { text: "导出", method: this.btn2 }
                         ]
                     }
                 ],
@@ -173,9 +232,38 @@ export default {
                 pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
                 pageSizeChange: this.orgPageSizeChange,
                 pageChange: this.orgPageChange,
-                formatter: this.formatter,
+                formatter: this.formatter
             },
-            orgParentId: ""
+            orgParentId: 28,
+            currentPage: 1,
+            pageSize: 10,
+            // 新增弹窗
+            addOrgDialog: false,
+            addOrgForm: {
+                orgCode: "",
+                orgName: "",
+                orgType: "",
+                orgParentId: "",
+                orgManagerId: ""
+            },
+            rules: {
+                orgCode: [
+                    { required: true, message: "请输入", trigger: "blur" }
+                ],
+                orgName: [
+                    { required: true, message: "请输入", trigger: "blur" }
+                ],
+                orgType: [
+                    { required: true, message: "请输入", trigger: "blur" }
+                ],
+                orgParentId: [
+                    { required: true, message: "请输入", trigger: "blur" }
+                ],
+                orgManagerId: [
+                    { required: true, message: "请输入", trigger: "blur" }
+                ]
+            },
+            orgTypeList:[],
         };
     },
     components: {
@@ -186,10 +274,37 @@ export default {
         this.getTreeReq();
     },
     methods: {
+        //新增机构
+        addOrg() {
+            this.addOrgDialog = true;
+            this.getOrgType()
+            // this.addOrgForm.orgParentId = this.orgTable.data.list[0].orgParentName
+        },
+        addOrgReq(){},
+        getOrgType(){
+            let send = {
+                dictType:"ORG_TYPE",
+            }
+            orgRepair_api3(send,res=>{
+                base.log('s',"获取所有机构类型",send)
+                base.log('r',"获取所有机构类型",res.data)
+                if(res.data.success){
+                    this.orgTypeList = res.data.result 
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
         //页码改变
-        orgPageChange() {},
+        orgPageChange(page) {
+            this.currentPage = page;
+            this.getOrgTable();
+        },
         //页容量改变
-        orgPageSizeChange() {},
+        orgPageSizeChange(pageSize) {
+            this.currentPage = 1;
+            (this.pageSize = pageSize), this.getOrgTable();
+        },
         //格式化列表数据
         formatter(key, val) {
             if (key == "isEnable") {
@@ -209,13 +324,11 @@ export default {
         },
         //获取机构表
         getOrgTable() {
-            console.log("有父级id的节点被点击了");
-
             let send = {
-                currentPage: 1,
+                currentPage: this.currentPage,
                 isEnable: this.value ? 1 : 0,
-                orgParentId: 28,
-                pageSize: 10
+                orgParentId: this.orgParentId,
+                pageSize: this.pageSize
             };
             orgRepair_api2(send, res => {
                 base.log("s", "机构表", send);
@@ -238,8 +351,10 @@ export default {
         },
         //树形节点点击
         nodeClick(node) {
+            console.log(node);
+
             if (node.orgParentId) {
-                this.orgParentId = node.orgParentId;
+                // this.orgParentId = node.orgParentId;
                 this.getOrgTable();
             }
         },
@@ -259,7 +374,7 @@ export default {
                 let d = res.data;
                 base.log("r", "查询树", d);
                 if (d.success) {
-                    this.treeData.data = d.result;
+                    this.treeData.data = d.result.list;
                     // this.orgId = d.result.list[0].orgId;
                 } else {
                     base.error(d);

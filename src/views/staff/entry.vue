@@ -1,14 +1,143 @@
-<style scoped>
+<style scoped lang="scss" >
 #staffEntry{
     height: 100%;
+}
+
+.sendEntryApply .title{
+    display: flex;
+    align-items: center;
+    padding: 24px;
+    .icon{
+        width: 4px;
+        height: 16px;
+        background-color: #FF8C58;
+    };
+    .text{
+        font-size: 16px;
+        line-height: 22px;
+        margin-left: 16px;
+    };
+}
+.sendEntryApply{
+    .row{
+        margin-top: 24px;
+    }
+    .label{
+        text-align: right;
+        font-size: 14px;
+        color: #000;
+        margin-right: 32px;
+    };
+    .value{
+        text-align: left;
+        font-size: 14px;
+        color: #676B6D;
+    }
+    .entryTemplate{
+        width: 214px;
+        height: 96px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        font-size: 0;
+        box-shadow:0px 2px 4px 0px rgba(0,0,0,0.15);
+        .img{
+            width: 96px;
+            height: 96px;
+        }
+        .text{
+            width: 98px;
+            margin-left: 12px;
+            text-align: left;
+        }
+        h6{
+            font-size: 16px;
+            text-align: center;
+            color: #343535;
+            line-height: 22px;
+        };
+        p{
+            font-size: 14px;
+            color: #676B6D;
+            line-height: 20px;
+        }
+    }
+    .nameList{
+        display: flex;
+        align-items: center;
+        .name{
+            margin-right: 16px;
+        }
+    }
+    .btns{
+        margin-top: 32px;
+        text-align: center;
+        .send{
+            margin-left: 16px;
+        }
+    }
 }
 </style>
 
 <template>
     <div id="staffEntry" class="commonRightCont">
-        <commonTable :table="table" ref="commonTable" ></commonTable>
+        <!-- 主页 -->
+        <commonTable v-show="!sendEntryApply" :table="table" ref="commonTable" ></commonTable>
 
-        <!-- 大弹窗 -->
+        <!-- 发送入职申请 -->
+        <div class="sendEntryApply" v-show="sendEntryApply" >
+            <div class="title">
+                <span class="icon"></span>
+                <span class="text">发送入职登记邀请</span>
+            </div>
+            <el-row type="flex" align="middle" class="row">
+                <el-col :span="6" class="label" >发送名单：</el-col>
+                <el-col :span="18" class="value nameList">
+                    <span v-for="(name,index) in checkedNames" class="name" :key="index" >{{name}}</span>
+                    <el-button type="text" @click="detailIsShow = !detailIsShow" >
+                        展开详情
+                        <i :class="{'el-icon-caret-right': !detailIsShow, 'el-icon-caret-bottom': detailIsShow,}"></i>
+                    </el-button>
+                </el-col>
+            </el-row>
+            <el-row type="flex" align="middle" class="row" v-show="detailIsShow">
+                <el-col :span="6"></el-col>
+                <el-col :span="18">
+                    <commonTable class="row" :table="tableChecked" ref="tableChecked" ></commonTable>
+                </el-col>
+            </el-row>
+            <el-row type="flex" align="middle" class="row">
+                <el-col :span="6" class="label">通知方式：</el-col>
+                <el-col :span="18" class="value">
+                    <el-checkbox-group v-model="noticeType">
+                        <el-checkbox label="邮件通知"></el-checkbox>
+                        <el-checkbox label="短信通知"></el-checkbox>
+                        <el-checkbox label="现场通知"></el-checkbox>
+                    </el-checkbox-group>
+                </el-col>
+            </el-row>
+            <el-row type="flex" class="row" >
+                <el-col :span="6" class="label">入职登记表：</el-col>
+                <el-col :span="18" class="value">
+                    <div class="entryTemplate">
+                        <div class="img"></div>
+                        <div class="text">
+                            <h6>入职登记模板</h6>
+                            <p>邀请待入职人员填写入职登记</p>
+                            <el-button style="padding:0;margin-top:4px;" type="text">预览</el-button>
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
+
+            <div class="btns">
+                <el-button plain="" size="small" @click="sendEntryApply = false" >返回</el-button>
+                <el-button class="send" type="primary" size="small" @click="sendEntryApplySure" :disabled="entryApplySureBtn()" :loading="entryApplyLoading" >发送</el-button>
+            </div>
+        </div>
+
+        <!-- 新增 -->
         <el-dialog
             :visible.sync="addDialog"
             class="qinjeeDialogBig"
@@ -50,9 +179,7 @@
                         <el-col :span="12">
                             <el-form-item label="证件类型" prop="idType" >
                                 <el-select v-model="addForm.idType" style="width:100%" >
-                                    <el-option value="身份证" ></el-option>
-                                    <el-option value="护照" ></el-option>
-                                    <el-option value="港澳台通行证" ></el-option>
+                                    <el-option v-for="(item,index) in cardTyptList" :key="index" :label="item.dictValue" :value="item.id" ></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -90,7 +217,9 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="婚姻状况" prop="maritalStatus">
-                                <el-input v-model="addForm.maritalStatus"></el-input>
+                                <el-select v-model="addForm.maritalStatus" style="width:100%" >
+                                    <el-option v-for="(item,index) in marryStatusList" :key="index" :label="item.dictValue" :value="item.id" ></el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -98,7 +227,9 @@
                     <el-row :gutter="20" >
                         <el-col :span="12">
                             <el-form-item label="最高学历" prop="degree">
-                                <el-input v-model="addForm.degree" ></el-input>
+                                <el-select v-model="addForm.degree" style="width:100%" >
+                                    <el-option v-for="(item,index) in degreeList" :key="index" :label="item.dictValue" :value="item.id" ></el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -173,13 +304,21 @@
 <script>
 import base from '../../assets/js/base';
 import commonTable from '../../components/table/commonTable';
-import {entry_api1, entry_api2} from "../../request/api";
+import {sys_api1, entry_api1, entry_api2, entry_api3} from "../../request/api";
 
 export default {
     name: 'entry',              /* 入职管理 */
     components: {commonTable},
     data() {
         return {
+            cardTyptList: [],               // 证件类型
+            marryStatusList: [],            // 婚姻状况
+            degreeList: [],                 // 学历
+            testList: [],                   // 试用期
+            entryDepartment: [],            // 入职部门
+            entryPost: [],                  // 入职岗位
+
+            // 主页面表格
             table: {
                 head: [                                 /* 必须，表格头配置 */
                     {name: '姓名', key: 'userName', isShow: true},
@@ -188,13 +327,13 @@ export default {
                     {name: '状态', key: 'employmentState', isShow: true},
                     {name: '个人邮箱', key: 'email', isShow: true},
                     {name: '应聘岗位', key: 'applicationPosition', isShow: true},
-                    {name: '入职部门', key: 'orgId', isShow: true},
-                    {name: '入职岗位', key: 'postId', isShow: true},
+                    {name: '入职部门', key: 'orgName', isShow: true},
+                    {name: '入职岗位', key: 'postName', isShow: true},
                     {name: '计划入职日期', key: 'hireDate', isShow: true},
-                    {name: '延期入职日期', key: 'preEmploymentChange.delayDate', isShow: true},
-                    {name: '延期原因', key: 'preEmploymentChange.changeRemark', isShow: true},
-                    {name: '放弃原因', key: 'preEmploymentChange.changeRemark', isShow: true},
-                    {name: '拉黑原因', key: 'preEmploymentChange.abandonReason', isShow: true},
+                    {name: '延期入职日期', key: 'delayDate', isShow: true},
+                    {name: '延期原因', key: 'delayReason', isShow: true},
+                    {name: '放弃原因', key: 'abandonReason', isShow: true},
+                    {name: '拉黑原因', key: 'blockReason', isShow: true},
                     {name: '入职登记', key: 'employmentRegister', isShow: true}
                 ],
                 data: [],                               /* 必须，表格要渲染的数据，数组格式 */
@@ -270,9 +409,36 @@ export default {
                 phone: [{required: true, message: '请输入联系电话', trigger: 'change'}],
                 email: [{type: 'email', message: '请输入正确的邮箱地址', trigger: 'change'}]
             },
+
+            // 发送入职登记邀请
+            sendEntryApply: false,
+            checkedNames: ['牛郎', '老王', '织女'],
+            detailIsShow: false,
+            noticeType: [],
+            tableChecked: {
+                head: [                                 /* 必须，表格头配置 */
+                    {name: '姓名', key: 'userName', isShow: true},
+                    {name: '联系电话', key: 'phone', isShow: true},
+                    {name: '个人邮箱', key: 'email', isShow: true},
+                    {name: '计划入职日期', key: 'hireDate', isShow: true},
+                    {name: '延期入职日期', key: 'preEmploymentChange.delayDate', isShow: true}
+                ],
+                data: [],                               /* 必须，表格要渲染的数据，数组格式 */
+                showSelect: true,                       /* 非必须，是否显示select勾选框 */
+                selectChange: this.entryApplyChange,
+                selected: {                             /* 非必须, 默认勾选的行 */
+                    key: 'checkedAll',
+                    value: undefined
+                },
+                pageHide: true,
+                formatter: this.formatter,
+            },
+            entryChecked: null,                     /* 发送入职申请内页勾选改变后的值 */
+            entryApplyLoading: false,
         };
     },
     mounted() {
+        this.initGetData();
         this.getTable();
     },
     methods: {
@@ -308,6 +474,42 @@ export default {
             }else{
                 return val;
             }
+        },
+
+        // 请求需要的数据
+        initGetData() {
+            // 请求证件类型
+            this.initGetDataSubmit('CARD_TYPE', '证件类型', 'cardTyptList');
+
+            // 请求婚姻状况
+            this.initGetDataSubmit('MARITAL_STATUS', '婚姻状况', 'marryStatusList');
+
+            // 请求学历
+            this.initGetDataSubmit('DEGREE', '学历', 'degreeList');
+
+            // 请求试用期
+            // this.initGetDataSubmit('CARD_TYPE', '试用期');
+
+            // 请求入职部门
+            // this.initGetDataSubmit('CARD_TYPE', '证件类型');
+
+            // 请求入职岗位
+            // this.initGetDataSubmit('CARD_TYPE', '证件类型');
+        },
+
+        // 请求需要的数据--请求方式
+        initGetDataSubmit(operation, log, key) {
+            let send = {"dictType": operation};
+            base.log('s', log, send);
+            sys_api1(send, res => {
+                let d = res.data;
+                base.log('r', log, d);
+                if (d.success) {
+                    this[key] = d.result;
+                }else{
+                    base.error(d);
+                }
+            })
         },
 
         // 新增
@@ -363,7 +565,85 @@ export default {
         },
 
         // 发送入职登记
-        sendEntryNote(searchData,radioData,checkboxData) {},
+        sendEntryNote(searchData,radioData,checkboxData) {
+            if (!checkboxData || checkboxData.length === 0) {
+                this.$message({
+                    message: '请先勾选人员',
+                    type: 'warning'
+                })
+                return false;
+            }
+            this.tableChecked.data = checkboxData;
+            let nameList;
+            if (checkboxData.length > 3) {
+                nameList = checkboxData.slice(0,3);
+            }else{
+                nameList = checkboxData;
+            };
+            this.checkedNames = nameList.map(item => {return item.userName});
+            this.detailIsShow = false;
+            this.entryChecked = null;
+            this.sendEntryApply = true;
+        },
+
+        // 发送入职登记--select改变时
+        entryApplyChange(list) {
+            console.log(list)
+            this.entryChecked = list;
+        },
+
+        // 发送入职登记--按钮能否被点击
+        entryApplySureBtn() {
+            if (this.entryChecked !== null && this.entryChecked.length === 0) {
+                return true;
+            };
+            if (this.noticeType.length === 0) {
+                return true;
+            };
+            return false;
+        },
+
+        // 发送入职登记--确定
+        sendEntryApplySure() {
+            let personIdList = [];
+            if (this.entryChecked === null) {
+                // 取传入的值
+                personIdList = this.tableChecked.data.map(item => {return item.employmentId});
+            }else{
+                personIdList = this.entryChecked.map(item => {return item.employmentId});
+            };
+
+            if (this.noticeType.includes('邮件通知')) {
+                this.entryAppltEmail(personIdList);
+            }else if (this.noticeType.includes('短信通知')) {
+                // 
+            };
+        },
+
+        // 发送入职登记--邮件
+        entryAppltEmail(idList) {
+            let send = {
+                "conList": [0],
+                "content": "你好a",
+                "filepath": [],
+                "prelist": [1],
+                "subject": "预入职"
+            };
+            base.log('s', '邮件发送预入职登记', send);
+            this.entryApplyLoading = true;
+            entry_api3(send, res => {
+                this.entryApplyLoading = false;
+                let d = res.data;
+                base.log('r', '邮件发送预入职登记', d);
+                if (d.success) {
+                    base.success(d);
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+
 
         // 确认入职
         entry(searchData,radioData,checkboxData) {},

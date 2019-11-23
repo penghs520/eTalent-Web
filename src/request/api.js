@@ -1,6 +1,10 @@
 // 页面接口配置
 import request from './http';
 
+// 系统参数接口
+const sys_api1 = (data, callback) => {request('form', `api/masterdata/sysDict/searchSysDictListByDictType`, data, callback)};
+
+
 // 登录
 const login_api1 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
 const login_api2 = (data, callback) => {request('form', `api/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
@@ -12,6 +16,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     // 入职管理
     const entry_api1     = (data, callback) => {request('form', `api/masterdata/staffpre/selectPreEmployment`, data, callback)};
     const entry_api2     = (data, callback) => {request('post', `api/masterdata/staffpre/selectPreEmployment`, data, callback)};
+    const entry_api3     = (data, callback) => {request('post', `api/masterdata/staffpre/sendMail`, data, callback)};
 
 
 // 系统管理
@@ -81,12 +86,15 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
        
 
 export {
+    // 系统参数
+    sys_api1,
+    
     // 登录
     login_api1, login_api2,login_api3,login_api4,login_api5,
 
     // 员工管理
         // 入职管理
-        entry_api1, entry_api2,
+        entry_api1, entry_api2, entry_api3,
 
     // 系统管理
         // 权限管理

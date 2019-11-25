@@ -56,7 +56,7 @@
         </div>
         <!-- 右侧表格 -->
         <div class="content">
-            <el-tabs  v-model="activeName" @tab-click="handleClick">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane name="orgForm">
                     <span slot="label">
                         <i class="qj-form"></i>机构表
@@ -81,7 +81,7 @@
                                 size="small"
                             >
                                 <el-form-item label="机构编码" prop="orgCode">
-                                    <el-input v-model="addOrgForm.orgCode" placeholder="请输入"></el-input>
+                                    <el-input v-model="addOrgForm.orgCode" disabled></el-input>
                                 </el-form-item>
                                 <el-form-item label="机构名称" prop="orgName">
                                     <el-input v-model="addOrgForm.orgName" placeholder="请输入"></el-input>
@@ -131,6 +131,92 @@
                             >确 定</el-button>
                         </span>
                     </el-dialog>
+                    <!-- 删除机构弹窗 -->
+                    <el-dialog
+                        :visible.sync="delOrgDialog"
+                        class="qinjeeDialogMini"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">提示</span>
+                        <div class="qinjeeDialogSmallMini">
+                            <!-- <commonTable :table="DelOrgTable" ></commonTable> -->
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="delOrgDialog = false">取 消</el-button>
+                            <el-button size="small" type="primary" @click="delOrgReq">确 定</el-button>
+                        </span>
+                    </el-dialog>
+                    <!-- 编辑机构弹窗 -->
+                    <el-dialog
+                        :visible.sync="editOrgDialog"
+                        class="qinjeeDialogSmall"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">新增机构</span>
+                        <div class="qinjeeDialogSmallCont">
+                            <el-form
+                                :model="editOrgForm"
+                                :rules="rules"
+                                ref="editOrgForm"
+                                label-width="100px"
+                                class="demo-ruleForm"
+                                size="small"
+                            >
+                                <el-form-item label="机构编码" prop="orgCode">
+                                    <el-input v-model="editOrgForm.orgCode" disabled></el-input>
+                                </el-form-item>
+                                <el-form-item label="机构名称" prop="orgName">
+                                    <el-input v-model="editOrgForm.orgName" placeholder="请输入"></el-input>
+                                </el-form-item>
+                                <el-form-item label="机构类型" prop="orgType">
+                                    <el-select v-model="editOrgForm.orgType" placeholder="请选择">
+                                        <div v-for="item in orgTypeList" :key="item.id">
+                                            <el-option
+                                                :label="item.dictValue"
+                                                :value="item.dictCode"
+                                            ></el-option>
+                                        </div>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="上级机构" prop="orgParentId">
+                                    <el-select v-model="editOrgForm.orgParentId" placeholder="请选择">
+                                        <el-option
+                                            v-for="item in orgParenList"
+                                            :key="item.orgParentId"
+                                            :label="item.orgName"
+                                            :value="item.orgId"
+                                        ></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="机构负责人" prop="orgManagerId">
+                                    <el-select
+                                        v-model="editOrgForm.orgManagerName"
+                                        placeholder="输入查找"
+                                        filterable
+                                    >
+                                        <el-option
+                                            v-for="item in orgManagerList"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value"
+                                        ></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="editOrgDialog = false">取 消</el-button>
+                            <el-button
+                                size="small"
+                                type="primary"
+                                @click="editOrgReq('editOrgForm')"
+                            >确 定</el-button>
+                        </span>
+                    </el-dialog>
                 </el-tab-pane>
                 <el-tab-pane name="orgPic">
                     <span slot="label">
@@ -149,7 +235,8 @@ import {
     orgRepair_api2,
     orgRepair_api3,
     orgRepair_api4,
-    orgRepair_api5
+    orgRepair_api5,
+    orgRepair_api6
 } from "../../request/api";
 import tree from "../../components/tree/tree";
 import commonTable from "../../components/table/commonTable";
@@ -219,6 +306,12 @@ export default {
                     },
                     {
                         type: "button",
+                        text: "编辑",
+                        btnType: "plain",
+                        method: this.editOrg
+                    },
+                    {
+                        type: "button",
                         text: "删除",
                         btnType: "plain",
                         method: this.delOrg
@@ -256,28 +349,19 @@ export default {
                 pageChange: this.orgPageChange,
                 formatter: this.formatter
             },
-            orgParentId: "", //获取机构表的Id
+            orgParent: "", //获取机构表的Id
             currentPage: 1,
             pageSize: 10,
             // 新增机构弹窗
             addOrgDialog: false,
             addOrgForm: {
-                orgCode: 0,
+                orgCode: "",
                 orgName: "",
                 orgType: "",
                 orgParentId: "",
                 orgManagerId: ""
             },
             rules: {
-                orgCode: [
-                    { required: true, message: "请输入", trigger: "blur" },
-                    {
-                        type: "number",
-                        required: true,
-                        message: "请输入数字格式的编码",
-                        trigger: "change"
-                    }
-                ],
                 orgName: [
                     { required: true, message: "请输入", trigger: "blur" }
                 ],
@@ -299,7 +383,26 @@ export default {
             ],
             maxCodeAdd: "",
             //删除机构
-            delOrgList: []
+            DelOrgTable:{
+                head: [
+                    {
+                        name: "机构名称",
+                        key: "orgName",
+                        isShow: true,
+                        width: "200px"
+                    },
+                ],
+                data: [] /* 必须，表格要渲染的数据，数组格式 */,
+                total: 0 /* 必须，数据的总条数，用于翻页 */,
+                showSelect: true /* 非必须，是否显示select勾选框 */,
+                selectChange: this.orgDelChange,
+            },
+            delOrgList: [],
+            delOrgDialog: false,
+            //编辑机构
+            editOrgDialog: false,
+            editOrglist: [],
+            editOrgForm: {}
         };
     },
     components: {
@@ -310,19 +413,70 @@ export default {
         this.getTreeReq();
     },
     methods: {
-        //删除机构--选中表格数据
+        //编辑机构--弹出框
+        editOrg() {
+            if (this.editOrglist.length != 1) {
+                this.$message.error("编辑机构当前必须只能选中一个");
+                return;
+            }
+            this.getOrgType(); //获取所有数据类型
+            this.editOrgForm = { ...this.editOrglist[0]};
+            this.editOrgDialog = true;
+        },
+        //编辑机构--请求接口
+        editOrgReq(formName) {
+            this.$refs[formName].validate(valid => {
+                if (valid) {
+                    let send = this.editOrgForm;
+                    orgRepair_api6(send, res => {
+                        base.log("s", "编辑机构", send);
+                        base.log("r", "编辑机构", res.data);                       
+                        if (res.data.success) {
+                            this.editOrgDialog = false;
+                            this.getOrgTable();
+                     this.getOrgTable();
+                            this.$message.success('编辑成功')
+                        } else {
+                            base.error(res.data);
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
+        },
+
+        //删除机构--选中表格数据,编辑机构--选中表格数据
         orgSelectChange(node) {
-            this.delOrgList = node;
-            console.log(this.delOrgList);
+            console.log(node);
+
+            this.delOrgList = node; //删除数据赋值
+            this.DelOrgTable.data = this.editOrglist //删除数据
+
+            this.editOrglist = node; //编辑数据赋值
+            
+        },
+        orgDelChange(node){
+            
+        },
+        //删除机构--表格点击按钮
+        delOrg() {
+            if (this.delOrgList.length === 0) {
+                this.$message.error("未选中机构");
+                return;
+            }
+            this.delOrgDialog = true;
         },
         //删除机构--请求接口
-        delOrg() {
+        delOrgReq() {
             let send = this.delOrgList.map(item => item.orgId);
             orgRepair_api5(send, res => {
                 base.log("s", "删除机构", send);
                 base.log("r", "删除机构", res.data);
                 if (res.data.success) {
-                    this.getOrgTable();//删除成功后更新数据
+                     this.getOrgTable();
+                    this.delOrgDialog = false;
+                     this.$message.success('删除成功')
                 } else {
                     base.error(res.data);
                 }
@@ -333,33 +487,32 @@ export default {
         addOrg() {
             this.addOrgDialog = true;
             this.getOrgType(); //获取所有机构类型
-            this.addOrgForm.orgCode = Number(this.maxCodeAdd);
-            this.addOrgForm.orgParentId = this.orgParenList[0].orgName;
             this.addOrgForm.orgName = "";
             this.addOrgForm.orgManagerId = "";
+            if (this.orgParent.length === 0) {
+                this.addOrgForm.orgCode = "";
+                return;
+            }
+            this.addOrgForm.orgCode = Number(this.maxCodeAdd);
+            this.addOrgForm.orgParentId = this.orgParent.orgId;
         },
         // 新增机构--请求接口
         addOrgReq(formName) {
             this.$refs[formName].validate(valid => {
                 if (valid) {
-                    let userInfo = JSON.parse(localStorage.getItem("userInfo"));
-                    let send = {
-                        companyId: userInfo.companyId,
-                        // companyId: 0,
-                        isEnable: this.value ? 1 : 0,
-                        operatorId: userInfo.archiveId,
-                        // operatorId: 0,
-                        orgCode: this.addOrgForm.orgCode,
-                        orgManagerId: this.addOrgForm.orgManagerId,
-                        orgName: this.addOrgForm.orgName,
-                        orgParentId: this.orgParentId,
-                        orgType: this.addOrgForm.orgType
-                    };
+                    // let send = {
+                    //     orgManagerId: this.addOrgForm.orgManagerId,
+                    //     orgName: this.addOrgForm.orgName,
+                    //     orgType: this.addOrgForm.orgType,
+                    //     orgParentId: this.addOrgForm.orgParentId
+                    // };
+                    let send = this.addOrgForm
                     orgRepair_api4(send, res => {
                         base.log("s", "新增机构", send);
                         base.log("r", "新增机构", res.data);
                         if (res.data.success) {
                             this.addOrgDialog = false;
+                            this.$message.success('新增成功')
                             this.getTreeReq();
                             this.getOrgTable();
                         } else {
@@ -405,6 +558,7 @@ export default {
         },
         //机构表--页容量改变
         orgPageSizeChange(pageSize) {
+            this.table.pageResize = true
             this.currentPage = 1;
             this.pageSize = pageSize;
             this.getOrgTable();
@@ -431,7 +585,7 @@ export default {
             let send = {
                 currentPage: this.currentPage,
                 isEnable: this.value ? 1 : 0,
-                orgParentId: this.orgParentId,
+                orgParentId: this.orgParent.orgId,
                 pageSize: this.pageSize,
                 querFieldVos: []
             };
@@ -441,6 +595,7 @@ export default {
                 if (res.data.success) {
                     this.orgTable.data = res.data.result.list;
                     this.orgTable.total = res.data.result.total;
+                    this.table.pageResize = false;
                 } else {
                     base.error(res.data);
                 }
@@ -459,11 +614,11 @@ export default {
         nodeClick(node) {
             console.log(node);
 
-            this.orgParentId = node.orgId;
-            this.getOrgTable();
-            this.getMaxOrgCode(node);
+            this.orgParent = node;
+            this.getOrgTable(); //获取机构表
+            this.getMaxOrgCode(node); //获取最大下级机构编码
 
-            this.orgParenList = [node];
+            this.orgParenList = [node]; //获取上级机构
         },
         //树形--封存
         switchChange() {

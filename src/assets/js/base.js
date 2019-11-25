@@ -38,6 +38,23 @@ let base = {
             type: 'success'
         })
     },
+
+    /**
+     * 根据身份证号码计算年龄，向下取整
+     * @param {string} idNumber 身份证号码
+     */
+    getAgeFromIdNumber(idNumber) {
+        if (typeof idNumber === 'string' && idNumber.length === 18) {
+            let idDate = idNumber.slice(6, 14);
+            let date = `${idDate.slice(0,4)}-${idDate.slice(4,6)}-${idDate.slice(6)}`;
+            let birthday = new Date(date).getTime();
+            let now = Date.now();
+            let age = Math.floor((now - birthday)/(1000 * 60 * 60 * 24 * 365));
+            return age;
+        }else{
+            return '请传入正确的身份证号码：字符串格式、18位'
+        }
+    },
 };
 
 export default base;

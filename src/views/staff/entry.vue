@@ -178,14 +178,14 @@
                     <el-row :gutter="20" >
                         <el-col :span="12">
                             <el-form-item label="证件类型" prop="idType" >
-                                <el-select v-model="addForm.idType" style="width:100%" >
-                                    <el-option v-for="(item,index) in cardTyptList" :key="index" :label="item.dictValue" :value="item.id" ></el-option>
+                                <el-select v-model="addForm.idType" style="width:100%" @change="idTypeChange" >
+                                    <el-option v-for="(item,index) in cardTyptList" :key="index" :label="item.dictValue" :value="item.dictCode" ></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="证件号码" prop="idNum">
-                                <el-input v-model="addForm.idNum"></el-input>
+                                <el-input v-model="addForm.idNum" @blur="idNumberBlur" ></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -218,7 +218,7 @@
                         <el-col :span="12">
                             <el-form-item label="婚姻状况" prop="maritalStatus">
                                 <el-select v-model="addForm.maritalStatus" style="width:100%" >
-                                    <el-option v-for="(item,index) in marryStatusList" :key="index" :label="item.dictValue" :value="item.id" ></el-option>
+                                    <el-option v-for="(item,index) in marryStatusList" :key="index" :label="item.dictValue" :value="item.dictCode" ></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -228,7 +228,7 @@
                         <el-col :span="12">
                             <el-form-item label="最高学历" prop="degree">
                                 <el-select v-model="addForm.degree" style="width:100%" >
-                                    <el-option v-for="(item,index) in degreeList" :key="index" :label="item.dictValue" :value="item.id" ></el-option>
+                                    <el-option v-for="(item,index) in degreeList" :key="index" :label="item.dictValue" :value="item.dictCode" ></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -267,7 +267,9 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="试用期" prop="testDate">
-                                <el-input v-model="addForm.testDate"></el-input>
+                                <el-select v-model="addForm.testDate" style="width:100%" >
+                                    <el-option v-for="(item,index) in testList" :key="index" :label="item.label" :value="item.value" ></el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -298,13 +300,114 @@
                 <el-button size="small" type="primary" @click="addSure('addForm')" :loading="addLoading" >确 定</el-button>
             </span>
         </el-dialog>
+
+        <!-- 删除 -->
+        <el-dialog
+            :visible.sync="entryDeleteDialog"
+            v-if="entryDeleteDialog"
+            class="qinjeeDialogMini"
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            center>
+            <span slot="title" >删除预入职</span>
+            <div class="qinjeeDialogMiniCont">
+                <i class="el-icon-warning warning icon" ></i>
+                <span>{{entryDeleteInfo}}</span>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="entryDeleteDialog = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="deleteSure" :loading="deleteSureLoading" >确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <!-- 延期入职 -->
+        <el-dialog
+            :visible.sync="delayDialog"
+            v-if="delayDialog"
+            class="qinjeeDialogSmall"
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            center>
+            <span slot="title" >延期入职</span>
+            <div class="qinjeeDialogSmallCont">
+                <el-form :model="delayForm" size="small" status-icon :rules="addRules" ref="delayForm" label-width="120px" >
+                    <el-form-item label="延期入职时间" prop="date">
+                        <el-date-picker
+                            style="width:100%;"
+                            v-model="delayForm.date"
+                            :editable="false"
+                            size="small"
+                            value-format="yyyy-MM-dd">
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="延期入职原因" prop="reason">
+                        <el-input v-model="delayForm.reason" type="textarea" :autosize="{minRows: 4}" ></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="delayDialog = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="delaySure('delayForm')">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <!-- 放弃入职 -->
+        <el-dialog
+            :visible.sync="giveUpDialog"
+            v-if="giveUpDialog"
+            class="qinjeeDialogSmall"
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            center>
+            <span slot="title" >放弃入职</span>
+            <div class="qinjeeDialogSmallCont">
+                <el-form :model="giveUpForm" size="small" status-icon :rules="giveUpRules" ref="giveUpForm" label-width="120px" >
+                    <el-form-item label="放弃入职原因" prop="reason">
+                        <el-select v-model="giveUpForm.reason" style="width:100%" >
+                            <el-option v-for="(item,index) in giveUpReasonList" :key="index" :value="item" ></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="备注" prop="note">
+                        <el-input v-model="giveUpForm.note" type="textarea" :autosize="{minRows: 4}" ></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="giveUpDialog = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="giveUpSure('giveUpForm')">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <!-- 加入黑名单 -->
+        <el-dialog
+            :visible.sync="blackDialog"
+            v-if="blackDialog"
+            class="qinjeeDialogSmall"
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            center>
+            <span slot="title" >加入黑名单</span>
+            <div class="qinjeeDialogSmallCont">
+                <el-form :model="blackForm" size="small" status-icon :rules="blackRules" ref="blackForm" label-width="130px" >
+                    <el-form-item label="加入黑名单原因" prop="reason">
+                        <el-input v-model="blackForm.reason" type="textarea" :autosize="{minRows: 4}" ></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="blackDialog = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="giveUpSure('blackForm')">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
 <script>
 import base from '../../assets/js/base';
 import commonTable from '../../components/table/commonTable';
-import {sys_api1, entry_api1, entry_api2, entry_api3} from "../../request/api";
+import {sys_api1, entry_api1, entry_api2, entry_api3, staff_api1, staff_api2, staff_api3, entry_api4, entry_api5,
+        entry_api6} from "../../request/api";
 
 export default {
     name: 'entry',              /* 入职管理 */
@@ -331,9 +434,9 @@ export default {
                     {name: '入职岗位', key: 'postName', isShow: true},
                     {name: '计划入职日期', key: 'hireDate', isShow: true},
                     {name: '延期入职日期', key: 'delayDate', isShow: true},
-                    {name: '延期原因', key: 'delayReason', isShow: true},
+                    {name: '延期原因', key: 'delayReson', isShow: true},
                     {name: '放弃原因', key: 'abandonReason', isShow: true},
-                    {name: '拉黑原因', key: 'blockReason', isShow: true},
+                    {name: '拉黑原因', key: 'blockReson', isShow: true},
                     {name: '入职登记', key: 'employmentRegister', isShow: true}
                 ],
                 data: [],                               /* 必须，表格要渲染的数据，数组格式 */
@@ -400,7 +503,7 @@ export default {
                 lastCompany: '',    /* 最近工作单位 */
 
                 joinDate: '',       /* 计划入职日期 */
-                testDate: '',       /* 试用期 */
+                testDate: 1,        /* 试用期 */
                 joinDepartment: '', /* 入职部门 */
                 joinPost: '',       /* 入职岗位 */
             },
@@ -409,6 +512,17 @@ export default {
                 phone: [{required: true, message: '请输入联系电话', trigger: 'change'}],
                 email: [{type: 'email', message: '请输入正确的邮箱地址', trigger: 'change'}]
             },
+            testList: [             /* 试用期 */
+                {label: '无试用期', value: 0},
+                {label: '1个月', value: 1},
+                {label: '2个月', value: 2},
+                {label: '3个月', value: 3},
+                {label: '4个月', value: 4},
+                {label: '5个月', value: 5},
+                {label: '6个月', value: 6}
+            ],
+            departmentList: [],     /* 入职部门 */
+            postList: [],           /* 入职岗位 */
 
             // 发送入职登记邀请
             sendEntryApply: false,
@@ -435,6 +549,46 @@ export default {
             },
             entryChecked: null,                     /* 发送入职申请内页勾选改变后的值 */
             entryApplyLoading: false,
+
+            // 删除预入职
+            entryDeleteInfo: '',
+            entryDeleteDialog: false,
+            deleteSureLoading: false,
+            deleteIdList: null,
+
+            // 操作的预入职id
+            operateIdList: null,
+
+            // 延期入职
+            delayDialog: false,
+            delayForm: {
+                date: '',
+                reason: ''
+            },
+            addRules: {
+                date: [{required: true, message: '请选择延期入职时间', trigger: 'blur'}],
+                reason: [{required: true, message: '请填写延期入职原因', trigger: 'change'}],
+            },
+
+            // 放弃入职
+            giveUpForm: {
+                reason: '',
+                note: '',
+            },
+            giveUpRules: {
+                reason: [{required: true, message: '请选择放弃入职原因', trigger: 'blur'}]
+            },
+            giveUpDialog: false,
+            giveUpReasonList: ['个人原因', '接受其他offer', '工作不感兴趣', '原单位留任', '薪资不满意', '工作地点不满意', '其他'],
+
+            // 加入黑名单
+            blackForm: {
+                reason: '',
+            },
+            blackRules: {
+                reason: [{required: true, message: '请填写加入黑名单原因', trigger: 'change'}]
+            },
+            blackDialog: false,
         };
     },
     mounted() {
@@ -442,6 +596,10 @@ export default {
         this.getTable();
     },
     methods: {
+        /**
+         *  春花秋月何时了？往事知多少。小楼昨夜又东风，故国不堪回首月明中。
+         *  雕栏玉砌应犹在，只是朱颜改。问君能有几多愁？恰似一江春水向东流。
+         */
         // 查询表格
         getTable() {
             let send = {
@@ -487,11 +645,9 @@ export default {
             // 请求学历
             this.initGetDataSubmit('DEGREE', '学历', 'degreeList');
 
-            // 请求试用期
-            // this.initGetDataSubmit('CARD_TYPE', '试用期');
-
             // 请求入职部门
             // this.initGetDataSubmit('CARD_TYPE', '证件类型');
+            this.getCompany();
 
             // 请求入职岗位
             // this.initGetDataSubmit('CARD_TYPE', '证件类型');
@@ -510,6 +666,65 @@ export default {
                     base.error(d);
                 }
             })
+        },
+
+        // 获取单位
+        getCompany() {
+            staff_api1(null, res => {
+                let d = res.data;
+                base.log('r', '获取单位', d);
+                if (d.success) {
+                    this.getDepartment(d.result);
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 根据单位id获取部门
+        getDepartment(id) {
+            let send = {"companyId": id};
+            base.log('s', '获取部门', send);
+            staff_api2(send, res => {
+                let d = res.data;
+                base.log('r', '获取部门', d);
+                if (d.success) {
+                    this.departmentList = d.result;
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 获取入职岗位
+        getPost(departmentId) {
+            let send = {"orgId": departmentId};
+            base.log('s', '获取入职岗位', send);
+            staff_api3(send, res => {
+                let d = res.data;
+                base.log('r', '获取入职岗位', d);
+                if (d.success) {
+                    this.postList = d.result;
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 证件类型改变
+        idTypeChange(v) {
+            if (v === 'ID_CARD') {
+                if (this.addForm.idNum.length === 18) {
+                    this.addForm.age = base.getAgeFromIdNumber(this.addForm.idNum);
+                }
+            }
+        },
+
+        // 证件号码输入框失去焦点--如果是身份证号码，计算年龄
+        idNumberBlur() {
+            if (this.addForm.idType === 'ID_CARD' && this.addForm.idNum.length === 18) {
+                this.addForm.age = base.getAgeFromIdNumber(this.addForm.idNum);
+            }
         },
 
         // 新增
@@ -643,25 +858,265 @@ export default {
             })
         },
 
-
-
         // 确认入职
-        entry(searchData,radioData,checkboxData) {},
+        entry(searchData,radioData,checkboxData) {
+            if (!checkboxData || checkboxData.length === 0) {
+                this.$message({
+                    message: '请先勾选人员',
+                    type: 'warning'
+                });
+                return false;
+            }
+            // 检测状态
+            let statusPass = checkboxData.every(item => {
+                return ['未入职', '已延期'].includes(item.employmentState);
+            });
+            if (!statusPass) {
+                this.$message({
+                    message: '只能勾选状态是 “未入职”、“已延期” 的人员',
+                    type: 'warning'
+                });
+                // return false;
+            };
+
+            // 检测信息完整性
+            let infoLoseList = checkboxData.filter(item => {
+                return !item.orgName || !item.postName;
+            });
+            if (infoLoseList.length !== 0) {
+                let nameList = infoLoseList.map(item => {
+                    return item.userName;
+                });
+                this.$message({
+                    message: `请完善 ${nameList.join('、')} 的【入职部门】、【入职岗位】信息后再操作`,
+                    type: 'warning'
+                });
+                // return false;
+            };
+
+            // 提交数据
+            this.entrySubmit(checkboxData);
+        },
+
+        // 确认入职--数据提交
+        entrySubmit(userList) {
+            let send = userList.map(item => {return item.employmentId});
+            base.log('s', '确认入职', send);
+            entry_api4(send, res => {
+                let d = res.data;
+                base.log('r', '确认入职', d);
+                if (d.success) {
+                    base.success(d);
+                    this.getTable();
+                }else{
+                    base.error(d);
+                }
+            })
+        },
 
         // 删除
-        delet() {},
+        delet(searchData,radioData,checkboxData) {
+            if (!checkboxData || checkboxData.length === 0) {
+                this.$message({
+                    message: '请先勾选人员',
+                    type: 'warning'
+                });
+                return false;
+            };
+            let userNameList = checkboxData.map(item => {return item.userName});
+            this.entryDeleteInfo = `确定删除 ${userNameList.join('、')} 的预入职信息吗？`;
+            this.deleteIdList = checkboxData.map(item => {return item.employmentId});
+            this.entryDeleteDialog = true;
+        },
+
+        // 删除--确定
+        deleteSure() {
+            let send = this.deleteIdList;
+            base,log('s', '删除预入职', send);
+            this.deleteSureLoading = true;
+            entry_api5(send, res => {
+                this.deleteSureLoading = false;
+                let d = res.data;
+                base.log('r', '删除预入职', d);
+                if (d.success) {
+                    base.success(d);
+                    this.entryDeleteDialog = false;
+                }else{
+                    base.error(d);
+                }
+            })
+        },
 
         // 延期入职
-        delay() {},
+        delay(searchData,radioData,checkboxData) {
+            if (!checkboxData || checkboxData.length === 0) {
+                this.$message({
+                    message: '请先勾选人员',
+                    type: 'warning'
+                });
+                return false;
+            };
+            this.operateIdList = checkboxData.map(item => {return item.employmentId});
+
+            this.delayForm = {
+                date: '',
+                reason: ''
+            };
+            this.delayDialog = true;
+        },
+
+        // 延期入职--确定
+        delaySure(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.delaySubmit();
+                }
+            });
+        },
+
+        // 延期入职--提交
+        delaySubmit() {
+            let send = {
+                "abandonReason": "",
+                "changeRemark": this.delayForm.reason,
+                "changeState": "已延期",            /* 已延期、黑名单、放弃入职、已入职 */
+                "delayTime": this.delayForm.date,
+                "preEmploymentList": this.operateIdList
+            };
+            base.log('s', '延期入职', send);
+            entry_api6(send, res => {
+                let d = res.data;
+                base.log('r', '延期入职', d);
+                if (d.success) {
+                    this.getTable();
+                    base.success(d);
+                    this.delayDialog = false;
+                }else{
+                    base.error(d);
+                }
+            })
+        },
 
         // 放弃入职
-        giveUp() {},
+        giveUp(searchData,radioData,checkboxData) {
+            if (!checkboxData || checkboxData.length === 0) {
+                this.$message({
+                    message: '请先勾选人员',
+                    type: 'warning'
+                });
+                return false;
+            };
+            this.operateIdList = checkboxData.map(item => {return item.employmentId});
+
+            this.giveUpForm = {
+                reason: '',
+                note: '',
+            };
+            this.giveUpDialog = true;
+        },
+
+        // 放弃入职--确定
+        giveUpSure(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.giveUpSubmit();
+                }
+            });
+        },
+
+        // 放弃入职--提交
+        giveUpSubmit() {
+            let send = {
+                "abandonReason": this.giveUpForm.reason,
+                "changeRemark": this.giveUpForm.note,
+                "changeState": "放弃入职",            /* 已延期、黑名单、放弃入职、已入职 */
+                "delayTime": "",
+                "preEmploymentList": this.operateIdList
+            };
+            base.log('s', '放弃入职', send);
+            entry_api6(send, res => {
+                let d = res.data;
+                base.log('r', '放弃入职', d);
+                if (d.success) {
+                    this.getTable();
+                    base.success(d);
+                    this.giveUpDialog = false;
+                }else{
+                    base.error(d);
+                }
+            })
+        },
 
         // 加入黑名单
-        blackList() {},
+        blackList(searchData,radioData,checkboxData) {
+            if (!checkboxData || checkboxData.length === 0) {
+                this.$message({
+                    message: '请先勾选人员',
+                    type: 'warning'
+                });
+                return false;
+            };
+            this.operateIdList = checkboxData.map(item => {return item.employmentId});
+
+            this.blackForm = {
+                reason: '',
+            };
+            this.blackDialog = true;
+        },
+
+        // 加入黑名单--确定
+        blackSure(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.blackSubmit();
+                }
+            });
+        },
+
+        // 加入黑名单--提交
+        blackSubmit() {
+            let send = {
+                "abandonReason": "",
+                "changeRemark": this.blackForm.reason,
+                "changeState": "黑名单",            /* 已延期、黑名单、放弃入职、已入职 */
+                "delayTime": "",
+                "preEmploymentList": this.operateIdList
+            };
+            base.log('s', '加入黑名单', send);
+            entry_api6(send, res => {
+                let d = res.data;
+                base.log('r', '加入黑名单', d);
+                if (d.success) {
+                    this.getTable();
+                    base.success(d);
+                    this.blackDialog = false;
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // 打印登记表
-        print() {},
+        print(searchData,radioData,checkboxData) {
+            // 暂时不做，还没打印模板
+        },
 
         // 导入
         upload() {},

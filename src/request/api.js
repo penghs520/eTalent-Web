@@ -2,7 +2,8 @@
 import request from './http';
 
 // 系统参数接口
-const sys_api1 = (data, callback) => {request('form', `api/masterdata/sysDict/searchSysDictListByDictType`, data, callback)};
+    // 根据字典类型查询字典列表
+    const sys_api1 = (data, callback) => {request('form', `api/masterdata/sysDict/searchSysDictListByDictType`, data, callback)};
 
 
 // 登录
@@ -13,10 +14,22 @@ const login_api4 = (data, callback) => {request('form', `api/masterdata/userLogi
 const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogin/logout`, data, callback)};
 
 // 员工管理
+    // 公用接口
+        // 根据档案显示对应权限下的单位
+        const staff_api1     = (data, callback) => {request('form', `api/masterdata/staffarc/getCompany`, data, callback)};
+        // 根据档案id显示对应权限下的子集部门
+        const staff_api2     = (data, callback) => {request('form', `api/masterdata/staffarc/getOrgIdByCompanyId`, data, callback)};
+        // 显示部门下的岗位
+        const staff_api3     = (data, callback) => {request('form', `api/masterdata/staffarc/getPostByOrgId`, data, callback)};
+
+
     // 入职管理
     const entry_api1     = (data, callback) => {request('form', `api/masterdata/staffpre/selectPreEmployment`, data, callback)};
     const entry_api2     = (data, callback) => {request('post', `api/masterdata/staffpre/selectPreEmployment`, data, callback)};
     const entry_api3     = (data, callback) => {request('post', `api/masterdata/staffpre/sendMail`, data, callback)};
+    const entry_api4     = (data, callback) => {request('post', `api/masterdata/staffpre/confirmPreemployment`, data, callback)};
+    const entry_api5     = (data, callback) => {request('post', `api/masterdata/staffpre/deletePreEmployment`, data, callback)};
+    const entry_api6     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentChange`, data, callback)};
 
 
 // 系统管理
@@ -99,8 +112,10 @@ export {
     login_api1, login_api2,login_api3,login_api4,login_api5,
 
     // 员工管理
+        // 公用接口
+        staff_api1, staff_api2, staff_api3,
         // 入职管理
-        entry_api1, entry_api2, entry_api3,
+        entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6,
 
     // 系统管理
         // 权限管理

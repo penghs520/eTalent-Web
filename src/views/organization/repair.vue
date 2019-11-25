@@ -38,6 +38,28 @@
 .el-select {
     width: 100%;
 }
+.comf {
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: bold;
+}
+.wait_del {
+    margin-bottom: 16px;
+    font-size: 16px;
+}
+.check_all{
+    height: 40px;
+    line-height: 40px;
+}
+.check_wrap{
+    text-indent: 8px;
+    border: 1px solid #DBDBDB;
+}
+.check_box {
+   height: 32px;
+//    border-top: 1px solid #DBDBDB;
+   line-height: 32px;   
+}
 </style>
 
 
@@ -139,9 +161,29 @@
                         :close-on-click-modal="false"
                         center
                     >
-                        <span slot="title">提示</span>
+                        <span slot="title">确认删除</span>
                         <div class="qinjeeDialogSmallMini">
-                            <!-- <commonTable :table="DelOrgTable" ></commonTable> -->
+                            <div>
+                                <p class="comf">确认删除下表选中的机构吗?</p>
+                                <p class="wait_del">待删除机构</p>
+                            </div>
+                            <div :class="{ check_wrap : delOrgList.length > 1 }">
+                                <el-checkbox
+                                    :indeterminate="isIndeterminate"
+                                    v-model="checkAll"
+                                    @change="CheckAllChange"
+                                    v-if="delOrgList.length > 1"
+                                    class="check_all"
+                                >全选</el-checkbox>
+                                <el-checkbox-group v-model="delCheckedList" @change="checkedResult">
+                                    <div v-for="(item,index) in delOrgList" :class="{check_box : delOrgList.length > 1}">
+                                        <el-checkbox
+                                            :label="item"
+                                            :key="item.orgId + index"
+                                        >{{item.orgFullName}}</el-checkbox>
+                                    </div>
+                                </el-checkbox-group>
+                            </div>
                         </div>
                         <span slot="footer" class="dialog-footer">
                             <el-button size="small" @click="delOrgDialog = false">取 消</el-button>
@@ -343,7 +385,6 @@ export default {
                     pageSizes: [10, 20, 30] /* 非必须，页码可选的每页数量 */,
                     pageSize: 10 /* 非必须，默认每页显示的数量 */
                 },
-                pageResize: false,
                 pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
                 pageSizeChange: this.orgPageSizeChange,
                 pageChange: this.orgPageChange,
@@ -383,20 +424,9 @@ export default {
             ],
             maxCodeAdd: "",
             //删除机构
-            DelOrgTable:{
-                head: [
-                    {
-                        name: "机构名称",
-                        key: "orgName",
-                        isShow: true,
-                        width: "200px"
-                    },
-                ],
-                data: [] /* 必须，表格要渲染的数据，数组格式 */,
-                total: 0 /* 必须，数据的总条数，用于翻页 */,
-                showSelect: true /* 非必须，是否显示select勾选框 */,
-                selectChange: this.orgDelChange,
-            },
+            checkAll: true,
+            isIndeterminate: false,
+            delCheckedList: [],
             delOrgList: [],
             delOrgDialog: false,
             //编辑机构
@@ -420,7 +450,7 @@ export default {
                 return;
             }
             this.getOrgType(); //获取所有数据类型
-            this.editOrgForm = { ...this.editOrglist[0]};
+            this.editOrgForm = { ...this.editOrglist[0] };
             this.editOrgDialog = true;
         },
         //编辑机构--请求接口
@@ -430,12 +460,11 @@ export default {
                     let send = this.editOrgForm;
                     orgRepair_api6(send, res => {
                         base.log("s", "编辑机构", send);
-                        base.log("r", "编辑机构", res.data);                       
+                        base.log("r", "编辑机构", res.data);
                         if (res.data.success) {
                             this.editOrgDialog = false;
                             this.getOrgTable();
-                     this.getOrgTable();
-                            this.$message.success('编辑成功')
+                            this.$message.success("编辑成功");
                         } else {
                             base.error(res.data);
                         }
@@ -446,37 +475,46 @@ export default {
             });
         },
 
+        //删除机构--弹出框全选删除
+        CheckAllChange(val) {
+            this.delCheckedList = val ? this.delOrgList : [];
+            this.isIndeterminate = false;
+        },
+        //删除机构--弹出框多选删除
+        checkedResult(value) {
+            console.log(value);
+
+            let checkedCount = value.length;
+            this.checkAll = checkedCount === this.delOrgList.length;
+            this.isIndeterminate =
+                checkedCount > 0 && checkedCount < this.delOrgList.length;
+        },
         //删除机构--选中表格数据,编辑机构--选中表格数据
         orgSelectChange(node) {
             console.log(node);
-
             this.delOrgList = node; //删除数据赋值
-            this.DelOrgTable.data = this.editOrglist //删除数据
-
             this.editOrglist = node; //编辑数据赋值
-            
         },
-        orgDelChange(node){
-            
-        },
-        //删除机构--表格点击按钮
+        orgDelChange(node) {},
+        //删除机构--表格点击删除按钮
         delOrg() {
             if (this.delOrgList.length === 0) {
                 this.$message.error("未选中机构");
                 return;
             }
             this.delOrgDialog = true;
+            this.delCheckedList = this.delOrgList;
         },
         //删除机构--请求接口
         delOrgReq() {
-            let send = this.delOrgList.map(item => item.orgId);
+            let send = this.delCheckedList.map(item => item.orgId);
             orgRepair_api5(send, res => {
                 base.log("s", "删除机构", send);
                 base.log("r", "删除机构", res.data);
                 if (res.data.success) {
-                     this.getOrgTable();
+                    this.getOrgTable();
                     this.delOrgDialog = false;
-                     this.$message.success('删除成功')
+                    this.$message.success("删除成功");
                 } else {
                     base.error(res.data);
                 }
@@ -490,7 +528,9 @@ export default {
             this.addOrgForm.orgName = "";
             this.addOrgForm.orgManagerId = "";
             if (this.orgParent.length === 0) {
-                this.addOrgForm.orgCode = "";
+                let maxCodeList = this.treeData.data.map(item => item.orgCode)
+                let maxCode = Math.max.apply(this, maxCodeList);
+                this.addOrgForm.orgCode =maxCode + 1 ;
                 return;
             }
             this.addOrgForm.orgCode = Number(this.maxCodeAdd);
@@ -506,13 +546,13 @@ export default {
                     //     orgType: this.addOrgForm.orgType,
                     //     orgParentId: this.addOrgForm.orgParentId
                     // };
-                    let send = this.addOrgForm
+                    let send = this.addOrgForm;
                     orgRepair_api4(send, res => {
                         base.log("s", "新增机构", send);
                         base.log("r", "新增机构", res.data);
                         if (res.data.success) {
                             this.addOrgDialog = false;
-                            this.$message.success('新增成功')
+                            this.$message.success("新增成功");
                             this.getTreeReq();
                             this.getOrgTable();
                         } else {
@@ -558,7 +598,7 @@ export default {
         },
         //机构表--页容量改变
         orgPageSizeChange(pageSize) {
-            this.table.pageResize = true
+            this.table.pageResize = true;
             this.currentPage = 1;
             this.pageSize = pageSize;
             this.getOrgTable();

@@ -101,6 +101,9 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const orgRepair_api1    = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
         const orgRepair_api2     = (data, callback) => {request('post', `api/masterdata/organization/getOrganizationPageList`, data, callback)};
         const orgRepair_api3     = (data, callback) => {request('form', `api/masterdata/sysDict/searchSysDictListByDictType`, data, callback)};
+        const orgRepair_api4     = (data, callback) => {request('get', `api/masterdata/organization/addOrganization`, data, callback)};
+        const orgRepair_api5     = (data, callback) => {request('post', `api/masterdata/organization/deleteOrganizationById`, data, callback)};
+        const orgRepair_api6     = (data, callback) => {request('get', `api/masterdata/organization/editOrganization`, data, callback)};
         
        
 
@@ -145,5 +148,5 @@ export {
         
         // 组织机构
             //机构维护
-            orgRepair_api1,orgRepair_api2,orgRepair_api3,
+            orgRepair_api1,orgRepair_api2,orgRepair_api3,orgRepair_api4,orgRepair_api5,orgRepair_api6,
 }

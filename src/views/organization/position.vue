@@ -351,16 +351,16 @@ export default {
         },
         //职等--多选框被点击
         GradeSelectChange() {
-
         },
-        //职等--页容量改变
+
+
+        //职等--表格页容量改变
         GradePageSizeChange() {
-
         },
-        //职等--页码改变
+        //职等--表格页码改变
         GradePageChange() {
-
         },
+
 
         //职级--获取职级列表
         getPositionLevelReq() {
@@ -390,11 +390,13 @@ export default {
             });
         },
 
-        //职位族--新增
+
+        //职位族--新增,弹出弹框
         addPositionGroup() {
             this.positionGroupDialog = true;
             this.GroupForm.Groupname = "";
         },
+        //职位族--新增,弹出框表单验证
         addGroup() {
             if (this.GroupForm.Groupname.length == 0) {
                 this.$message.error("请输入职位族名称");
@@ -403,6 +405,7 @@ export default {
             this.positionGroupDialog = false;
             this.addGroupRequst();
         },
+         //职位族--新增,请求接口
         addGroupRequst() {
             let send = {
                 positionGroupName: this.GroupForm.Groupname.toString()
@@ -422,6 +425,7 @@ export default {
             this.GroupDelList = data;
             console.log(data);
         },
+        //职位族--删除,获取职位族Id
         delPositionGroup() {
             this.GroupDelList = this.GroupDelList.map(
                 item => item.positionGroupId
@@ -429,6 +433,7 @@ export default {
             this.delGroupRequst();
             console.log(this.GroupDelList);
         },
+        //职位族--删除,请求接口
         delGroupRequst() {
             let send = {
                 positionGroupIds: this.GroupDelList
@@ -443,7 +448,7 @@ export default {
                 }
             });
         },
-        //职位族--获取所有职位族
+        //职位族--表格获取所有职位族
         getAllPositionGroup() {
             let send = {
                 currentPage: this.GroupCurrentPage,
@@ -462,13 +467,13 @@ export default {
                 }
             });
         },
-        //职位族--页码改变
+        //职位族--表格页码改变
         GroupPageChange(page) {
             this.positionGroupTable.loading = true;
             this.GroupCurrentPage = page;
             this.getAllPositionGroup();
         },
-        //职位族--页容量改变
+        //职位族--表格页容量改变
         GroupPageSizeChange(pageSize) {
             this.positionGroupTable.pageResize = true;
             this.positionGroupTable.loading = true;

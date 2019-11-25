@@ -215,8 +215,8 @@ export default {
         //设置用户信息,缓存里没有数据返回登录页
         try {
             let userInfo = JSON.parse(localStorage.getItem("userInfo"));
-            this.userInfo.userName = userInfo.result.userName;
-            this.userInfo.companyName = userInfo.result.companyName;
+            this.userInfo.userName = userInfo.userName;
+            this.userInfo.companyName = userInfo.companyName;
         } catch (error) {
             this.$message.warning("请先登录");
             this.$router.push("/");

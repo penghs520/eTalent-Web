@@ -32,6 +32,11 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     const entry_api6     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentChange`, data, callback)};
     const entry_api7     = (data, callback) => {request('post', `api/masterdata/staffarc/importPreFile`, data, callback)};      // 导入
 
+    // 参数设置
+        //合同参数
+        const params_api1     = (data, callback) => {request('form', `api/number/insertContractParam`, data, callback)};
+
+
 
 // 系统管理
     // 权限管理
@@ -124,6 +129,10 @@ export {
         staff_api1, staff_api2, staff_api3,
         // 入职管理
         entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6, entry_api7,
+
+        // 参数设置
+            // 合同参数
+            params_api1,
 
     // 系统管理
         // 权限管理

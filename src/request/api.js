@@ -30,6 +30,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     const entry_api4     = (data, callback) => {request('post', `api/masterdata/staffpre/confirmPreemployment`, data, callback)};
     const entry_api5     = (data, callback) => {request('post', `api/masterdata/staffpre/deletePreEmployment`, data, callback)};
     const entry_api6     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentChange`, data, callback)};
+    const entry_api7     = (data, callback) => {request('post', `api/masterdata/staffarc/importPreFile`, data, callback)};      // 导入
 
 
 // 系统管理
@@ -118,7 +119,7 @@ export {
         // 公用接口
         staff_api1, staff_api2, staff_api3,
         // 入职管理
-        entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6,
+        entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6, entry_api7,
 
     // 系统管理
         // 权限管理

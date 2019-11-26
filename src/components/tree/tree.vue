@@ -45,6 +45,7 @@
             :default-expand-all="treeData.showAllNode"
             :highlight-current="true"
             :icon-class="showDefaultIcon(treeData.showDefaultIcon)"
+            :expand-on-click-node="!Boolean(treeData.defaultIconExpandNode)"
         >
             <span slot-scope="{ node, data }">
                 <span

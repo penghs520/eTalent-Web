@@ -128,3 +128,34 @@ html,body,#app,.el-container{
 }
 /* 去掉数字输入框右边的小箭头-----------开始 */
 
+/* elemebt-ui steps步骤条样式修改-----------开始 */
+.el-step__main{
+    height: 28px !important;
+}
+.el-step__title{
+    position: relative;
+    top: -31px;
+    left: 24px;
+    display: inline-block;
+    z-index: 1;
+    background: #fff;
+    padding: 0 11px 0 6px;
+    font-size: 14px !important;
+    color: rgb(192, 196, 204);
+}
+.el-step__description{
+    position: relative;
+    top: -31px;
+}
+/* elemebt-ui steps步骤条样式修改-----------结束 */
+
+/* 树形下拉框样式 */
+.base_treeSelect .el-select-dropdown__item{
+    height: auto;
+    max-height: 274px;
+    background-color: rgba(0, 0, 0, 0) !important;
+    padding: 4px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+

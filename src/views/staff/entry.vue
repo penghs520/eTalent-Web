@@ -45,6 +45,10 @@
         .img{
             width: 96px;
             height: 96px;
+            img{
+                width: 100%;
+                height: 100%;
+            }
         }
         .text{
             width: 98px;
@@ -121,7 +125,9 @@
                 <el-col :span="6" class="label">入职登记表：</el-col>
                 <el-col :span="18" class="value">
                     <div class="entryTemplate">
-                        <div class="img"></div>
+                        <div class="img">
+                            <img src="../../assets/img/staff_template.png" alt="">
+                        </div>
                         <div class="text">
                             <h6>入职登记模板</h6>
                             <p>邀请待入职人员填写入职登记</p>
@@ -277,7 +283,11 @@
                     <el-row :gutter="20" >
                         <el-col :span="12">
                             <el-form-item label="入职部门" prop="joinDepartment">
-                                <el-input v-model="addForm.joinDepartment" ></el-input>
+                                <el-select v-model="addForm.joinDepartment" ref="selectTree" popper-class="base_treeSelect" style="width:100%" >
+                                    <el-option  :label="addForm.joinDepartment" :value="addForm.joinDepartment" >
+                                        <tree :treeData="treeData"></tree>
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -400,18 +410,22 @@
             </span>
         </el-dialog>
 
+        <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="0"></commonUpload>
+
     </div>
 </template>
 
 <script>
 import base from '../../assets/js/base';
 import commonTable from '../../components/table/commonTable';
+import commonUpload from '../../components/upload/upload';
+import tree from '../../components/tree/tree';
 import {sys_api1, entry_api1, entry_api2, entry_api3, staff_api1, staff_api2, staff_api3, entry_api4, entry_api5,
-        entry_api6} from "../../request/api";
+        entry_api6, entry_api7} from "../../request/api";
 
 export default {
     name: 'entry',              /* 入职管理 */
-    components: {commonTable},
+    components: {commonTable, commonUpload, tree},
     data() {
         return {
             cardTyptList: [],               // 证件类型
@@ -504,7 +518,8 @@ export default {
 
                 joinDate: '',       /* 计划入职日期 */
                 testDate: 1,        /* 试用期 */
-                joinDepartment: '', /* 入职部门 */
+                joinDepartment: '', /* 入职部门名称 */
+                joinDepartmentId: '',   /* 入职部门id */
                 joinPost: '',       /* 入职岗位 */
             },
             addRules: {
@@ -523,6 +538,17 @@ export default {
             ],
             departmentList: [],     /* 入职部门 */
             postList: [],           /* 入职岗位 */
+            treeData: {
+                data: [],
+                nodeKey: 'org_id',
+                props: {
+                    children: 'list',
+                    label: 'org_name'
+                },
+                showDefaultIcon: true,
+                nodeClick: this.selectTreeNodeClick,
+                defaultIconExpandNode: true,
+            },
 
             // 发送入职登记邀请
             sendEntryApply: false,
@@ -589,6 +615,22 @@ export default {
                 reason: [{required: true, message: '请填写加入黑名单原因', trigger: 'change'}]
             },
             blackDialog: false,
+
+            // 导入
+            uploadShow: false,
+            uploadData: {
+                title: '导入机构',                  // 非必须，弹窗标题
+                download: this.upload_download,                 // 非必须，下载模板方法
+                fileFormatDescription: '仅支持扩展名：.xls .xles，大小不能超过5M',      // 非必须，文件格式说明
+                uploadDescription: '这句话的内容还需要和产品沟通',                      // 非必须，导入说明
+                uploadUrl: '',                  // 必须，上传地址
+                cancel: this.upload_cancel,                   // 必须，取消操作
+                check: this.upload_check,                    // 必须，校验操作
+                finish: this.upload_finish,                   // 必须，完成操作
+                cancelLoading: false,             // 必须，取消loading
+                checkLoading: false,              // 必须，校验loading
+                finishLoading: false,             // 必须，完成loading
+            }
         };
     },
     mounted() {
@@ -689,11 +731,20 @@ export default {
                 let d = res.data;
                 base.log('r', '获取部门', d);
                 if (d.success) {
-                    this.departmentList = d.result;
+                    // this.departmentList.push(d.result);
+                    this.treeData.data.push(d.result);
                 }else{
                     base.error(d);
                 }
             })
+        },
+
+        // 部门下拉框节点被点击
+        selectTreeNodeClick(node) {
+            console.log(node);
+            this.addForm.joinDepartment = node.org_name;
+            this.addForm.joinDepartmentId = node.org_id;
+            this.$refs.selectTree.blur();
         },
 
         // 获取入职岗位
@@ -857,6 +908,9 @@ export default {
                 }
             })
         },
+
+        // 发送入职登记--短信
+        entryApplyMessage(idList) {},
 
         // 确认入职
         entry(searchData,radioData,checkboxData) {
@@ -1096,6 +1150,24 @@ export default {
             })
         },
 
+        // 导入
+        upload() {
+            this.uploadShow = true;
+        },
+
+        // 导入--下载模板
+        upload_download() {},
+
+        // 导入--取消
+        upload_cancel() {
+            this.uploadShow = false;
+        },
+
+        // 导入--校验
+        upload_check() {},
+
+        // 导入--完成
+        upload_finish() {},
 
 
 
@@ -1118,8 +1190,6 @@ export default {
             // 暂时不做，还没打印模板
         },
 
-        // 导入
-        upload() {},
 
         // 导出
         download() {},

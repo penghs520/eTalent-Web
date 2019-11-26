@@ -20,7 +20,7 @@ export default {
         return {
             treeData: {
                 data: Array /* 必须，树形结构数据 */,
-                nodeKey: String /* 必须, 节点数据中某个字段,一般是id字段 */,
+                nodeKey: String /* 必须, 节点key，一般选取节点数据中某个字段,一般是id字段 */,
                 props: {
                     /* 必须，树形结构数据绑字段配置 */
                     children: String /* 必须，子集key */,
@@ -38,6 +38,7 @@ export default {
                 checkClick: this
                     .checkClick /* 非必须，点击多选框事件,接收两个参数,当前选中的节点数据,树中选中的所有节点*/,
                 showDefaultIcon: false /* 非必须，是否显示默认图标 */,
+                defaultIconExpandNode: false,               /* 非必须，是否在点击默认图标时才展开或收起子节点，默认false */
                 showAllNode: false /* 非必须，是否展开所有的子节点*/,
                 nodeClick: this
                     .nodeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */,

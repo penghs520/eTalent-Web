@@ -15,6 +15,7 @@ const organization_position  = () => import(/* webpackChunkName: "group-organiza
 
     // 参数设置
     const staff_jobNumber               = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/jobNumber.vue');
+    const staff_contract_params         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/contract_params.vue');
 
 // 权限管理
 const authority_role         = () => import(/* webpackChunkName: "group-authority" */ '../views/authority/role.vue');
@@ -39,7 +40,9 @@ let path = {
         // 档案管理
         staff_archives_info,
 
+        //参数设置
         staff_jobNumber,
+        staff_contract_params,
 
     // 权限管理
     authority_role,

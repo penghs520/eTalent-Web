@@ -38,27 +38,54 @@
 .el-select {
     width: 100%;
 }
+//弹框样式开始--删除,解封,封存
 .comf {
     margin-bottom: 16px;
     font-size: 16px;
     font-weight: bold;
 }
 .wait_del {
-    margin-bottom: 16px;
+    margin: 0px 0px 16px 30px;
     font-size: 16px;
 }
-.check_all{
+.check_all {
     height: 40px;
+    border-bottom: 1px solid #dbdbdbff;
     line-height: 40px;
 }
-.check_wrap{
-    text-indent: 8px;
-    border: 1px solid #DBDBDB;
+.check_wrap {
+    border: 1px solid#DBDBDBFF;
+}
+.check_wrap2 {
+    padding-left: 8px;
+    margin: 0px 30px;
 }
 .check_box {
-   height: 32px;
-//    border-top: 1px solid #DBDBDB;
-   line-height: 32px;   
+    height: 32px;
+    line-height: 32px;
+}
+.el-icon-question {
+    margin-right: 8px;
+    font-size: 22px;
+    color: #ffd532ff;
+}
+.el-checkbox {
+    width: 100%;
+    height: 32px;
+    line-height: 32px;
+}
+.is-checked {
+    border-left: 8px solid #ffefe8ff;
+    margin-left: -8px;
+    background-color: #ffefe8ff;
+}
+//弹框样式开始--删除,解封,封存
+.merge_check {
+    height: 168px;
+    padding-left: 8px;
+    overflow: auto;
+    border: 1px solid #dbdbdbff;
+    border-radius: 3px;
 }
 </style>
 
@@ -164,10 +191,15 @@
                         <span slot="title">确认删除</span>
                         <div class="qinjeeDialogSmallMini">
                             <div>
-                                <p class="comf">确认删除下表选中的机构吗?</p>
+                                <p class="comf">
+                                    <i class="el-icon-question"></i>确认删除下表选中的机构吗?
+                                </p>
                                 <p class="wait_del">待删除机构</p>
                             </div>
-                            <div :class="{ check_wrap : delOrgList.length > 1 }">
+                            <div
+                                :class="{ check_wrap : delOrgList.length > 1 }"
+                                class="check_wrap2"
+                            >
                                 <el-checkbox
                                     :indeterminate="isIndeterminate"
                                     v-model="checkAll"
@@ -176,11 +208,12 @@
                                     class="check_all"
                                 >全选</el-checkbox>
                                 <el-checkbox-group v-model="delCheckedList" @change="checkedResult">
-                                    <div v-for="(item,index) in delOrgList" :class="{check_box : delOrgList.length > 1}">
-                                        <el-checkbox
-                                            :label="item"
-                                            :key="item.orgId + index"
-                                        >{{item.orgFullName}}</el-checkbox>
+                                    <div
+                                        v-for="(item,index) in delOrgList"
+                                        :key="index"
+                                        :class="{check_box : delOrgList.length > 1}"
+                                    >
+                                        <el-checkbox :label="item">{{item.orgFullName}}</el-checkbox>
                                     </div>
                                 </el-checkbox-group>
                             </div>
@@ -198,7 +231,7 @@
                         :close-on-click-modal="false"
                         center
                     >
-                        <span slot="title">新增机构</span>
+                        <span slot="title">编辑机构</span>
                         <div class="qinjeeDialogSmallCont">
                             <el-form
                                 :model="editOrgForm"
@@ -209,7 +242,7 @@
                                 size="small"
                             >
                                 <el-form-item label="机构编码" prop="orgCode">
-                                    <el-input v-model="editOrgForm.orgCode" disabled></el-input>
+                                    <el-input v-model="editOrgForm.orgCode" ></el-input>
                                 </el-form-item>
                                 <el-form-item label="机构名称" prop="orgName">
                                     <el-input v-model="editOrgForm.orgName" placeholder="请输入"></el-input>
@@ -259,6 +292,205 @@
                             >确 定</el-button>
                         </span>
                     </el-dialog>
+                    <!-- 封存机构弹窗 -->
+                    <el-dialog
+                        :visible.sync="notEnableDialog"
+                        class="qinjeeDialogMini"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">确认封存</span>
+                        <div class="qinjeeDialogSmallMini">
+                            <div>
+                                <p class="comf">
+                                    <i class="el-icon-question"></i>确认封存下表选中的机构吗?
+                                </p>
+                                <p class="wait_del">待封存机构</p>
+                            </div>
+                            <div
+                                :class="{ check_wrap : notEnableList.length > 1 }"
+                                class="check_wrap2"
+                            >
+                                <el-checkbox
+                                    :indeterminate="isIndet"
+                                    v-model="notEnableAll"
+                                    @change="notEnableAllChange"
+                                    v-if="notEnableList.length > 1"
+                                    class="check_all"
+                                >全选</el-checkbox>
+                                <el-checkbox-group
+                                    v-model="notEnableCheckedList"
+                                    @change="notEnableChange"
+                                >
+                                    <div
+                                        v-for="(item,index) in notEnableList"
+                                        :key="index"
+                                        :class="{check_box : notEnableList.length > 1}"
+                                    >
+                                        <el-checkbox :label="item">{{item.orgFullName}}</el-checkbox>
+                                    </div>
+                                </el-checkbox-group>
+                            </div>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="notEnableDialog = false">取 消</el-button>
+                            <el-button size="small" type="primary" @click="notEnableReq">确 定</el-button>
+                        </span>
+                    </el-dialog>
+                    <!-- 解封机构弹窗-->
+                    <el-dialog
+                        :visible.sync="EnableDialog"
+                        class="qinjeeDialogMini"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">确认解封</span>
+                        <div class="qinjeeDialogSmallMini">
+                            <div>
+                                <p class="comf">
+                                    <i class="el-icon-question"></i>确认解封下表选中的机构吗?
+                                </p>
+                                <p class="wait_del">待解封机构</p>
+                            </div>
+                            <div
+                                :class="{ check_wrap : EnableList.length > 1 }"
+                                class="check_wrap2"
+                            >
+                                <el-checkbox
+                                    :indeterminate="isIndet2"
+                                    v-model="EnableAll"
+                                    @change="EnableAllChange"
+                                    v-if="EnableList.length > 1"
+                                    class="check_all"
+                                >全选</el-checkbox>
+                                <el-checkbox-group
+                                    v-model="EnableCheckedList"
+                                    @change="EnableChange"
+                                >
+                                    <div
+                                        v-for="(item,index) in EnableList"
+                                        :key="index"
+                                        :class="{check_box : EnableList.length > 1}"
+                                    >
+                                        <el-checkbox :label="item">{{item.orgFullName}}</el-checkbox>
+                                    </div>
+                                </el-checkbox-group>
+                            </div>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="EnableDialog = false">取 消</el-button>
+                            <el-button size="small" type="primary" @click="EnableReq">确 定</el-button>
+                        </span>
+                    </el-dialog>
+                    <!-- 合并机构弹窗 -->
+                    <el-dialog
+                        :visible.sync="mergeDialog"
+                        class="qinjeeDialogMini"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">机构合并</span>
+                        <div class="qinjeeDialogSmallMini">
+                            <!-- 合并机构 -->
+                            <el-form
+                                :model="mergeForm"
+                                :rules="rules"
+                                ref="mergeForm"
+                                label-width="100px"
+                                class="demo-ruleForm"
+                                size="mini"
+                            >
+                                <el-form-item label="新机构名称" prop="NewOrgName">
+                                    <el-input v-model="mergeForm.NewOrgName" placeholder="请输入"></el-input>
+                                </el-form-item>
+                                <!-- 合并机构选择框 -->
+                                <el-form-item label="待合并机构">
+                                    <div class="merge_check">
+                                        <el-checkbox
+                                            :indeterminate="mergeisIndet"
+                                            v-model="mergeAll"
+                                            @change="mergeAllChange"
+                                            v-if="mergeList.length > 1"
+                                            class="check_all"
+                                        >全选</el-checkbox>
+                                        <el-checkbox-group
+                                            v-model="mergeCheckedList"
+                                            @change="mergeChange"
+                                        >
+                                            <div
+                                                v-for="(item,index) in mergeList"
+                                                :key="index"
+                                                :class="{check_box : mergeList.length > 1}"
+                                            >
+                                                <el-checkbox :label="item">{{item.orgFullName}}</el-checkbox>
+                                            </div>
+                                        </el-checkbox-group>
+                                    </div>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="mergeDialog = false">取 消</el-button>
+                            <el-button size="small" type="primary" @click="mergeReq">确 定</el-button>
+                        </span>
+                    </el-dialog>
+                    <!-- 划转机构弹窗-->
+                    <el-dialog
+                        :visible.sync="enrolDialog"
+                        class="qinjeeDialogMini"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">机构划转</span>
+                        <div class="qinjeeDialogSmallMini">
+                            <!-- 划转机构 -->
+                            <el-form
+                                :model="enrolForm"
+                                :rules="rules"
+                                ref="enrolForm"
+                                label-width="100px"
+                                class="demo-ruleForm"
+                                size="mini"
+                            >
+                                <el-form-item label="选择目标机构" prop="reachOrgName">
+                                    <el-input v-model="enrolForm.reachOrgName" placeholder="请输入"></el-input>
+                                </el-form-item>
+                                <!-- 划转机构选择框 -->
+                                <el-form-item label="待划转机构">
+                                    <div class="merge_check">
+                                        <el-checkbox
+                                            :indeterminate="enrolisIndet"
+                                            v-model="enrolAll"
+                                            @change="enrolAllChange"
+                                            v-if="enrolList.length > 1"
+                                            class="check_all"
+                                        >全选</el-checkbox>
+                                        <el-checkbox-group
+                                            v-model="enrolCheckedList"
+                                            @change="enrolChange"
+                                        >
+                                            <div
+                                                v-for="(item,index) in enrolList"
+                                                :key="index"
+                                                :class="{check_box : enrolList.length > 1}"
+                                            >
+                                                <el-checkbox :label="item">{{item.orgFullName}}</el-checkbox>
+                                            </div>
+                                        </el-checkbox-group>
+                                    </div>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="enrolDialog = false">取 消</el-button>
+                            <el-button size="small" type="primary" @click="enrolReq">确 定</el-button>
+                        </span>
+                    </el-dialog>
+
                 </el-tab-pane>
                 <el-tab-pane name="orgPic">
                     <span slot="label">
@@ -278,7 +510,11 @@ import {
     orgRepair_api3,
     orgRepair_api4,
     orgRepair_api5,
-    orgRepair_api6
+    orgRepair_api6,
+    orgRepair_api7,
+    orgRepair_api8,
+    orgRepair_api9,
+    orgRepair_api10,
 } from "../../request/api";
 import tree from "../../components/tree/tree";
 import commonTable from "../../components/table/commonTable";
@@ -287,7 +523,7 @@ export default {
     name: "repair" /* 机构维护 */,
     data() {
         return {
-            value: "true",
+            value: false,
             treeData: {
                 data: [] /* 必须，树形结构数据 */,
                 props: {
@@ -365,10 +601,10 @@ export default {
                         icon: "",
                         defaultIconHide: false,
                         list: [
-                            { text: "封存", method: this.btn1 },
-                            { text: "解封", method: this.btn2 },
-                            { text: "合并", method: this.btn2 },
-                            { text: "划转", method: this.btn2 },
+                            { text: "封存", method: this.notEnable },
+                            { text: "解封", method: this.Enable },
+                            { text: "合并", method: this.mergeOrg },
+                            { text: "划转", method: this.enrolOrg },
                             { text: "排序", method: this.btn2 },
                             { text: "模板下载", method: this.btn2 },
                             { text: "导入", method: this.btn2 },
@@ -414,6 +650,9 @@ export default {
                 ],
                 orgManagerId: [
                     { required: true, message: "请输入", trigger: "blur" }
+                ],
+                NewOrgName: [
+                    { required: true, message: "请输入", trigger: "blur" }
                 ]
             },
             orgTypeList: [],
@@ -432,7 +671,38 @@ export default {
             //编辑机构
             editOrgDialog: false,
             editOrglist: [],
-            editOrgForm: {}
+            editOrgForm: {},
+            //封存机构
+            notEnableAll: true,
+            isIndet: false,
+            notEnableCheckedList: [],
+            notEnableList: [],
+            notEnableDialog: false,
+            //解封机构
+            isIndet2: false,
+            EnableAll: true,
+            EnableCheckedList: [],
+            EnableList: [],
+            EnableDialog: false,
+            //合并机构
+            mergeAll: true,
+            mergeisIndet: false,
+            mergeDialog: false,
+            mergeCheckedList: [],
+            mergeList: [],
+            mergeForm: {
+                NewOrgName: ""
+            },
+            //划转机构
+            enrolDialog: false,
+            enrolForm: {
+                reachOrgName: ""
+            },
+            enrolAll: true,
+            enrolisIndet: false,
+            enrolCheckedList: [],
+            enrolList: [],
+            //机构导入
         };
     },
     components: {
@@ -443,6 +713,165 @@ export default {
         this.getTreeReq();
     },
     methods: {
+        //划转机构--点击按钮
+        enrolOrg() {
+            if (this.enrolList.length < 1) {
+                this.$message.error("请选择至少一个机构");
+                return;
+            }
+            this.enrolDialog = true;
+            this.enrolCheckedList = this.enrolList;
+        },
+        //划转机构--弹出框全选
+        enrolAllChange(val) {
+            this.enrolCheckedList = val ? this.enrolList : [];
+            this.enrolisIndet = false;
+        },
+        //划转机构--弹出框多选
+        enrolChange(value) {
+            let checkedCount = value.length;
+            this.enrolAll = checkedCount === this.enrolList.length;
+            this.enrolisIndet =
+                checkedCount > 0 && checkedCount < this.enrolList.length;
+        },
+        //划转机构--请求接口
+        enrolReq() {
+            // let send = {
+            //     newOrgName: "新机构名称",
+            //     orgIds: [74, 75],
+            //     targetOrgId: 28
+            // };
+            // orgRepair_api9(send, res => {
+            //     base.log("s", "划转机构", send);
+            //     base.log("r", "划转机构", res.data);
+            //     if (res.data.success) {
+                    this.enrolDialog = false;
+            //     } else {
+            //         base.error(res.data);
+            //     }
+            // });
+        },
+
+        //合并机构--弹出框全选
+        mergeAllChange(val) {
+            this.mergeCheckedList = val ? this.mergeList : [];
+            this.mergeisIndet = false;
+        },
+        //合并机构--弹出框多选
+        mergeChange(value) {
+            let checkedCount = value.length;
+            this.mergeAll = checkedCount === this.mergeList.length;
+            this.mergeisIndet =
+                checkedCount > 0 && checkedCount < this.mergeList.length;
+        },
+        //合并机构--点击按钮
+        mergeOrg() {
+            if (this.mergeList.length < 2) {
+                this.$message.error("请选择2个以上的机构");
+                return;
+            }
+            this.mergeAll = true;
+            this.mergeCheckedList = this.mergeList;
+            this.mergeDialog = true;
+        },
+        //合并机构--请求接口
+        mergeReq() {
+            // let send = {
+            //     orgIds: [],
+            //     targetOrgId:28,
+            // };
+            // orgRepair_api10(send, res => {
+            //     base.log("s", "合并机构", send);
+            //     base.log("r", "合并机构", res.data);
+            //     if (res.data.success) {
+            this.mergeDialog = false;
+            //     } else {
+            //         base.error(res.data);
+            //     }
+            // });
+        },
+
+        //解存--点击按钮
+        Enable() {
+            let status = this.EnableList.find(item => item.isEnable === 1); //找出未封存的数据
+            if (this.EnableList.length === 0 || status) {
+                this.$message.error("请选择已封存的机构");
+                return;
+            }
+            this.EnableAll = true;
+            this.EnableDialog = true;
+            this.EnableCheckedList = this.EnableList;
+        },
+        //解存--全选状态改变
+        EnableAllChange(val) {
+            this.EnableCheckedList = val ? this.EnableList : [];
+            this.isIndet2 = false;
+        },
+        //解存--弹出框多选改变
+        EnableChange(value) {
+            let checkedCount = value.length;
+            this.EnableAll = checkedCount === this.EnableList.length;
+            this.isIndet2 =
+                checkedCount > 0 && checkedCount < this.EnableList.length;
+        },
+        //解存--请求接口
+        EnableReq() {
+            console.log("点击");
+            let send = this.EnableCheckedList.map(item => item.orgId);
+            if (send.length === 0) {
+                this.$message.error("请选择解封机构");
+                return;
+            }
+            orgRepair_api8(send, res => {
+                base.log("s", "解封机构", send);
+                base.log("r", "解封机构", res.data);
+                if (res.data.success) {
+                    this.EnableDialog = false;
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
+
+        //封存--点击按钮
+        notEnable() {
+            let status = this.notEnableList.find(item => item.isEnable === 0); //找出已封存的数据
+            console.log("封存状态", status);
+            if (this.notEnableList.length === 0 || status) {
+                this.$message.error("请选择未被封存的机构");
+                return;
+            }
+            this.notEnableAll = true;
+            this.notEnableDialog = true;
+            this.notEnableCheckedList = this.notEnableList;
+        },
+        //封存--全选状态改变
+        notEnableAllChange(val) {
+            this.notEnableCheckedList = val ? this.notEnableList : [];
+            this.isIndet = false;
+        },
+        //封存--弹出框多选改变
+        notEnableChange(value) {
+            let checkedCount = value.length;
+            this.notEnableAll = checkedCount === this.notEnableList.length;
+            this.isIndet =
+                checkedCount > 0 && checkedCount < this.notEnableList.length;
+        },
+        //封存--请求接口
+        notEnableReq() {
+            let send = this.notEnableCheckedList.map(item => item.orgId);
+            orgRepair_api7(send, res => {
+                base.log("s", "封存机构", send);
+                base.log("r", "封存机构", res.data);
+                if (res.data.success) {
+                    this.getOrgTable(); //刷新表格
+                    this.notEnableDialog = false;
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
+
         //编辑机构--弹出框
         editOrg() {
             if (this.editOrglist.length != 1) {
@@ -489,11 +918,16 @@ export default {
             this.isIndeterminate =
                 checkedCount > 0 && checkedCount < this.delOrgList.length;
         },
-        //删除机构--选中表格数据,编辑机构--选中表格数据
+
+        //删除机构,编辑机构,封存,解封,合并,划转
         orgSelectChange(node) {
             console.log(node);
             this.delOrgList = node; //删除数据赋值
             this.editOrglist = node; //编辑数据赋值
+            this.notEnableList = node; //封存数据赋值
+            this.EnableList = node; //封存数据赋值
+            this.mergeList = node; //合并数据赋值
+            this.enrolList = node; //合并数据赋值
         },
         orgDelChange(node) {},
         //删除机构--表格点击删除按钮
@@ -528,9 +962,9 @@ export default {
             this.addOrgForm.orgName = "";
             this.addOrgForm.orgManagerId = "";
             if (this.orgParent.length === 0) {
-                let maxCodeList = this.treeData.data.map(item => item.orgCode)
+                let maxCodeList = this.treeData.data.map(item => item.orgCode);
                 let maxCode = Math.max.apply(this, maxCodeList);
-                this.addOrgForm.orgCode =maxCode + 1 ;
+                this.addOrgForm.orgCode = maxCode + 1;
                 return;
             }
             this.addOrgForm.orgCode = Number(this.maxCodeAdd);
@@ -598,7 +1032,6 @@ export default {
         },
         //机构表--页容量改变
         orgPageSizeChange(pageSize) {
-            this.table.pageResize = true;
             this.currentPage = 1;
             this.pageSize = pageSize;
             this.getOrgTable();
@@ -606,7 +1039,7 @@ export default {
         //机构表--格式化数据
         formatter(key, val) {
             if (key == "isEnable") {
-                val = val == 1 ? "是" : "否";
+                val = val === 1 ? "否" : "是";
                 return val;
             } else if (key == "orgType") {
                 if (val == "GROUP") {
@@ -624,7 +1057,7 @@ export default {
         getOrgTable() {
             let send = {
                 currentPage: this.currentPage,
-                isEnable: this.value ? 1 : 0,
+                // isEnable: this.value ? 0 : 1,
                 orgParentId: this.orgParent.orgId,
                 pageSize: this.pageSize,
                 querFieldVos: []
@@ -635,7 +1068,6 @@ export default {
                 if (res.data.success) {
                     this.orgTable.data = res.data.result.list;
                     this.orgTable.total = res.data.result.total;
-                    this.table.pageResize = false;
                 } else {
                     base.error(res.data);
                 }
@@ -662,13 +1094,12 @@ export default {
         },
         //树形--封存
         switchChange() {
-            console.log("封存状态");
             this.getTreeReq();
         },
         //树形--获取树形
         getTreeReq() {
             let send = {
-                isEnable: this.value ? 1 : 0
+                isEnable: this.value ? 0 : 1
             };
             orgRepair_api1(send, res => {
                 base.log("s", "查询树", send);

@@ -205,7 +205,7 @@ export default {
             orgId: "82",
             showUserList: false,
             archiveId: "", //人员id
-            value: "true",
+            value: false,
             addUserTree: {
                 data: [] /* 必须，树形结构数据 */,
                 nodeKey: "searchPageId",
@@ -316,7 +316,7 @@ export default {
         // 获取树形结构
         getTree() {
             let send = {
-                isEnable: this.value ? 1 : 0
+                isEnable: this.value ? 0 : 1
             };
             userCheck_api2(send, res => {
                 base.log("s", "查询树", send);

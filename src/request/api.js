@@ -38,7 +38,12 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
 
     // 参数设置
         //合同参数
-        const params_api1     = (data, callback) => {request('form', `api/number/insertContractParam`, data, callback)};
+        const params_api1     = (data, callback) => {request('form', `api/masterdata/number/insertContractParam`, data, callback)};
+    
+    
+    // 档案管理
+        //信息维护
+        const archives_api1     = (data, callback) => {request('form', `api/masterdata/staffarc/selectArchivebatch`, data, callback)};
 
 
 
@@ -95,7 +100,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         // 职位族设置
         const positionGroup_api1    = (data, callback) => {request('get', `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
         const positionGroup_api2    = (data, callback) => {request('get', `api/masterdata/positionGroup/addPositionGroup`, data, callback)};
-        const positionGroup_api3    = (data, callback) => {request('form', `api/masterdata/positionGroup/deletePositionGroup`, data, callback)};
+        const positionGroup_api3    = (data, callback) => {request('post', `api/masterdata/positionGroup/deletePositionGroup`, data, callback)};
         const positionGroup_api4    = (data, callback) => {request('get', `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
 
         // 职级设置
@@ -108,7 +113,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     
     // 组织机构
         //机构维护
-        const orgRepair_api1    = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const orgRepair_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
         const orgRepair_api2     = (data, callback) => {request('post', `api/masterdata/organization/getOrganizationPageList`, data, callback)};
         const orgRepair_api3     = (data, callback) => {request('form', `api/masterdata/sysDict/searchSysDictListByDictType`, data, callback)};
         const orgRepair_api4     = (data, callback) => {request('get', `api/masterdata/organization/addOrganization`, data, callback)};
@@ -117,8 +122,12 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const orgRepair_api7     = (data, callback) => {request('post', `api/masterdata/organization/lockOrganizationByIds`, data, callback)};
         const orgRepair_api8     = (data, callback) => {request('post', `api/masterdata/organization/unlockOrganizationByIds`, data, callback)};
         const orgRepair_api9     = (data, callback) => {request('post', `api/masterdata/organization/mergeOrganization`, data, callback)};
-        const orgRepair_api10     = (data, callback) => {request('post', `api/masterdata/organization/transferOrganization2`, data, callback)};
+        const orgRepair_api10    = (data, callback) => {request('post', `api/masterdata/organization/transferOrganization2`, data, callback)};
+     
         
+    // 岗位管理
+        // 岗位维护
+        const postRepair_api    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationPostTree`, data, callback)};
        
 
 export {
@@ -134,6 +143,10 @@ export {
         // 入职管理
         entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6, entry_api7, entry_api8, entry_api9, entry_api10,
         entry_api11, 
+
+        // 档案管理
+            // 信息维护
+            archives_api1,
 
         // 参数设置
             // 合同参数
@@ -169,5 +182,9 @@ export {
             //机构维护
             orgRepair_api1,orgRepair_api2,orgRepair_api3,orgRepair_api4,orgRepair_api5,orgRepair_api6,orgRepair_api7,orgRepair_api8,
             orgRepair_api9,orgRepair_api10,
+
+        // 岗位管理
+            // 岗位维护
+            postRepair_api,
 
 }

@@ -70,7 +70,7 @@ export default {
     data() {
         return {
             icons: [], /* icon图标 */
-            switchValue:""
+            switchValue:false,
         };
     },
     created() {

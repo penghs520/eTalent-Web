@@ -145,7 +145,12 @@
                         <el-col :span="4">
                             <div class="grid-content bg-purple">
                                 <div class="contract_title">流水号</div>
-                                <el-select v-model="serial" placeholder="请选择" size="mini">
+                                <el-select
+                                    v-model="serial"
+                                    placeholder="请选择"
+                                    size="mini"
+                                    @change="serialChange"
+                                >
                                     <el-option
                                         v-for="item in serialList"
                                         :key="item.value"
@@ -188,7 +193,7 @@ export default {
         return {
             workKind: [],
             workKindList: ["正式", "试用", "实习"],
-            days: 1,
+            days: null,
             Prefix: "",
             Infix: "",
             Suffix: "",
@@ -203,14 +208,15 @@ export default {
             ],
             serial: "",
             serialList: [
-                { value: "01", label: "01(两位)" },
-                { value: "001", label: "001(三位)" },
-                { value: "0001", label: "0001(四位)" },
-                { value: "00001", label: "00001(五位)" },
-                { value: "000001", label: "000001(六位)" },
-                { value: "0000001", label: "0000001(七位)" }
+                { value: 2, label: "01(两位)" },
+                { value: 3, label: "001(三位)" },
+                { value: 4, label: "0001(四位)" },
+                { value: 5, label: "00001(五位)" },
+                { value: 6, label: "000001(六位)" },
+                { value: 7, label: "0000001(七位)" }
             ],
-            dateFormatter: ""
+            dateFormatter: "",
+            serialFormatter:"",
         };
     },
     computed: {
@@ -219,26 +225,31 @@ export default {
                 this.Prefix +
                 this.dateFormatter +
                 this.Infix +
-                this.serial +
+                this.serialFormatter +
                 this.Suffix;
             return res;
-        }
+        },
     },
     methods: {
+         //保存设置
+        saveSet() {
+            this.setParamsReq()
+        },
+        //设置合同参数请求
         setParamsReq() {
             let send = {
-                applicationScopeCode:"",
-                contractParamDescribe:"",
-                contractParamName:"",
-                contractRuleInfix:"",
-                contractRulePrefix:"",
-                contractRuleSuffix:"",
-                dateRule:"",
-                digitCapacity:1,
-                rememberDays:30,
+                applicationScopeCode:this.workKind[0],
+                // contractParamDescribe:"",
+                // contractParamName:"",               
+                contractRulePrefix:this.Prefix,
+                contractRuleInfix:this.Infix,
+                contractRuleSuffix:this.Suffix,
+                dateRule:this.date,
+                digitCapacity:Number(this.serial),
+                rememberDays:this.days,
             }
+            base.log("s", "合同参数设置", send);
             params_api1(send, res => {
-                base.log("s", "合同参数设置", send);
                 base.log("r", "合同参数设置", res.data);
                 if (res.data.success) {
                     this.$message.success("设置成功")
@@ -247,7 +258,7 @@ export default {
                 }
             });
         },
-        //日期选择框切换
+        //日期选择框切换--格式化
         dateChange(val) {
             switch (val) {
                 case "":
@@ -281,19 +292,40 @@ export default {
             }
             console.log(val);
         },
-        //适用范围多选框切换
+        //流水号格式化
+        serialChange(val){
+            switch (val) {
+                case 2:
+                  this.serialFormatter = "01"  
+                break;
+                case 3:
+                  this.serialFormatter = "001"  
+                break;
+                case 4:
+                  this.serialFormatter = "0001"  
+                break;
+                case 5:
+                  this.serialFormatter = "00001"  
+                break;
+                case 6:
+                  this.serialFormatter = "000001"  
+                break;
+                case 7:
+                  this.serialFormatter = "0000001"  
+                break;
+            }
+        },
+
+
+        //合同试用范围多选框切换
         workKindChange(val) {
             console.log(val);
         },
-        //
-        //计数器组件切换
+        //计数器组件
         daysChange(value) {
             console.log(value);
         },
-        //保存设置
-        saveSet() {
-            this.setParamsReq()
-        }
+       
     }
 };
 </script>

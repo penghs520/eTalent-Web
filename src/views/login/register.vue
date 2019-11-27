@@ -190,7 +190,7 @@ export default {
                         trigger: "blur"
                     },
                     {
-                        pattern: /1[0-9]{10}/,
+                        pattern: /^1[3,4,5,6,7,8,9]\d{9}$/,
                         message: "请输入正确的手机号",
                         trigger: "blur"
                     }

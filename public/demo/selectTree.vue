@@ -41,7 +41,7 @@ export default {
          * 2.给变量赋用到的节点id（一般后台要的都是节点id，而不是节点名称）
          * 3.手动操作使得下拉框收起来
          */
-        selectTreeNodeClick() {
+        selectTreeNodeClick(node) {
             // 该方法中要做
             this.checkedName = node.org_name;
             this.checkedValue = node.org_id;

@@ -53,7 +53,6 @@
                 inactive-color="#ccc"
                 @change="switchChange"
             ></el-switch>
-
             <tree :treeData="treeData"></tree>
         </div>
 
@@ -61,6 +60,7 @@
         <div class="content">
             <div class="title">角色反查</div>
             <commonTable ref="commonTable" :table="table"></commonTable>
+            <!-- 角色列表弹窗 -->
             <el-dialog
                 :visible.sync="showUserList"
                 v-if="showUserList"
@@ -70,8 +70,9 @@
                 center
             >
                 <span slot="title">角色列表</span>
-                <tree :treeData="addUserTree"></tree>
-                <div class="qinjeeDialogSmallCont"></div>
+                <div class="qinjeeDialogSmallCont">
+                    <tree :treeData="addUserTree"></tree>
+                </div>
                 <span slot="footer" class="dialog-footer">
                     <el-button size="small" @click="showUserList = false">取 消</el-button>
                     <el-button

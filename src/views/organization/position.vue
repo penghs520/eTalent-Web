@@ -19,12 +19,16 @@
     //职位设置
     .side_tree {
         width: 216px;
-        border: 1px soild red;
         padding: 10px;
         box-sizing: border-box;
         overflow: hidden;
     }
+    
 }
+.group_list {
+        margin-top: 10px;
+        padding-left: 35px;
+    }
 </style>
 
 <template>
@@ -37,7 +41,7 @@
                 <div class="group_table">
                     <commonTable :table="positionGroupTable" class="positionGroupTable"></commonTable>
                 </div>
-
+                <!-- 新增职位族弹窗 -->
                 <el-dialog
                     :visible.sync="positionGroupDialog"
                     class="qinjeeDialogMini"
@@ -58,6 +62,34 @@
                         <el-button size="small" type="primary" @click="addGroup">确 定</el-button>
                     </span>
                 </el-dialog>
+                <!-- 删除职位族弹窗 -->
+                <el-dialog
+                    :visible.sync="groupDelDialog"
+                    class="qinjeeDialogMini"
+                    :append-to-body="true"
+                    :close-on-click-modal="false"
+                    center
+                >
+                    <span slot="title">确认删除</span>
+                    <div class="qinjeeDialogMiniCont">
+                        <div>
+                            <div>
+                                <i class="el-icon-warning warning icon"></i>
+                                <span>是否确认删除以下职位族?</span>
+                            </div>
+                            <div class="group_list">
+                                <div
+                                    v-for="(item,index) in GroupDelList"
+                                    :key="index"
+                                >{{item.positionGroupName}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                        <el-button size="small" @click="groupDelDialog = false">取 消</el-button>
+                        <el-button size="small" type="primary" @click="delGroupRequst">确 定</el-button>
+                    </span>
+                </el-dialog>
             </el-tab-pane>
 
             <!-- 职位设置 -->
@@ -74,7 +106,7 @@
 
             <!-- 职等设置 -->
             <el-tab-pane label="职等设置" name="position_grade">
-                 <commonTable :table="positionGradeTable"></commonTable>
+                <commonTable :table="positionGradeTable"></commonTable>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -86,7 +118,7 @@ import {
     positionGroup_api3,
     positionGroup_api4,
     positionLevel_api1,
-    positionGrade_api1,
+    positionGrade_api1
 } from "../../request/api";
 import commonTable from "../../components/table/commonTable";
 import tree from "../../components/tree/tree";
@@ -166,10 +198,11 @@ export default {
                 Groupname: ""
             },
             GroupDelList: [],
+            groupDelDialog: false,
             //职位
             positionTree: {
                 data: [] /* 必须，树形结构数据 */,
-                nodeKey: "positionGroupId",
+                // nodeKey: "positionGroupId",
                 props: {
                     /* 必须，树形结构数据绑字段配置 */
                     children: "positionList" /* 必须，子集key */,
@@ -187,10 +220,9 @@ export default {
                 showCheckbox: false /* 非必须，是否显示多选框 */,
                 checkClick: this
                     .checkClick /* 非必须，点击多选框事件,接收两个参数,当前选中的节点数据,树中选中的所有节点*/,
-                showDefaultIcon: false /* 非必须，是否显示默认图标 */,
+                showDefaultIcon: true /* 非必须，是否显示默认图标 */,
                 showAllNode: false /* 非必须，是否展开所有的子节点*/,
-                nodeClick: this
-                    .nodeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
+                nodeClick: this.positionTreeClick
             },
             // 职级
             positionLevelTable: {
@@ -335,32 +367,24 @@ export default {
         //职等--获取职等列表
         getPositionGradeReq() {
             let send = {
-                currentPage:1,
-                pageSize:10,
-            }
-           positionGrade_api1(send,res=>{
-             base.log("s","获取职等数据",send)
-             base.log("r","获取职等数据",res)
-                if(res.data.success){
-
-                }else{
-
+                currentPage: 1,
+                pageSize: 10
+            };
+            positionGrade_api1(send, res => {
+                base.log("s", "获取职等数据", send);
+                base.log("r", "获取职等数据", res);
+                if (res.data.success) {
+                } else {
                 }
-           })
-
+            });
         },
         //职等--多选框被点击
-        GradeSelectChange() {
-        },
-
+        GradeSelectChange() {},
 
         //职等--表格页容量改变
-        GradePageSizeChange() {
-        },
+        GradePageSizeChange() {},
         //职等--表格页码改变
-        GradePageChange() {
-        },
-
+        GradePageChange() {},
 
         //职级--获取职级列表
         getPositionLevelReq() {
@@ -378,18 +402,34 @@ export default {
                 }
             });
         },
+
+        //职位 -- 树形被点击
+        positionTreeClick(node) {
+            console.log(node);
+        },
         //职位 -- 获取树形结构
         getPositionTreeReq() {
             positionGroup_api4(null, res => {
                 base.log("r", "获取所有职位树", res.data);
                 if (res.data.success) {
-                    this.positionTree.data = res.data.result;
+                    let newTree = JSON.parse(JSON.stringify(res.data.result));
+                    this.positionTreeFormatter(newTree);
+                    this.positionTree.data = newTree;
                 } else {
                     base.error(res.data);
                 }
             });
         },
-
+        //职位 -- 格式化职位树形
+        positionTreeFormatter(newTree) {
+            newTree.forEach(item => {
+                if (item.positionList) {
+                    item.positionList.forEach(item => {
+                        item.positionGroupName = item.positionName;
+                    });
+                }
+            });
+        },
 
         //职位族--新增,弹出弹框
         addPositionGroup() {
@@ -405,7 +445,7 @@ export default {
             this.positionGroupDialog = false;
             this.addGroupRequst();
         },
-         //职位族--新增,请求接口
+        //职位族--新增,请求接口
         addGroupRequst() {
             let send = {
                 positionGroupName: this.GroupForm.Groupname.toString()
@@ -420,28 +460,29 @@ export default {
                 }
             });
         },
-        //职位族--删除
+        //职位族--删除,多选框选择
         GroupselectChange(data) {
             this.GroupDelList = data;
             console.log(data);
         },
-        //职位族--删除,获取职位族Id
+        //职位族--删除,点击删除按钮
         delPositionGroup() {
-            this.GroupDelList = this.GroupDelList.map(
-                item => item.positionGroupId
-            );
-            this.delGroupRequst();
-            console.log(this.GroupDelList);
+            this.groupDelDialog = true;
         },
         //职位族--删除,请求接口
         delGroupRequst() {
-            let send = {
-                positionGroupIds: this.GroupDelList
-            };
+            // let send = {
+            //     positionGroupIds: this.GroupDelList
+            // };
+            this.GroupDelList = this.GroupDelList.map(
+                item => item.positionGroupId
+            );
+            let send = this.GroupDelList;
             positionGroup_api3(send, res => {
                 base.log("s", "删除职位族", send);
                 base.log("r", "删除职位族", res.data);
                 if (res.data.success) {
+                    this.$message.success("删除成功");
                     this.getAllPositionGroup();
                 } else {
                     base.error(res.data);
@@ -481,7 +522,6 @@ export default {
             this.GroupPageSize = pageSize;
             this.getAllPositionGroup();
         },
-
 
         //tab栏切换
         handleClick(tab, event) {

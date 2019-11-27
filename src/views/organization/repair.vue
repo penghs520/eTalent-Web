@@ -242,7 +242,7 @@
                                 size="small"
                             >
                                 <el-form-item label="机构编码" prop="orgCode">
-                                    <el-input v-model="editOrgForm.orgCode" ></el-input>
+                                    <el-input v-model="editOrgForm.orgCode"></el-input>
                                 </el-form-item>
                                 <el-form-item label="机构名称" prop="orgName">
                                     <el-input v-model="editOrgForm.orgName" placeholder="请输入"></el-input>
@@ -403,8 +403,8 @@
                                 class="demo-ruleForm"
                                 size="mini"
                             >
-                                <el-form-item label="新机构名称" prop="NewOrgName">
-                                    <el-input v-model="mergeForm.NewOrgName" placeholder="请输入"></el-input>
+                                <el-form-item label="新机构名称" prop="newOrgName">
+                                    <el-input v-model="mergeForm.newOrgName" placeholder="请输入"></el-input>
                                 </el-form-item>
                                 <!-- 合并机构选择框 -->
                                 <el-form-item label="待合并机构">
@@ -434,7 +434,11 @@
                         </div>
                         <span slot="footer" class="dialog-footer">
                             <el-button size="small" @click="mergeDialog = false">取 消</el-button>
-                            <el-button size="small" type="primary" @click="mergeReq">确 定</el-button>
+                            <el-button
+                                size="small"
+                                type="primary"
+                                @click="mergeReq('mergeForm')"
+                            >确 定</el-button>
                         </span>
                     </el-dialog>
                     <!-- 划转机构弹窗-->
@@ -452,12 +456,25 @@
                                 :model="enrolForm"
                                 :rules="rules"
                                 ref="enrolForm"
-                                label-width="100px"
+                                label-width="120px"
                                 class="demo-ruleForm"
                                 size="mini"
                             >
                                 <el-form-item label="选择目标机构" prop="reachOrgName">
-                                    <el-input v-model="enrolForm.reachOrgName" placeholder="请输入"></el-input>
+                                    <el-select
+                                        v-model="enrolForm.reachOrgName"
+                                        placeholder="请选择"
+                                        ref="selectTree"
+                                        popper-class="base_treeSelect"
+                                        style="width:100%"
+                                    >
+                                        <el-option
+                                            :label="enrolForm.reachOrgName"
+                                            :value="enrolForm.reachOrgName"
+                                        >
+                                            <tree :treeData="enrolTree"></tree>
+                                        </el-option>
+                                    </el-select>
                                 </el-form-item>
                                 <!-- 划转机构选择框 -->
                                 <el-form-item label="待划转机构">
@@ -487,10 +504,13 @@
                         </div>
                         <span slot="footer" class="dialog-footer">
                             <el-button size="small" @click="enrolDialog = false">取 消</el-button>
-                            <el-button size="small" type="primary" @click="enrolReq">确 定</el-button>
+                            <el-button
+                                size="small"
+                                type="primary"
+                                @click="enrolReq('enrolForm')"
+                            >确 定</el-button>
                         </span>
                     </el-dialog>
-
                 </el-tab-pane>
                 <el-tab-pane name="orgPic">
                     <span slot="label">
@@ -514,7 +534,7 @@ import {
     orgRepair_api7,
     orgRepair_api8,
     orgRepair_api9,
-    orgRepair_api10,
+    orgRepair_api10
 } from "../../request/api";
 import tree from "../../components/tree/tree";
 import commonTable from "../../components/table/commonTable";
@@ -651,8 +671,11 @@ export default {
                 orgManagerId: [
                     { required: true, message: "请输入", trigger: "blur" }
                 ],
-                NewOrgName: [
+                newOrgName: [
                     { required: true, message: "请输入", trigger: "blur" }
+                ],
+                reachOrgName: [
+                    { required: true, message: "请选择", trigger: "blur" }
                 ]
             },
             orgTypeList: [],
@@ -691,17 +714,30 @@ export default {
             mergeCheckedList: [],
             mergeList: [],
             mergeForm: {
-                NewOrgName: ""
+                newOrgName: ""
             },
             //划转机构
+            enrolTree: {
+                data: [] /* 必须，树形结构数据 */,
+                props: {
+                    /* 必须，树形结构数据绑字段配置 */
+                    children: "childList" /* 必须，子集key */,
+                    label: "orgName" /* 必须，菜单节点要显示的文字对应的字段 */
+                },
+                showDefaultIcon: true /* 非必须，是否显示默认图标 */,
+                defaultIconExpandNode: true,
+                nodeClick: this
+                    .selectTreeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
+            },
             enrolDialog: false,
             enrolForm: {
-                reachOrgName: ""
+                reachOrgName: "",
+                reachOrgValue: ""
             },
             enrolAll: true,
             enrolisIndet: false,
             enrolCheckedList: [],
-            enrolList: [],
+            enrolList: []
             //机构导入
         };
     },
@@ -713,6 +749,12 @@ export default {
         this.getTreeReq();
     },
     methods: {
+        //划转机构--点击树形
+        selectTreeClick(node) {
+            this.enrolForm.reachOrgName = node.orgName;
+            this.enrolForm.reachOrgValue = node.orgId;
+            this.$refs.selectTree.blur();
+        },
         //划转机构--点击按钮
         enrolOrg() {
             if (this.enrolList.length < 1) {
@@ -735,21 +777,30 @@ export default {
                 checkedCount > 0 && checkedCount < this.enrolList.length;
         },
         //划转机构--请求接口
-        enrolReq() {
-            // let send = {
-            //     newOrgName: "新机构名称",
-            //     orgIds: [74, 75],
-            //     targetOrgId: 28
-            // };
-            // orgRepair_api9(send, res => {
-            //     base.log("s", "划转机构", send);
-            //     base.log("r", "划转机构", res.data);
-            //     if (res.data.success) {
-                    this.enrolDialog = false;
-            //     } else {
-            //         base.error(res.data);
-            //     }
-            // });
+        enrolReq(formName) {
+            this.$refs[formName].validate(valid => {
+                if (valid) {
+                    let orgIds = this.enrolCheckedList.map(item => item.orgId);
+                    let send = {
+                        orgIds: orgIds,
+                        targetOrgId: this.enrolForm.reachOrgValue
+                    };
+                    base.log("s", "划转机构", send);
+                    orgRepair_api10(send, res => {
+                        base.log("r", "划转机构", res.data);
+                        if (res.data.success) {
+                            this.enrolDialog = false;
+                            this.$message.success("划转成功");
+                            this.getOrgTable();
+                            this.getTreeReq();
+                        } else {
+                            base.error(res.data);
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
         },
 
         //合并机构--弹出框全选
@@ -775,20 +826,31 @@ export default {
             this.mergeDialog = true;
         },
         //合并机构--请求接口
-        mergeReq() {
-            // let send = {
-            //     orgIds: [],
-            //     targetOrgId:28,
-            // };
-            // orgRepair_api10(send, res => {
-            //     base.log("s", "合并机构", send);
-            //     base.log("r", "合并机构", res.data);
-            //     if (res.data.success) {
-            this.mergeDialog = false;
-            //     } else {
-            //         base.error(res.data);
-            //     }
-            // });
+        mergeReq(formName) {
+            this.$refs[formName].validate(valid => {
+                if (valid) {
+                    let orgIds = this.mergeCheckedList.map(item => item.orgId);
+                    let send = {
+                        newOrgName: this.mergeForm.newOrgName,
+                        orgIds: orgIds,
+                        parentOrgId: this.orgParent.orgId
+                    };
+                    base.log("s", "合并机构", send);
+                    orgRepair_api9(send, res => {
+                        base.log("r", "合并机构", res.data);
+                        if (res.data.success) {
+                            this.$message.success("合并成功");
+                            this.mergeDialog = false;
+                            this.getOrgTable();
+                            this.getTreeReq();
+                        } else {
+                            base.error(res.data);
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
         },
 
         //解存--点击按钮
@@ -942,11 +1004,16 @@ export default {
         //删除机构--请求接口
         delOrgReq() {
             let send = this.delCheckedList.map(item => item.orgId);
+            if (send.length === 0) {
+                this.$message.error("未删除机构");
+                return;
+            }
             orgRepair_api5(send, res => {
                 base.log("s", "删除机构", send);
                 base.log("r", "删除机构", res.data);
                 if (res.data.success) {
                     this.getOrgTable();
+                    this.getTreeReq();
                     this.delOrgDialog = false;
                     this.$message.success("删除成功");
                 } else {
@@ -957,16 +1024,19 @@ export default {
 
         //新增机构--弹出弹框
         addOrg() {
-            this.addOrgDialog = true;
-            this.getOrgType(); //获取所有机构类型
-            this.addOrgForm.orgName = "";
-            this.addOrgForm.orgManagerId = "";
             if (this.orgParent.length === 0) {
-                let maxCodeList = this.treeData.data.map(item => item.orgCode);
-                let maxCode = Math.max.apply(this, maxCodeList);
-                this.addOrgForm.orgCode = maxCode + 1;
+                this.$message.error("请选择机构");
+                // let maxCodeList = this.treeData.data.map(item => item.orgCode);
+                // let maxCode = Math.max.apply(this, maxCodeList);
+                // this.addOrgForm.orgCode = maxCode + 1;
+                // this.rules.orgParentId = [] //构建集团时取消上级机构校验
                 return;
             }
+            // this.rules.orgParentId = [{ required: true, message: "请输入", trigger: "blur" }]
+            this.addOrgForm.orgName = "";
+            this.addOrgForm.orgManagerId = "";
+            this.getOrgType(); //获取所有机构类型
+            this.addOrgDialog = true;
             this.addOrgForm.orgCode = Number(this.maxCodeAdd);
             this.addOrgForm.orgParentId = this.orgParent.orgId;
         },
@@ -1057,7 +1127,7 @@ export default {
         getOrgTable() {
             let send = {
                 currentPage: this.currentPage,
-                // isEnable: this.value ? 0 : 1,
+                isEnable: this.value ? 0 : 1,
                 orgParentId: this.orgParent.orgId,
                 pageSize: this.pageSize,
                 querFieldVos: []
@@ -1107,6 +1177,7 @@ export default {
                 base.log("r", "查询树", d);
                 if (d.success) {
                     this.treeData.data = d.result.list;
+                    this.enrolTree.data = d.result.list;
                 } else {
                     base.error(d);
                 }

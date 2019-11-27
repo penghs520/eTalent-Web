@@ -91,13 +91,14 @@ export default {
                         ]
                     }
                 ],
+                activeColumn: Array/String,             /* 非必须，给列加高亮，值是该列表格头显示的名称，多列的话要写成数组格式 */
+                cellClick: Function,                    /* 非必须，表格单元格被点击的回调，接收3个参数：该列的key、行数据、该单元格显示的内容 */
                 loading: Boolean,                       /* 非必须，加载动画 */
-                pageResize: Boolean,                    /* 非必须，页码重置 */
                 page: {                                 /* 非必须，页码配置 */
                     pageSizes: [1,2,3],                 /* 非必须，页码可选的每页数量 */
                     pageSize: 2                         /* 非必须，默认每页显示的数量 */
                 },
-                pageResize: false,
+                pageResize: Boolean,                    /* 非必须，页码重置 */
                 pageHide: false,                        /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */
                 pageSizeChange: this.pageSizeChange,    /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */
                 pageChange: this.pageChange,            /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */

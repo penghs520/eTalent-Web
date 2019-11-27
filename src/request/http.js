@@ -42,6 +42,23 @@ function request_postForm(url, data, callback) {
         });
 }
 
+function request_postDownload(url, data, callback) {
+    axios.post(url, qs.stringify(data), {
+        withCredentials: true,
+        headers: {
+            'Content-disposition': 'attachment; filename=rzjl.xls',
+            'Content-Type': 'application/msexcel',
+        },
+        responseType: 'blob'
+    })
+        .then(function (response) {
+            callback(response);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
 
 
 // 请求拦截器
@@ -90,6 +107,10 @@ export default function request(type, url, data, callback) {
             
         case 'form' || 'FORM':
             request_postForm(url, data, callback);
+            break;
+
+        case 'excel':
+            request_postDownload(url, data, callback);
             break;
 
         default:

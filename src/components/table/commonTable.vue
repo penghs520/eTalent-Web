@@ -78,8 +78,10 @@
             stripe
             ref="tableDom"
             header-row-class-name="tableHeader"
-            @selection-change="selectChange" 
-            v-loading='loading' 
+            :v-loading='loading' 
+            :cell-style="cellStyle"
+            @selection-change="selectChange"
+            @cell-click="cellClick" 
             element-loading-text="拼命加载中"
             element-loading-spinner="el-icon-loading"
             element-loading-background="rgba(0, 0, 0, 0.5)" >
@@ -283,6 +285,25 @@ export default {
             }else{
                 return cellValue;
             };
+        },
+
+        // 单元格样式--给列加高亮
+        cellStyle(cell) {
+            if (this.table.activeColumn) {
+                let label = cell.column.label;
+                if (this.table.activeColumn.includes(label)) {
+                    return {"color": "#FF8C58", "cursor": "pointer"};
+                }
+            }
+        },
+
+        // 单元格被点击
+        cellClick(row,column,cell,event) {
+            if (this.table.cellClick) {
+                let key = column.property;
+                let cellText = row[key];
+                this.table.cellClick(key, row, cellText);
+            }
         },
     }
 }

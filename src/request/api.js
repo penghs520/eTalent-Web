@@ -25,12 +25,16 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
 
     // 入职管理
     const entry_api1     = (data, callback) => {request('form', `api/masterdata/staffpre/selectPreEmployment`, data, callback)};
-    const entry_api2     = (data, callback) => {request('post', `api/masterdata/staffpre/selectPreEmployment`, data, callback)};
+    const entry_api2     = (data, callback) => {request('post', `api/masterdata/staffpre/insertPreEmployment`, data, callback)};
     const entry_api3     = (data, callback) => {request('post', `api/masterdata/staffpre/sendMail`, data, callback)};
     const entry_api4     = (data, callback) => {request('post', `api/masterdata/staffpre/confirmPreemployment`, data, callback)};
     const entry_api5     = (data, callback) => {request('post', `api/masterdata/staffpre/deletePreEmployment`, data, callback)};
     const entry_api6     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentChange`, data, callback)};
     const entry_api7     = (data, callback) => {request('post', `api/masterdata/staffarc/importPreFile`, data, callback)};      // 导入
+    const entry_api8     = (data, callback) => {request('form', `api/masterdata/staffarc/getPostByOrgId`, data, callback)};
+    const entry_api9     = (data, callback) => {request('post', `api/masterdata/staffarc/sendMessage`, data, callback)};
+    const entry_api10     = (data, callback) => {request('excel', `api/masterdata/staffarc/exportPreFile`, data, callback)};
+    const entry_api11     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentField`, data, callback)};
 
     // 参数设置
         //合同参数
@@ -128,7 +132,8 @@ export {
         // 公用接口
         staff_api1, staff_api2, staff_api3,
         // 入职管理
-        entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6, entry_api7,
+        entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6, entry_api7, entry_api8, entry_api9, entry_api10,
+        entry_api11, 
 
         // 参数设置
             // 合同参数

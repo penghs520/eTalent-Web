@@ -139,7 +139,7 @@
 
             <div class="btns">
                 <el-button plain="" size="small" @click="sendEntryApply = false" >返回</el-button>
-                <el-button class="send" type="primary" size="small" @click="sendEntryApplySure" :disabled="entryApplySureBtn()" :loading="entryApplyLoading" >发送</el-button>
+                <el-button class="send" type="primary" size="small" @click="sendEntryApplySure" :disabled="entryApplySureBtn()" :loading="entryApplyLoadingEmail || entryApplyLoadingPhone" >发送</el-button>
             </div>
         </div>
 
@@ -152,7 +152,7 @@
             center>
             <span slot="title" >新增</span>
             <div class="qinjeeDialogBigCont">
-                <el-form :model="addForm" size="small" status-icon :rules="addRules" ref="addForm" label-width="100px" >
+                <el-form :model="addForm" size="small" status-icon :rules="addRules" ref="addForm" label-width="110px" >
                     <!-- 个人信息 -->
                     <el-row :gutter="20" >
                         <el-col :span="12">
@@ -162,15 +162,15 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="性别" prop="sex">
-                                <el-radio v-model="addForm.sex" label="1">男</el-radio>
-                                <el-radio v-model="addForm.sex" label="2">女</el-radio>
+                                <el-radio v-model="addForm.sex" label="男">男</el-radio>
+                                <el-radio v-model="addForm.sex" label="女">女</el-radio>
                             </el-form-item>
                         </el-col>
                     </el-row>
 
                     <el-row :gutter="20" >
                         <el-col :span="12">
-                            <el-form-item label="联系电话" prop="phone">
+                            <el-form-item label="手机号码" prop="phone">
                                 <el-input v-model="addForm.phone"></el-input>
                             </el-form-item>
                         </el-col>
@@ -292,7 +292,9 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="入职岗位" prop="joinPost">
-                                <el-input v-model="addForm.joinPost"></el-input>
+                                <el-select v-model="addForm.joinPost" style="width:100%" @change="joinPostChange" >
+                                    <el-option v-for="(item,index) in postList" :key="index" :label="item.post_name" :value="item.post_id" ></el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -340,7 +342,7 @@
             center>
             <span slot="title" >延期入职</span>
             <div class="qinjeeDialogSmallCont">
-                <el-form :model="delayForm" size="small" status-icon :rules="addRules" ref="delayForm" label-width="120px" >
+                <el-form :model="delayForm" size="small" status-icon :rules="delayRules" ref="delayForm" label-width="120px" >
                     <el-form-item label="延期入职时间" prop="date">
                         <el-date-picker
                             style="width:100%;"
@@ -406,11 +408,13 @@
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button size="small" @click="blackDialog = false">取 消</el-button>
-                <el-button size="small" type="primary" @click="giveUpSure('blackForm')">确 定</el-button>
+                <el-button size="small" type="primary" @click="blackSure('blackForm')">确 定</el-button>
             </span>
         </el-dialog>
 
         <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="0"></commonUpload>
+
+        <userInfo v-show='userInfoShow' :userInfo="userInfoData"></userInfo>
 
     </div>
 </template>
@@ -420,20 +424,18 @@ import base from '../../assets/js/base';
 import commonTable from '../../components/table/commonTable';
 import commonUpload from '../../components/upload/upload';
 import tree from '../../components/tree/tree';
+import userInfo from './components/userInfo';
 import {sys_api1, entry_api1, entry_api2, entry_api3, staff_api1, staff_api2, staff_api3, entry_api4, entry_api5,
-        entry_api6, entry_api7} from "../../request/api";
+        entry_api6, entry_api7, entry_api8, entry_api9, entry_api10} from "../../request/api";
 
 export default {
     name: 'entry',              /* 入职管理 */
-    components: {commonTable, commonUpload, tree},
+    components: {commonTable, commonUpload, tree, userInfo},
     data() {
         return {
             cardTyptList: [],               // 证件类型
             marryStatusList: [],            // 婚姻状况
             degreeList: [],                 // 学历
-            testList: [],                   // 试用期
-            entryDepartment: [],            // 入职部门
-            entryPost: [],                  // 入职岗位
 
             // 主页面表格
             table: {
@@ -486,10 +488,11 @@ export default {
                         ]
                     }
                 ],
+                activeColumn: ['姓名'],
+                cellClick: this.tableCellClick,
                 showSelect: true,                       /* 非必须，是否显示select勾选框 */
                 loading: false,                       /* 非必须，加载动画 */
                 pageResize: false,                    /* 非必须，页码重置 */
-                pageResize: false,
                 pageSizeChange: this.pageSizeChange,    /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */
                 pageChange: this.pageChange,            /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
                 formatter: this.formatter,
@@ -521,11 +524,14 @@ export default {
                 joinDepartment: '', /* 入职部门名称 */
                 joinDepartmentId: '',   /* 入职部门id */
                 joinPost: '',       /* 入职岗位 */
+                joinPostId: ''      /* 入职岗位id */
             },
             addRules: {
                 name: [{required: true, message: '请输入姓名', trigger: 'change'}],
-                phone: [{required: true, message: '请输入联系电话', trigger: 'change'}],
-                email: [{type: 'email', message: '请输入正确的邮箱地址', trigger: 'change'}]
+                phone: [{required: true, message: '请输入手机号码', trigger: 'change'},
+                        {pattern: /^1[3,4,5,6,7,8,9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'change'}],
+                email: [{type: 'email', message: '请输入正确的邮箱地址', trigger: 'change'}],
+                joinDate: [{required: true, message: '请选择计划入职日期', trigger: 'change'}],
             },
             testList: [             /* 试用期 */
                 {label: '无试用期', value: 0},
@@ -574,7 +580,8 @@ export default {
                 formatter: this.formatter,
             },
             entryChecked: null,                     /* 发送入职申请内页勾选改变后的值 */
-            entryApplyLoading: false,
+            entryApplyLoadingEmail: false,
+            entryApplyLoadingPhone: false,
 
             // 删除预入职
             entryDeleteInfo: '',
@@ -591,7 +598,7 @@ export default {
                 date: '',
                 reason: ''
             },
-            addRules: {
+            delayRules: {
                 date: [{required: true, message: '请选择延期入职时间', trigger: 'blur'}],
                 reason: [{required: true, message: '请填写延期入职原因', trigger: 'change'}],
             },
@@ -630,7 +637,10 @@ export default {
                 cancelLoading: false,             // 必须，取消loading
                 checkLoading: false,              // 必须，校验loading
                 finishLoading: false,             // 必须，完成loading
-            }
+            },
+
+            userInfoShow: false,                /* 用户详细信息是否显示 */
+            userInfoData: null,
         };
     },
     mounted() {
@@ -664,7 +674,7 @@ export default {
 
         // 单元格格式化
         formatter(key,val) {
-            if (key === 'hireDate' || key === 'preEmploymentChange.delayDate') {
+            if (key === 'hireDate' || key === 'delayDate') {
                 if (val) {
                     let r = val.split('T');
                     return r[0];
@@ -688,11 +698,7 @@ export default {
             this.initGetDataSubmit('DEGREE', '学历', 'degreeList');
 
             // 请求入职部门
-            // this.initGetDataSubmit('CARD_TYPE', '证件类型');
             this.getCompany();
-
-            // 请求入职岗位
-            // this.initGetDataSubmit('CARD_TYPE', '证件类型');
         },
 
         // 请求需要的数据--请求方式
@@ -741,25 +747,32 @@ export default {
 
         // 部门下拉框节点被点击
         selectTreeNodeClick(node) {
-            console.log(node);
             this.addForm.joinDepartment = node.org_name;
             this.addForm.joinDepartmentId = node.org_id;
             this.$refs.selectTree.blur();
+            this.getPost(node.org_id);
+            this.addForm.joinPost = '';
+            this.addForm.joinPostId = '';
         },
 
         // 获取入职岗位
         getPost(departmentId) {
             let send = {"orgId": departmentId};
             base.log('s', '获取入职岗位', send);
-            staff_api3(send, res => {
+            entry_api8(send, res => {
                 let d = res.data;
                 base.log('r', '获取入职岗位', d);
                 if (d.success) {
-                    this.postList = d.result;
+                    this.postList = JSON.parse(d.result);
                 }else{
                     base.error(d);
                 }
             })
+        },
+
+        // 入职岗位改变
+        joinPostChange(v) {
+            this.addForm.joinPostId = v;
         },
 
         // 证件类型改变
@@ -794,26 +807,46 @@ export default {
 
         // 新增提交
         addSubmit() {
-            // name: '',           /* 姓名 */
-            // sex: '',            /* 性别 */
-            // phone: '',          /* 联系电话 */
-            // email: '',          /* 邮箱 */
-            // idType: '',         /* 证件类型 */
-            // idNum: '',          /* 证件号码 */
-            // age: '',            /* 年龄 */
-            // startWorkDate: '',  /* 参加工作时间 */
-            // post: '',           /* 应聘岗位 */
-            // maritalStatus: '',  /* 婚姻状况 */
-            // degree: '',         /* 最高学历 */
-            // school: '',         /* 毕业学校 */
-            // major: '',          /* 毕业专业 */
-            // lastCompany: '',    /* 最近工作单位 */
-
-            // joinDate: '',       /* 计划入职日期 */
-            // testDate: '',       /* 试用期 */
-            // joinDepartment: '', /* 入职部门 */
-            // joinPost: '',       /* 入职岗位 */
-            let send = {};
+            let send = {
+                "abandonReason":        "",                                         /* 放弃入职原因 */
+                "age":                  Number(this.addForm.age),                   /* 年龄 */
+                "applicationPosition":  this.addForm.post,                          /* 应聘岗位 */
+                "birthDate":            "",                                         /* 出生日期 */
+                "birthplace":           "",                                         /* 出生地 */
+                "blockReson":           "",                                         /* 拉黑原因 */
+                "bloodType":            "",                                         /* 血型 */
+                "dataSource":           "",                                         /* 数据来源 */
+                "delayDate":            "",                                         /* 延期日期 */
+                "delayReson":           "",                                         /* 延期原因 */
+                "description":          "",                                         /* 描述 */
+                "email":                this.addForm.email,                         /* 邮箱 */
+                "employmentId":         0,                                          /* 预入职ID */
+                "employmentRegister":   "",                                         /* 入职登记 */
+                "employmentState":      "",                                         /* 入职状态 */
+                "englishName":          "",                                         /* 英文名 */
+                "firstWorkDate":        this.addForm.startWorkDate,                 /* 参加工作时间 */
+                "gender":               this.addForm.sex,                           /* 性别 */
+                "graduatedSchool":      this.addForm.school,                        /* 毕业院校 */
+                "graduatedSpeciality":  this.addForm.major,                         /* 毕业专业 */
+                "height":               0,                                          /* 身高 */
+                "highestDegree":        this.addForm.degree,                        /* 最高学历 */
+                "hireDate":             this.addForm.joinDate,                      /* 入职日期 */
+                "idNumber":             this.addForm.idNum,                         /* 证件号码 */
+                "idType":               this.addForm.idType,                        /* 证件类型 */
+                "isGiveBirth":          0,                                          /* 是否已育 */
+                "lastWorkCompany":      this.addForm.lastCompany,                   /* 最近工作单位 */
+                "maritalStatus":        this.addForm.maritalStatus,                 /* 婚姻状况 */
+                "nationality":          0,                                          /* 民族 */
+                "orgId":                Number(this.addForm.joinDepartmentId),      /* 入职部门id */
+                "orgName":              this.addForm.joinDepartment,                /* 入职部门 */
+                "phone":                this.addForm.phone,                         /* 手机号 */
+                "politicalStatus":      0,                                          /* 政治面貌 */
+                "postId":               Number(this.addForm.joinPostId),            /* 入职岗位id */
+                "postName":             this.addForm.joinPost,                      /* 入职岗位 */
+                "probationPeriod":      Number(this.addForm.testDate),              /* 试用期 */
+                "residentCharacter":    "",                                         /* 户口性质 */              
+                "userName":             this.addForm.name                           /* 用户名 */
+            };
             base.log('s', '新增预入职', send);
             this.addLoading = true;
             entry_api2(send, res => {
@@ -822,7 +855,11 @@ export default {
                 base.log('r', '新增预入职', d);
                 if (d.success) {
                     base.success(d);
+                    this.currentPage = 1;
+                    this.pageSize = 10;
+                    this.table.pageResize = true;
                     this.getTable();
+                    this.addDialog = false;
                 }else{
                     base.error(d);
                 }
@@ -881,8 +918,9 @@ export default {
 
             if (this.noticeType.includes('邮件通知')) {
                 this.entryAppltEmail(personIdList);
-            }else if (this.noticeType.includes('短信通知')) {
-                // 
+            };
+            if (this.noticeType.includes('短信通知')) {
+                this.entryApplyMessage(personIdList);
             };
         },
 
@@ -896,9 +934,9 @@ export default {
                 "subject": "预入职"
             };
             base.log('s', '邮件发送预入职登记', send);
-            this.entryApplyLoading = true;
+            this.entryApplyLoadingEmail = true;
             entry_api3(send, res => {
-                this.entryApplyLoading = false;
+                this.entryApplyLoadingEmail = false;
                 let d = res.data;
                 base.log('r', '邮件发送预入职登记', d);
                 if (d.success) {
@@ -910,7 +948,25 @@ export default {
         },
 
         // 发送入职登记--短信
-        entryApplyMessage(idList) {},
+        entryApplyMessage(idList) {
+            let send = {
+                "list": idList,
+                "params": ["string", 1],
+                "templateId": 89
+            };
+            base.log('s', '短信发送预入职登记', send);
+            this.entryApplyLoadingPhone = true;
+            entry_api9(send, res => {
+                this.entryApplyLoadingPhone = false;
+                let d = res.data;
+                base.log('r', '短信发送预入职登记', d);
+                if (d.success) {
+                    base.success(d);
+                }else{
+                    base.error(d);
+                }
+            })
+        },
 
         // 确认入职
         entry(searchData,radioData,checkboxData) {
@@ -986,7 +1042,7 @@ export default {
         // 删除--确定
         deleteSure() {
             let send = this.deleteIdList;
-            base,log('s', '删除预入职', send);
+            base.log('s', '删除预入职', send);
             this.deleteSureLoading = true;
             entry_api5(send, res => {
                 this.deleteSureLoading = false;
@@ -994,6 +1050,10 @@ export default {
                 base.log('r', '删除预入职', d);
                 if (d.success) {
                     base.success(d);
+                    this.currentPage = 1;
+                    this.pageSize = 10;
+                    this.table.pageResize = true;
+                    this.getTable();
                     this.entryDeleteDialog = false;
                 }else{
                     base.error(d);
@@ -1169,22 +1229,6 @@ export default {
         // 导入--完成
         upload_finish() {},
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // 打印登记表
         print(searchData,radioData,checkboxData) {
             // 暂时不做，还没打印模板
@@ -1192,13 +1236,51 @@ export default {
 
 
         // 导出
-        download() {},
+        download(searchData,radioData,checkboxData) {
+            console.log(checkboxData)
+            let send = {
+                "list": !checkboxData || checkboxData.length === 0 ? null : checkboxData.map(item => {return item.employmentId}),
+                "title": "string"
+            };
+            base.log('s', '导出', send);
+            entry_api10(send, res => {
+                console.log(res);
+
+                let blob = new Blob([res.data]);
+                let url = window.URL.createObjectURL(blob);
+
+                // 4.创建url之后可以模拟对此文件对象的一系列操作，例如：预览、下载
+                let a = document.createElement("a");
+                a.href = url;
+                a.download = "string.xls";
+                a.click();
+                // 5.释放这个临时的对象url
+                window.URL.revokeObjectURL(url);
+            })
+        },
 
         // 改变页容量
-        pageSizeChange(size) {},
+        pageSizeChange(size) {
+            this.currentPage = 1;
+            this.pageSize = size;
+            this.table.pageResize = true;
+            this.getTable();
+        },
 
         // 翻页
-        pageChange(index) {},
+        pageChange(index) {
+            this.this.currentPage = index;
+            this.getTable();
+        },
+
+        // 表格单元格被点击
+        tableCellClick(key,row,text) {
+            if (key === 'userName') {
+                console.log(row);
+                this.userInfoData = row;
+                this.userInfoShow = true;
+            }
+        },
     }
 }
 </script>

@@ -39,6 +39,8 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     // 参数设置
         //合同参数
         const params_api1     = (data, callback) => {request('form', `api/masterdata/number/insertContractParam`, data, callback)};
+        //工号规则
+        const params_api2     = (data, callback) => {request('form', `api/masterdata/number/insertEmployNumber`, data, callback)};
     
     
     // 档案管理
@@ -103,6 +105,9 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const positionGroup_api3    = (data, callback) => {request('post', `api/masterdata/positionGroup/deletePositionGroup`, data, callback)};
         const positionGroup_api4    = (data, callback) => {request('get', `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
 
+        // 职位设置
+        const position_api1    = (data, callback) => {request('post', `api/masterdata/position/getPositionPage`, data, callback)};
+        
         // 职级设置
         const positionLevel_api1    = (data, callback) => {request('get', `api/masterdata/positionLevel/getPositionLevelList`, data, callback)};
 
@@ -127,7 +132,8 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         
     // 岗位管理
         // 岗位维护
-        const postRepair_api    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationPostTree`, data, callback)};
+        const postRepair_api1    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationPostTree`, data, callback)};
+        const postRepair_api2    = (data, callback) => {request('post', `api/masterdata/post/getPostList`, data, callback)};
        
 
 export {
@@ -150,7 +156,7 @@ export {
 
         // 参数设置
             // 合同参数
-            params_api1,
+            params_api1,params_api2,
 
     // 系统管理
         // 权限管理
@@ -172,6 +178,9 @@ export {
             // 职位族设置
             positionGroup_api1,positionGroup_api2,positionGroup_api3,positionGroup_api4,
             
+            //职位设置
+            position_api1,
+            
             //职级设置
             positionLevel_api1,
 
@@ -185,6 +194,6 @@ export {
 
         // 岗位管理
             // 岗位维护
-            postRepair_api,
+            postRepair_api1,postRepair_api2,
 
 }

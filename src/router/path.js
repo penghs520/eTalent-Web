@@ -16,6 +16,7 @@ const organization_position  = () => import(/* webpackChunkName: "group-organiza
     // 参数设置
     const staff_jobNumber               = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/jobNumber.vue');
     const staff_contract_params         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/contract_params.vue');
+    const staff_entry_template          = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/entry_template.vue');
 
 // 权限管理
 const authority_role         = () => import(/* webpackChunkName: "group-authority" */ '../views/authority/role.vue');
@@ -43,6 +44,7 @@ let path = {
         //参数设置
         staff_jobNumber,
         staff_contract_params,
+        staff_entry_template,
 
     // 权限管理
     authority_role,

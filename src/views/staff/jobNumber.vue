@@ -1,158 +1,279 @@
-<style scoped>
-
+<style lang="scss" scoped>
+#staff_contract_params {
+    display: flex;
+    height: 100%;
+    text-align: left;
+    .content {
+        width: 100%;
+        height: 100%;
+        border: 10px solid #f0f0f0;
+        border-bottom: none;
+        padding: 24px 0px 0px 24px;
+        box-sizing: border-box;
+        background-color: #fff;
+        .contract_content {
+            width: 726px;
+            margin: 41px 0px 0px 124px;
+        }
+        .result {
+            margin: 24px 0px 32px 124px;
+            .result_number {
+                margin-left: 32px;
+                color: #ff8c58;
+            }
+        }
+        .footer_btn {
+            display: flex;
+            justify-content: center;
+        }
+    }
+    .title {
+        display: flex;
+        align-items: center;
+        .vertical_line {
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            margin-right: 16px;
+            background-color: #ff8c58ff;
+        }
+        span {
+            font-size: 16px;
+            color: #262626ff;
+        }
+    }
+    .contract_title {
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
+    .input_num {
+        margin: 0px 8px;
+    }
+}
 </style>
 <template>
-    <div id="staff_jobNumber">
-        <h1>工号规则</h1>
-        <commonTable :table="table" ></commonTable>
+    <div id="staff_contract_params">
+        <div class="content">
+            <!-- 合同编号规则 -->
+            <div class="contract">
+                <div class="title">
+                    <i class="vertical_line"></i>
+                    <span>工号设定</span>
+                </div>
+                <div class="contract_content">
+                    <el-row :gutter="10">
+                        <el-col :span="4">
+                            <div class="grid-content bg-purple">
+                                <div class="contract_title">前缀固定字符</div>
+                                <el-input size="mini" v-model="Prefix" placeholder="请输入"></el-input>
+                            </div>
+                        </el-col>
+                        <el-col :span="4">
+                            <div class="grid-content bg-purple">
+                                <div class="contract_title">日期</div>
+                                <el-select
+                                    v-model="date"
+                                    placeholder="请选择"
+                                    size="mini"
+                                    @change="dateChange"
+                                >
+                                    <el-option
+                                        v-for="item in dateList"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value"
+                                    ></el-option>
+                                </el-select>
+                            </div>
+                        </el-col>
+                        <el-col :span="4">
+                            <div class="grid-content bg-purple">
+                                <div class="contract_title">中间固定字符</div>
+                                <el-input size="mini" v-model="Infix" placeholder="请输入"></el-input>
+                            </div>
+                        </el-col>
+                        <el-col :span="4">
+                            <div class="grid-content bg-purple">
+                                <div class="contract_title">流水号</div>
+                                <el-select
+                                    v-model="serial"
+                                    placeholder="请选择"
+                                    size="mini"
+                                    @change="serialChange"
+                                >
+                                    <el-option
+                                        v-for="item in serialList"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value"
+                                    ></el-option>
+                                </el-select>
+                            </div>
+                        </el-col>
+                        <el-col :span="4">
+                            <div class="grid-content bg-purple">
+                                <div class="contract_title">后缀固定字符</div>
+                                <el-input size="mini" v-model="Suffix" placeholder="请输入"></el-input>
+                            </div>
+                        </el-col>
+                    </el-row>
+                </div>
+                <div class="result">
+                    <span>工号示范例:</span>
+                    <span class="result_number">{{jobNum}}</span>
+                </div>
+            </div>
+            <!--按钮点击-->
+            <div class="footer_btn">
+                <el-button plain size="small">取消</el-button>
+                <el-button type="primary" size="small" @click="saveSet">保存</el-button>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
-import base from '../../assets/js/base';
-import commonTable from '../../components/table/commonTable';
-import {user_api1} from '../../request/api';
+import base from "../../assets/js/base";
+import { params_api2 } from "../../request/api";
 
 export default {
-    name: 'jobNumber',             /* 用户授权 */
-    components: {commonTable},
+    name: "contract_params",
     data() {
         return {
-            table: {
-                head: [                                 /* 必须，表格头配置 */
-                    {
-                        name: '姓名',                   /* 必须，表格头所显示的文字 */
-                        key: 'userName',                /* 必须，该列要显示的数据所对应的变量的字符串格式 */
-                        isShow: true,                   /* 必须，表格是否默认显示该列 */
-                        width: '200px'                  /* 非必须，该列的默认宽度 */
-                    },
-                    {name: '工号', key: 'employeeNumber', isShow: true}
-                ],
-                data: [],                               /* 必须，表格要渲染的数据，数组格式 */
-                total: 0,                               /* 必须，数据的总条数，用于翻页 */
-                bar: [                                  /* 非必须，表格上面的操作栏配置 */
-                    {
-                        type: 'input',                  /* 输入框 */
-                        placeholder: '请输入',          /* 非必须，输入框提示语 */
-                        key: 'name',                    /* 必须，输入框绑定的变量字符串 */
-                        defaultVal: '',                 /* 非必须，默认值 */
-                        enter: this.search              /* 非必须，回车键的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: 'select',                 /* 单选下拉框 */
-                        placeholder: '请选择',
-                        key: 'type',
-                        defaultVal: '',
-                        list: [
-                            {label: '类型1', value: 1},
-                            {label: '类型2', value: 2},
-                        ]
-                    },
-                    {
-                        type: 'button',                 /* 必须，DOM类型：按钮 */
-                        text: '查询',                   /* 必须，按钮名称 */
-                        btnType: 'primary',             /* 非必须，element-ui提供的按钮样式 */
-                        icon: 'el-icon-search',         /* 非必须，icon图标 */
-                        method: this.search             /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: 'buttons',                 /* 下拉按钮 */
-                        text: '更多',
-                        btnType: 'primary',
-                        icon: '',
-                        defaultIconHide: false,         /* 非必须，默认图标是否不显示，默认显示，true-不显示，false-显示 */
-                        list: [                         /* 必须，更多按钮的数据组成的数组 */
-                            {
-                                text: '按钮1',          /* 必须，按钮名称 */
-                                method: this.btn1,      /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                                icon: 'el-icon-search'  /* 非必须，icon图标 */
-                            },
-                            {text: '按钮2', method: this.btn2}
-                        ]
-                    }
-                ],
-                showSelect: false,                       /* 非必须，是否显示select勾选框 */
-                selectChange: this.selectChange,        /* 非必须，selcet选中改变时的回调，接收1个参数 */
-                showRadio: true,                        /* 非必须，是否显示单选框 */
-                perColumn: [                            /* 非必须，表格前置列配置，数组格式，数组中的每个元素就是一列 */
-                    {
-                        name: '角色',                   /* 必须，该列的表头名称 */
-                        width: '200px',                 /* 非必须，该列的宽度 */
-                        btnList: [                      /* 必须，该列中要渲染的按钮，数组格式，数组中每个元素就是一个按钮 */
-                            {
-                                type: 'primary',        /* 非必须，按钮的样式，element-ui提供的按钮样式 */
-                                icon: '',               /* 非必须，按钮的icon */
-                                text: '角色',           /* 必须，按钮上显示的文字 */
-                                method: this.columnBtn        /* 必须，按钮点击时的回调，该函数接收1个参数：该行的数据 */
-                            }
-                        ]
-                    }
-                ],
-                page: {                                 /* 非必须，页码配置 */
-                    pageSizes: [10,20,30,40],                 /* 非必须，页码可选的每页数量 */
-                    pageSize: 20                         /* 非必须，默认每页显示的数量 */
-                },
-                pageHide: false,                        /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */
-                pageSizeChange: this.pageSizeChange,    /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */
-                pageChange: this.pageChange,            /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
-            },
+            Prefix: "",
+            Infix: "",
+            Suffix: "",
+            date: "",
+            dateList: [
+                { value: "", label: "空" },
+                { value: "YY", label: "YY(两位年)" },
+                { value: "YYYY", label: "YYYY(四位年)" },
+                { value: "YYMM", label: "YYMM(两位年两位月)" },
+                { value: "YYYYMM", label: "YYYYMM(四位年两位月)" },
+                { value: "YYYYMMDD", label: "YYYYMMDD(四位年两位月两位日)" }
+            ],
+            serial: "",
+            serialList: [
+                { value: 2, label: "01(两位)" },
+                { value: 3, label: "001(三位)" },
+                { value: 4, label: "0001(四位)" },
+                { value: 5, label: "00001(五位)" },
+                { value: 6, label: "000001(六位)" },
+                { value: 7, label: "0000001(七位)" }
+            ],
+            dateFormatter: "",
+            serialFormatter: ""
         };
     },
-    mounted() {
-        this.getTable();
+    computed: {
+        jobNum() {
+            let res =
+                this.Prefix +
+                this.dateFormatter +
+                this.Infix +
+                this.serialFormatter +
+                this.Suffix;
+            return res;
+        }
+    },
+    created() {
+        try {
+            let params = JSON.parse(localStorage.getItem("numberRuler"));
+            this.Prefix = params.employeeNumberPrefix;
+            this.Infix = params.employeeNumberInfix;
+            this.Suffix = params.employeeNumberSuffix;
+            this.date = params.dateRule;
+            this.serial = params.digitCapacity;
+
+            this.dateChange(this.date);
+            this.serialChange(this.serial)
+        } catch (error) {}
     },
     methods: {
-        // 获取表格数据
-        getTable() {
+        //保存设置
+        saveSet() {
+            this.setNumberReq();
+        },
+        //工号生成请求
+        setNumberReq() {
             let send = {
-                roleId: 1,
-                currentPage: 1,
-                pageSize: 10
+                employeeNumberPrefix: this.Prefix,
+                employeeNumberInfix: this.Infix,
+                employeeNumberSuffix: this.Suffix,
+                dateRule: this.date,
+                digitCapacity: Number(this.serial)
             };
-            base.log('s', '获取表格数据', send);
-            user_api1(send, res => {
-                let d = res.data;
-                base.log('r', '获取表格数据', d);
-                if (d.success) {
-                    this.table.data = d.result.list;
-                    this.table.total = d.result.total;
-                }else{
-                    base.error(d);
+
+            localStorage.setItem("numberRuler", JSON.stringify(send));
+
+            base.log("s", "生成工号表", send);
+            params_api2(send, res => {
+                base.log("r", "生成工号表", res.data);
+                if (res.data.success) {
+                    this.$message.success("设置成功");
+                } else {
+                    base.error(res.data);
                 }
-            })
+            });
         },
-
-        selectChange(val) {
-            console.log(val)
+        //日期选择框--格式化
+        dateChange(val) {
+            switch (val) {
+                case "":
+                    this.dateFormatter = "";
+                    break;
+                case "YY":
+                    this.dateFormatter = String(new Date().getFullYear()).slice(
+                        2,
+                        4
+                    );
+                    break;
+                case "YYYY":
+                    this.dateFormatter = String(new Date().getFullYear());
+                    break;
+                case "YYMM":
+                    this.dateFormatter =
+                        String(new Date().getFullYear()).slice(2, 4) +
+                        (new Date().getMonth() + 1);
+                    break;
+                case "YYYYMM":
+                    this.dateFormatter =
+                        String(new Date().getFullYear()) +
+                        (new Date().getMonth() + 1);
+                    break;
+                case "YYYYMMDD":
+                    this.dateFormatter =
+                        String(new Date().getFullYear()) +
+                        (new Date().getMonth() + 1) +
+                        new Date().getDate();
+                    break;
+            }
+            console.log(val);
         },
-
-        search(search,radio,checkbox) {
-            console.log('查询')
-            console.log(search)
-            console.log(radio)
-            console.log(checkbox)
-        },
-
-        btn1(search,radio,checkbox) {
-            console.log('按钮1')
-            console.log(search)
-            console.log(radio)
-            console.log(checkbox)
-        },
-        btn2(search,radio,checkbox) {
-            console.log('按钮2')
-            console.log(search)
-            console.log(radio)
-            console.log(checkbox)
-        },
-        pageChange(page) {
-            console.log('88888888888')
-            console.log(page)
-        },
-        columnBtn(row) {
-            console.log(row)
-        },
-
+        //流水号--格式化
+        serialChange(val) {
+            switch (val) {
+                case 2:
+                    this.serialFormatter = "01";
+                    break;
+                case 3:
+                    this.serialFormatter = "001";
+                    break;
+                case 4:
+                    this.serialFormatter = "0001";
+                    break;
+                case 5:
+                    this.serialFormatter = "00001";
+                    break;
+                case 6:
+                    this.serialFormatter = "000001";
+                    break;
+                case 7:
+                    this.serialFormatter = "0000001";
+                    break;
+            }
+        }
     }
-}
+};
 </script>
+

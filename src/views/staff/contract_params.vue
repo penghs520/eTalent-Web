@@ -183,9 +183,8 @@
 </template>
 
 <script>
-
-import base from "../../assets/js/base"
-import { params_api1 } from "../../request/api"
+import base from "../../assets/js/base";
+import { params_api1 } from "../../request/api";
 
 export default {
     name: "contract_params",
@@ -216,7 +215,7 @@ export default {
                 { value: 7, label: "0000001(七位)" }
             ],
             dateFormatter: "",
-            serialFormatter:"",
+            serialFormatter: ""
         };
     },
     computed: {
@@ -228,31 +227,48 @@ export default {
                 this.serialFormatter +
                 this.Suffix;
             return res;
-        },
+        }
+    },
+    created() {
+        try {
+            let params = JSON.parse(localStorage.getItem("contract_params"));
+            this.workKind[0] = params.applicationScopeCode;
+            this.Prefix = params.contractRulePrefix;
+            this.Infix = params.contractRuleInfix;
+            this.Suffix = params.contractRuleSuffix;
+            this.date = params.dateRule;
+            this.serial = params.digitCapacity;
+            this.days = params.rememberDays;
+
+            this.dateChange(this.date);
+            this.serialChange(this.serial);
+        } catch (error) {}
     },
     methods: {
-         //保存设置
+        //保存设置
         saveSet() {
-            this.setParamsReq()
+            this.setParamsReq();
         },
         //设置合同参数请求
         setParamsReq() {
             let send = {
-                applicationScopeCode:this.workKind[0],
+                applicationScopeCode: this.workKind[0],
                 // contractParamDescribe:"",
-                // contractParamName:"",               
-                contractRulePrefix:this.Prefix,
-                contractRuleInfix:this.Infix,
-                contractRuleSuffix:this.Suffix,
-                dateRule:this.date,
-                digitCapacity:Number(this.serial),
-                rememberDays:this.days,
-            }
+                // contractParamName:"",
+                contractRulePrefix: this.Prefix,
+                contractRuleInfix: this.Infix,
+                contractRuleSuffix: this.Suffix,
+                dateRule: this.date,
+                digitCapacity: Number(this.serial),
+                rememberDays: this.days
+            };
+            localStorage.setItem("contract_params", JSON.stringify(send));
+
             base.log("s", "合同参数设置", send);
             params_api1(send, res => {
                 base.log("r", "合同参数设置", res.data);
                 if (res.data.success) {
-                    this.$message.success("设置成功")
+                    this.$message.success("设置成功");
                 } else {
                     base.error(res.data);
                 }
@@ -293,29 +309,28 @@ export default {
             console.log(val);
         },
         //流水号格式化
-        serialChange(val){
+        serialChange(val) {
             switch (val) {
                 case 2:
-                  this.serialFormatter = "01"  
-                break;
+                    this.serialFormatter = "01";
+                    break;
                 case 3:
-                  this.serialFormatter = "001"  
-                break;
+                    this.serialFormatter = "001";
+                    break;
                 case 4:
-                  this.serialFormatter = "0001"  
-                break;
+                    this.serialFormatter = "0001";
+                    break;
                 case 5:
-                  this.serialFormatter = "00001"  
-                break;
+                    this.serialFormatter = "00001";
+                    break;
                 case 6:
-                  this.serialFormatter = "000001"  
-                break;
+                    this.serialFormatter = "000001";
+                    break;
                 case 7:
-                  this.serialFormatter = "0000001"  
-                break;
+                    this.serialFormatter = "0000001";
+                    break;
             }
         },
-
 
         //合同试用范围多选框切换
         workKindChange(val) {
@@ -324,8 +339,7 @@ export default {
         //计数器组件
         daysChange(value) {
             console.log(value);
-        },
-       
+        }
     }
 };
 </script>

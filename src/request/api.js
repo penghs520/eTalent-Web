@@ -107,6 +107,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
 
         // 职位设置
         const position_api1    = (data, callback) => {request('post', `api/masterdata/position/getPositionPage`, data, callback)};
+        const position_api2    = (data, callback) => {request('form', `api/masterdata/position/addPosition`, data, callback)};
         
         // 职级设置
         const positionLevel_api1    = (data, callback) => {request('get', `api/masterdata/positionLevel/getPositionLevelList`, data, callback)};
@@ -179,7 +180,7 @@ export {
             positionGroup_api1,positionGroup_api2,positionGroup_api3,positionGroup_api4,
             
             //职位设置
-            position_api1,
+            position_api1,position_api2,
             
             //职级设置
             positionLevel_api1,

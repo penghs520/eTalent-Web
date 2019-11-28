@@ -55,6 +55,9 @@
 .el-tabs {
     width: 100%;
 }
+.el-select {
+    width: 100%;
+}
 </style>
 
 <template>
@@ -138,20 +141,46 @@
                     >
                         <span slot="title">新增</span>
                         <div class="qinjeeDialogSmallCont">
-                            <el-form :model="addPositionForm" label-width="100px">
-                                <el-form-item label="所属职位族">
-                                    <el-input v-model="addPositionForm.groupName" size="mini"></el-input>
+                            <el-form
+                                :model="addPositionForm"
+                                label-width="100px"
+                                ref="addPositionForm"
+                                :rules="rules"
+                            >
+                                <el-form-item label="所属职位族" prop="positionGroupId">
+                                    <el-select
+                                        v-model="addPositionForm.positionGroupId"
+                                        placeholder="请选择"
+                                        size="mini"
+                                    >
+                                        <div v-for="item in positionSelectList" :key="item.id">
+                                            <el-option
+                                                :label="item.positionGroupName"
+                                                :value="item.positionGroupId"
+                                            ></el-option>
+                                        </div>
+                                    </el-select>
                                 </el-form-item>
-                                <el-form-item label="职位名称">
-                                    <el-input v-model="addPositionForm.positionName" size="mini"></el-input>
+                                <el-form-item label="职位名称" prop="positionName">
+                                    <el-input
+                                        v-model="addPositionForm.positionName"
+                                        size="mini"
+                                        placeholder="请输入"
+                                    ></el-input>
                                 </el-form-item>
                             </el-form>
                         </div>
                         <span slot="footer" class="dialog-footer">
                             <el-button size="small" @click="positionDialog = false">取 消</el-button>
-                            <el-button size="small" type="primary" @click="addPositiionReq">确 定</el-button>
+                            <el-button
+                                size="small"
+                                type="primary"
+                                @click="addPositiionReq('addPositionForm')"
+                            >确 定</el-button>
                         </span>
                     </el-dialog>
+                    <!-- 编辑职位弹窗 -->
+                    <!-- 删除职位弹窗 -->
                 </div>
             </el-tab-pane>
 
@@ -175,7 +204,8 @@ import {
     positionGroup_api4,
     positionLevel_api1,
     positionGrade_api1,
-    position_api1
+    position_api1,
+    position_api2
 } from "../../request/api";
 import commonTable from "../../components/table/commonTable";
 import tree from "../../components/tree/tree";
@@ -185,7 +215,144 @@ export default {
     name: "position" /* 职位体系 */,
     data() {
         return {
-            activeName: "position",
+            activeName: "systematic",
+            // 职级
+            positionLevelTable: {
+                head: [
+                    /* 必须，表格头配置 */
+                    {
+                        name: "职级名称" /* 必须，表格头所显示的文字 */,
+                        key:
+                            "userName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
+                        isShow: true /* 必须，表格是否默认显示该列 */,
+                        width: "200px" /* 非必须，该列的默认宽度 */
+                    },
+                    { name: "职级说明", key: "employeeNumber", isShow: true }
+                ],
+                data: [] /* 必须，表格要渲染的数据，数组格式 */,
+                total: 0 /* 必须，数据的总条数，用于翻页 */,
+                bar: [
+                    /* 非必须，表格上面的操作栏配置 */
+                    {
+                        type: "button" /* 必须，DOM类型：按钮 */,
+                        text: "新增" /* 必须，按钮名称 */,
+                        btnType:
+                            "primary" /* 非必须，element-ui提供的按钮样式，新增 plain */,
+                        method: this
+                            .addPositionLevel /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                    },
+                    {
+                        type: "button" /* 必须，DOM类型：按钮 */,
+                        text: "删除" /* 必须，按钮名称 */,
+                        btnType:
+                            "plain" /* 非必须，element-ui提供的按钮样式，新增 plain */,
+                        method: this
+                            .delPositionLevel /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                    },
+                    {
+                        type: "buttons" /* 下拉按钮 */,
+                        text: "更多操作",
+                        btnType: "primary",
+                        defaultIconHide: false /* 非必须，默认图标是否不显示，默认显示，true-不显示，false-显示 */,
+                        list: [
+                            /* 必须，更多按钮的数据组成的数组 */
+                            {
+                                text: "排序" /* 必须，按钮名称 */,
+                                method: this.btn1
+                            },
+                            { text: "导入", method: this.btn2 },
+                            { text: "导出", method: this.btn3 }
+                        ]
+                    }
+                ],
+                showSelect: true /* 非必须，是否显示select勾选框 */,
+                selectChange: this
+                    .levelSelectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
+                loading: false /* 非必须，加载动画 */,
+                pageResize: false /* 非必须，页码重置 */,
+                page: {
+                    /* 非必须，页码配置 */
+                    pageSizes: [10, 20, 30] /* 非必须，页码可选的每页数量 */,
+                    pageSize: 10 /* 非必须，默认每页显示的数量 */
+                },
+                pageResize: false,
+                pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
+                pageSizeChange: this
+                    .levelPageSizeChange /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */,
+                pageChange: this
+                    .levelPageChange /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
+            },
+
+            //职等
+            positionGradeTable: {
+                head: [
+                    /* 必须，表格头配置 */
+                    {
+                        name: "职等名称" /* 必须，表格头所显示的文字 */,
+                        key:
+                            "userName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
+                        isShow: true /* 必须，表格是否默认显示该列 */,
+                        width: "200px" /* 非必须，该列的默认宽度 */
+                    },
+                    { name: "职等说明", key: "employeeNumber", isShow: true }
+                ],
+                data: [] /* 必须，表格要渲染的数据，数组格式 */,
+                total: 0 /* 必须，数据的总条数，用于翻页 */,
+                bar: [
+                    /* 非必须，表格上面的操作栏配置 */
+                    {
+                        type: "button" /* 必须，DOM类型：按钮 */,
+                        text: "新增" /* 必须，按钮名称 */,
+                        btnType:
+                            "primary" /* 非必须，element-ui提供的按钮样式，新增 plain */,
+                        method: this
+                            .addPositionGrade /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                    },
+                    {
+                        type: "button" /* 必须，DOM类型：按钮 */,
+                        text: "删除" /* 必须，按钮名称 */,
+                        btnType:
+                            "plain" /* 非必须，element-ui提供的按钮样式，新增 plain */,
+                        method: this
+                            .delPositionGrade /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                    },
+                    {
+                        type: "buttons" /* 下拉按钮 */,
+                        text: "更多操作",
+                        btnType: "primary",
+                        defaultIconHide: false /* 非必须，默认图标是否不显示，默认显示，true-不显示，false-显示 */,
+                        list: [
+                            /* 必须，更多按钮的数据组成的数组 */
+                            {
+                                text: "排序" /* 必须，按钮名称 */,
+                                method: this.btn1
+                            },
+                            { text: "导入", method: this.btn2 },
+                            { text: "导出", method: this.btn3 }
+                        ]
+                    }
+                ],
+                showSelect: true /* 非必须，是否显示select勾选框 */,
+                selectChange: this
+                    .GradeSelectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
+                loading: false /* 非必须，加载动画 */,
+                pageResize: false /* 非必须，页码重置 */,
+                page: {
+                    /* 非必须，页码配置 */
+                    pageSizes: [10, 20, 30] /* 非必须，页码可选的每页数量 */,
+                    pageSize: 10 /* 非必须，默认每页显示的数量 */
+                },
+                pageResize: false,
+                pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
+                pageSizeChange: this
+                    .GradePageSizeChange /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */,
+                pageChange: this
+                    .GradePageChange /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
+            },
+
+            //职位体系
+            positionRadio: "",
+           
             // 职位族
             positionGroupTable: {
                 head: [
@@ -308,6 +475,12 @@ export default {
                     },
                     {
                         type: "button",
+                        text: "编辑",
+                        btnType: "plain",
+                        method: this.editPosition
+                    },
+                    {
+                        type: "button",
                         text: "删除",
                         btnType: "plain",
                         method: this.delPosition
@@ -341,145 +514,30 @@ export default {
             postCurrentPage: 1,
             postPageSize: 10,
             positionDialog: false,
-            addPositionForm:{
-                groupName:"",
-                positionName:"",
+            addPositionForm: {
+                positionGroupId: "",
+                positionName: ""
             },
+            positionSelectList: [],
+            rules: {
+                positionGroupId: [
+                    {
+                        required: true,
+                        message: "请选择",
+                        trigger: "blur"
+                    }
+                ],
+                positionName: [
+                    {
+                        required: true,
+                        message: "请选择",
+                        trigger: "blur"
+                    }
+                ]
+            },
+            delPositionList:[],
 
-            // 职级
-            positionLevelTable: {
-                head: [
-                    /* 必须，表格头配置 */
-                    {
-                        name: "职级名称" /* 必须，表格头所显示的文字 */,
-                        key:
-                            "userName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
-                        isShow: true /* 必须，表格是否默认显示该列 */,
-                        width: "200px" /* 非必须，该列的默认宽度 */
-                    },
-                    { name: "职级说明", key: "employeeNumber", isShow: true }
-                ],
-                data: [] /* 必须，表格要渲染的数据，数组格式 */,
-                total: 0 /* 必须，数据的总条数，用于翻页 */,
-                bar: [
-                    /* 非必须，表格上面的操作栏配置 */
-                    {
-                        type: "button" /* 必须，DOM类型：按钮 */,
-                        text: "新增" /* 必须，按钮名称 */,
-                        btnType:
-                            "primary" /* 非必须，element-ui提供的按钮样式，新增 plain */,
-                        method: this
-                            .addPositionLevel /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: "button" /* 必须，DOM类型：按钮 */,
-                        text: "删除" /* 必须，按钮名称 */,
-                        btnType:
-                            "plain" /* 非必须，element-ui提供的按钮样式，新增 plain */,
-                        method: this
-                            .delPositionLevel /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: "buttons" /* 下拉按钮 */,
-                        text: "更多操作",
-                        btnType: "primary",
-                        defaultIconHide: false /* 非必须，默认图标是否不显示，默认显示，true-不显示，false-显示 */,
-                        list: [
-                            /* 必须，更多按钮的数据组成的数组 */
-                            {
-                                text: "排序" /* 必须，按钮名称 */,
-                                method: this.btn1
-                            },
-                            { text: "导入", method: this.btn2 },
-                            { text: "导出", method: this.btn3 }
-                        ]
-                    }
-                ],
-                showSelect: true /* 非必须，是否显示select勾选框 */,
-                selectChange: this
-                    .levelSelectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
-                loading: false /* 非必须，加载动画 */,
-                pageResize: false /* 非必须，页码重置 */,
-                page: {
-                    /* 非必须，页码配置 */
-                    pageSizes: [10, 20, 30] /* 非必须，页码可选的每页数量 */,
-                    pageSize: 10 /* 非必须，默认每页显示的数量 */
-                },
-                pageResize: false,
-                pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
-                pageSizeChange: this
-                    .levelPageSizeChange /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */,
-                pageChange: this
-                    .levelPageChange /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
-            },
-            //职等
-            positionGradeTable: {
-                head: [
-                    /* 必须，表格头配置 */
-                    {
-                        name: "职等名称" /* 必须，表格头所显示的文字 */,
-                        key:
-                            "userName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
-                        isShow: true /* 必须，表格是否默认显示该列 */,
-                        width: "200px" /* 非必须，该列的默认宽度 */
-                    },
-                    { name: "职等说明", key: "employeeNumber", isShow: true }
-                ],
-                data: [] /* 必须，表格要渲染的数据，数组格式 */,
-                total: 0 /* 必须，数据的总条数，用于翻页 */,
-                bar: [
-                    /* 非必须，表格上面的操作栏配置 */
-                    {
-                        type: "button" /* 必须，DOM类型：按钮 */,
-                        text: "新增" /* 必须，按钮名称 */,
-                        btnType:
-                            "primary" /* 非必须，element-ui提供的按钮样式，新增 plain */,
-                        method: this
-                            .addPositionGrade /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: "button" /* 必须，DOM类型：按钮 */,
-                        text: "删除" /* 必须，按钮名称 */,
-                        btnType:
-                            "plain" /* 非必须，element-ui提供的按钮样式，新增 plain */,
-                        method: this
-                            .delPositionGrade /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: "buttons" /* 下拉按钮 */,
-                        text: "更多操作",
-                        btnType: "primary",
-                        defaultIconHide: false /* 非必须，默认图标是否不显示，默认显示，true-不显示，false-显示 */,
-                        list: [
-                            /* 必须，更多按钮的数据组成的数组 */
-                            {
-                                text: "排序" /* 必须，按钮名称 */,
-                                method: this.btn1
-                            },
-                            { text: "导入", method: this.btn2 },
-                            { text: "导出", method: this.btn3 }
-                        ]
-                    }
-                ],
-                showSelect: true /* 非必须，是否显示select勾选框 */,
-                selectChange: this
-                    .GradeSelectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
-                loading: false /* 非必须，加载动画 */,
-                pageResize: false /* 非必须，页码重置 */,
-                page: {
-                    /* 非必须，页码配置 */
-                    pageSizes: [10, 20, 30] /* 非必须，页码可选的每页数量 */,
-                    pageSize: 10 /* 非必须，默认每页显示的数量 */
-                },
-                pageResize: false,
-                pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
-                pageSizeChange: this
-                    .GradePageSizeChange /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */,
-                pageChange: this
-                    .GradePageChange /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
-            },
-            //职位体系
-            positionRadio: ""
+         
         };
     },
     components: {
@@ -488,55 +546,43 @@ export default {
     },
     mounted() {},
     methods: {
-        //职等--获取职等列表
-        getPositionGradeReq() {
-            let send = {
-                currentPage: 1,
-                pageSize: 10
-            };
-            positionGrade_api1(send, res => {
-                base.log("s", "获取职等数据", send);
-                base.log("r", "获取职等数据", res);
-                if (res.data.success) {
-                } else {
-                }
-            });
+        //职位删除 -- 删除按钮
+        delPosition() {
+            if(this.delPositionList.length == 0){
+                this.$message.error("请选择职位")
+                return
+            }
         },
-        //职等--多选框被点击
-        GradeSelectChange() {},
-        //职等--表格页容量改变
-        GradePageSizeChange() {},
-        //职等--表格页码改变
-        GradePageChange() {},
-
-        //职级--获取职级列表
-        getPositionLevelReq() {
-            let send = {
-                currentPage: 1,
-                pageSize: 10
-            };
-            positionLevel_api1(send, res => {
-                base.log("s", "获取职级列表", send);
-                base.log("r", "获取职级列表", res.data);
-                if (res.data.success) {
-                    this.positionLevelTable.data = res.data.list;
-                } else {
-                    base.error(res.data);
-                }
-            });
+        //职位删除-- 多选节点点击
+        postSelectChange(node){
+            this.delPositionList = node 
         },
-
         //职位 -- 新增按钮
         addPosition() {
             this.positionDialog = true;
         },
         //职位--新增请求接口
-        addPositiionReq() {
-            this.positionDialog = false;
-        },
-        //职位 -- 删除按钮
-        delPosition() {
-            console.log("点击职位删除");
+        addPositiionReq(formName) {
+            this.$refs[formName].validate(valid => {
+                if (valid) {
+                    let send = {
+                        positionGroupId: this.addPositionForm.positionGroupId,
+                        positionName: this.addPositionForm.positionName
+                    };
+                    base.log("s", "新增职位", send);
+                    position_api2(send, res => {
+                        base.log("r", "新增职位", res.data);
+                        if (res.data.success) {
+                            this.$message.success("添加成功");
+                            this.positionDialog = false;
+                        } else {
+                            base.error(res.data);
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
         },
         //职位-- 获取表格请求
         positionTableReq() {
@@ -550,6 +596,7 @@ export default {
                 base.log("r", "获取职位表格", res.data);
                 if (res.data.success) {
                     this.positionTable.data = res.data.result.list;
+                    this.positionTable.total = res.data.result.total;
                 } else {
                     base.error(res.data);
                 }
@@ -565,6 +612,7 @@ export default {
             positionGroup_api4(null, res => {
                 base.log("r", "获取所有职位树", res.data);
                 if (res.data.success) {
+                    this.positionSelectList = res.data.result;
                     let newTree = JSON.parse(JSON.stringify(res.data.result));
                     this.positionTreeFormatter(newTree);
                     let treeObj = [
@@ -576,7 +624,6 @@ export default {
                         }
                     ];
                     this.positionTree.data = treeObj;
-                    console.log(treeObj);
                 } else {
                     base.error(res.data);
                 }
@@ -594,6 +641,7 @@ export default {
                 }
             });
         },
+
 
         //职位族--新增,弹出弹框
         addPositionGroup() {
@@ -631,6 +679,10 @@ export default {
         },
         //职位族--删除,点击删除按钮
         delPositionGroup() {
+            if (this.GroupDelList.length == 0) {
+                this.$message.error("请选择职位族");
+                return;
+            }
             this.groupDelDialog = true;
         },
         //职位族--删除,请求接口
@@ -686,6 +738,44 @@ export default {
             this.GroupCurrentPage = 1;
             this.GroupPageSize = pageSize;
             this.getAllPositionGroup();
+        },
+
+        //职等--获取职等列表
+        getPositionGradeReq() {
+            let send = {
+                currentPage: 1,
+                pageSize: 10
+            };
+            positionGrade_api1(send, res => {
+                base.log("s", "获取职等数据", send);
+                base.log("r", "获取职等数据", res);
+                if (res.data.success) {
+                } else {
+                }
+            });
+        },
+        //职等--多选框被点击
+        GradeSelectChange() {},
+        //职等--表格页容量改变
+        GradePageSizeChange() {},
+        //职等--表格页码改变
+        GradePageChange() {},
+
+        //职级--获取职级列表
+        getPositionLevelReq() {
+            let send = {
+                currentPage: 1,
+                pageSize: 10
+            };
+            positionLevel_api1(send, res => {
+                base.log("s", "获取职级列表", send);
+                base.log("r", "获取职级列表", res.data);
+                if (res.data.success) {
+                    this.positionLevelTable.data = res.data.list;
+                } else {
+                    base.error(res.data);
+                }
+            });
         },
 
         //tab栏切换

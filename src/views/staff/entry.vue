@@ -524,7 +524,8 @@ export default {
                 joinDepartment: '', /* 入职部门名称 */
                 joinDepartmentId: '',   /* 入职部门id */
                 joinPost: '',       /* 入职岗位 */
-                joinPostId: ''      /* 入职岗位id */
+                joinPostId: '',     /* 入职岗位id */
+                backup: ''          /* 备注 */
             },
             addRules: {
                 name: [{required: true, message: '请输入姓名', trigger: 'change'}],
@@ -818,7 +819,7 @@ export default {
                 "dataSource":           "",                                         /* 数据来源 */
                 "delayDate":            "",                                         /* 延期日期 */
                 "delayReson":           "",                                         /* 延期原因 */
-                "description":          "",                                         /* 描述 */
+                "description":          this.addForm.backup,                        /* 描述 */
                 "email":                this.addForm.email,                         /* 邮箱 */
                 "employmentId":         0,                                          /* 预入职ID */
                 "employmentRegister":   "",                                         /* 入职登记 */
@@ -950,9 +951,7 @@ export default {
         // 发送入职登记--短信
         entryApplyMessage(idList) {
             let send = {
-                "list": idList,
-                "params": ["string", 1],
-                "templateId": 89
+                "list": idList
             };
             base.log('s', '短信发送预入职登记', send);
             this.entryApplyLoadingPhone = true;
@@ -1237,24 +1236,20 @@ export default {
 
         // 导出
         download(searchData,radioData,checkboxData) {
-            console.log(checkboxData)
             let send = {
                 "list": !checkboxData || checkboxData.length === 0 ? null : checkboxData.map(item => {return item.employmentId}),
-                "title": "string"
+                "title": "预入职"
             };
             base.log('s', '导出', send);
             entry_api10(send, res => {
-                console.log(res);
-
+                console.log(res)
                 let blob = new Blob([res.data]);
                 let url = window.URL.createObjectURL(blob);
-
-                // 4.创建url之后可以模拟对此文件对象的一系列操作，例如：预览、下载
                 let a = document.createElement("a");
                 a.href = url;
-                a.download = "string.xls";
+                a.download = "预入职.xls";
                 a.click();
-                // 5.释放这个临时的对象url
+                // 释放这个临时的对象url
                 window.URL.revokeObjectURL(url);
             })
         },

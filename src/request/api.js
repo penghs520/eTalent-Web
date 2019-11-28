@@ -33,7 +33,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     const entry_api7     = (data, callback) => {request('post', `api/masterdata/staffarc/importPreFile`, data, callback)};      // 导入
     const entry_api8     = (data, callback) => {request('form', `api/masterdata/staffarc/getPostByOrgId`, data, callback)};
     const entry_api9     = (data, callback) => {request('post', `api/masterdata/staffarc/sendMessage`, data, callback)};
-    const entry_api10     = (data, callback) => {request('excel', `api/masterdata/staffarc/exportPreFile`, data, callback)};
+    const entry_api10     = (data, callback) => {request('post', `api/masterdata/staffarc/exportPreFile`, data, callback, 'blob')};
     const entry_api11     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentField`, data, callback)};
 
     // 参数设置

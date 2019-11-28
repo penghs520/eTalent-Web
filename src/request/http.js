@@ -19,8 +19,8 @@ function request_get(url, data, callback) {
         });
 }
 
-function request_post(url, data, callback) {
-    axios.post(url, data)
+function request_post(url, data, callback, responseType='json') {
+    axios.post(url, data, {responseType: responseType})
         .then(function (response) {
             callback(response);
         })
@@ -41,25 +41,6 @@ function request_postForm(url, data, callback) {
             console.log(error);
         });
 }
-
-function request_postDownload(url, data, callback) {
-    axios.post(url, qs.stringify(data), {
-        withCredentials: true,
-        headers: {
-            'Content-disposition': 'attachment; filename=rzjl.xls',
-            'Content-Type': 'application/msexcel',
-        },
-        responseType: 'blob'
-    })
-        .then(function (response) {
-            callback(response);
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-}
-
-
 
 // 请求拦截器
 axios.interceptors.request.use(function (config) {
@@ -95,22 +76,18 @@ axios.interceptors.response.use(function (response) {
  * @param {object} data 请求发送的数据
  * @param {function} callback 回调函数
  */
-export default function request(type, url, data, callback) {
+export default function request(type, url, data, callback, responseType) {
     switch (type) {
-        case 'get' || 'GET':
+        case 'get':
             request_get(url, data, callback);
             break;
 
-        case 'post' || 'POST':
-            request_post(url, data, callback);
+        case 'post':
+            request_post(url, data, callback, responseType);
             break;
             
-        case 'form' || 'FORM':
+        case 'form':
             request_postForm(url, data, callback);
-            break;
-
-        case 'excel':
-            request_postDownload(url, data, callback);
             break;
 
         default:

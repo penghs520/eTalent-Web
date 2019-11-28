@@ -23,13 +23,13 @@
         border-bottom: none;
         box-sizing: border-box;
         overflow: auto;
-        background-color: #fff;       
+        background-color: #fff;
         .el-dialog__wrapper {
             .el-dialog__body {
-               padding: 0px !important;
-               border: 1px soild #ccc !important;
+                padding: 0px !important;
+                border: 1px soild #ccc !important;
             }
-        };
+        }
         .title {
             padding: 20px 24px;
             font-size: 16px;
@@ -145,29 +145,22 @@ export default {
                         placeholder:
                             "请输入工号或姓名" /* 非必须，输入框提示语 */,
                         key: "name" /* 必须，输入框绑定的变量字符串 */,
-                        defaultVal: "" /* 非必须，默认值 */,
-                        enter: this
-                            .search /* 非必须，回车键的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                        defaultVal: "",
+                        enter: this.search
                     },
                     {
-                        type: "button" /* 必须，DOM类型：按钮 */,
-                        text: "确定" /* 必须，按钮名称 */,
-                        btnType:
-                            "primary" /* 非必须，element-ui提供的按钮样式 */,
-                        method: this
-                            .search /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                        type: "button",
+                        text: "确定",
+                        btnType: "primary",
+                        method: this.search
                     }
                 ],
-                selectChange: this
-                    .selectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
+                selectChange: this.selectChange,
                 loading: false,
                 pageResize: false,
-                pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
-                pageResize: false,
-                pageSizeChange: this
-                    .pageSizeChange /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */,
-                pageChange: this
-                    .pageChange /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
+                pageHide: false,
+                pageSizeChange: this.pageSizeChange,
+                pageChange: this.pageChange
             },
             treeData: {
                 data: [] /* 必须，树形结构数据 */,
@@ -180,25 +173,25 @@ export default {
                     /* 非必须，树形结构层级图标配置 */
                     {
                         key:
-                            "orgType"        /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
-                        val: "GROUP"         /* 必须，key对应的值 */,
-                        icon: "qj-jituan"    /* 必须，图标类名 */
+                            "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
+                        val: "GROUP" /* 必须，key对应的值 */,
+                        icon: "qj-jituan" /* 必须，图标类名 */
                     },
                     {
                         key:
-                            "orgType"       /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
-                        val: "UNIT"         /* 必须，key对应的值 */,
-                        icon: "qj-danwei"   /* 必须，图标类名 */
+                            "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
+                        val: "UNIT" /* 必须，key对应的值 */,
+                        icon: "qj-danwei" /* 必须，图标类名 */
                     },
                     {
                         key:
-                            "orgType"            /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
-                        val: "DEPT"              /* 必须，key对应的值 */,
-                        icon: "qj-nav_client"    /* 必须，图标类名 */
+                            "orgType" /* 必须，该节点的数据中的某个字段，如果key的值与val相等，就显示icon */,
+                        val: "DEPT" /* 必须，key对应的值 */,
+                        icon: "qj-nav_client" /* 必须，图标类名 */
                     }
                 ],
-                showDefaultIcon: false          /* 非必须，是否显示默认图标 */,
-                nodeClick: this.nodeClick,
+                showDefaultIcon: false /* 非必须，是否显示默认图标 */,
+                nodeClick: this.nodeClick
             },
             currentPage: 1,
             pageSize: 10,
@@ -233,7 +226,7 @@ export default {
                         "hasRole" /* 必须,如果节点中该字段的值经过 Boolean() 格式化后为true,就默认勾选 */
                 }
             },
-            editRoleIdList: [],            
+            editRoleIdList: []
         };
     },
     mounted() {
@@ -336,7 +329,7 @@ export default {
             this.orgId = node.orgId;
             // 重置表格操作栏
             this.$refs.commonTable.resizeOperationBar();
-            this.search({name: ''})
+            this.search({ name: "" });
         },
         // 获取表格数据
         getTable() {
@@ -349,14 +342,12 @@ export default {
             };
             base.log("s", "查询表格数据", send);
             userCheck_api1(send, res => {
-                this.table.pageResize = false;
                 let d = res.data;
                 base.log("r", "查询表格数据", d);
                 if (d.success) {
                     this.table.data = d.result.list;
                     this.table.total = d.result.total;
                     this.table.loading = false;
-
                 } else {
                     base.error(d);
                 }

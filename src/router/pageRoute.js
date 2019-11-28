@@ -15,8 +15,9 @@ let pageRoute = {
         '信息维护': 'staff_archives_info',
 
         // 参数设置
-        '工号规则': 'staff_jobNumber',
-        '合同参数': 'staff_contract_params',
+        '工号规则':     'staff_jobNumber',
+        '合同参数':     'staff_contract_params',
+        '入职登记模板': 'staff_entry_template',
 
     // 系统管理 authority
         // 权限管理

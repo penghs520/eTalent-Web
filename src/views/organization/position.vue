@@ -17,24 +17,55 @@
         width: 100px;
     }
     //职位设置
-    .side_tree {
-        width: 216px;
-        padding: 10px;
-        box-sizing: border-box;
-        overflow: hidden;
+    .position {
+        display: flex;
+        .side_tree {
+            width: 216px;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .post_table {
+            flex: 1;
+            box-sizing: border-box;
+            margin-top: 18px;
+            overflow: auto;
+        }
     }
-    
+    // 职级设置
+    .position_level {
+        margin-top: 18px;
+    }
+    //职等设置
+    .position_grade,
+    .position_radio {
+        margin-top: 18px;
+    }
+}
+
+//删除职位族开始
+.el-icon-warning {
+    color: #ffd532ff;
 }
 .group_list {
-        margin-top: 10px;
-        padding-left: 35px;
-    }
+    margin-top: 10px;
+    padding-left: 35px;
+}
+//删除职位族结束
+.el-tabs {
+    width: 100%;
+}
 </style>
 
 <template>
     <div id="organization_position">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="职位体系" name="systematic">职位体系</el-tab-pane>
+            <el-tab-pane label="职位体系" name="systematic">
+                <el-radio-group v-model="positionRadio" class="position_radio">
+                    <el-radio :label="1">按职级</el-radio>
+                    <el-radio :label="2">按职位</el-radio>
+                </el-radio-group>
+            </el-tab-pane>
 
             <!-- 职位族设置 -->
             <el-tab-pane label="职位族设置" name="positionGroup">
@@ -93,19 +124,44 @@
             </el-tab-pane>
 
             <!-- 职位设置 -->
-            <el-tab-pane label="职位设置" name="position">
-                <div class="side_tree">
-                    <tree :treeData="positionTree"></tree>
+            <el-tab-pane label="职位设置" name="position" class="position">
+                <tree :treeData="positionTree" class="side_tree"></tree>
+                <div class="post_table">
+                    <commonTable :table="positionTable"></commonTable>
+                    <!-- 新增职位弹窗 -->
+                    <el-dialog
+                        :visible.sync="positionDialog"
+                        class="qinjeeDialogMini"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">新增</span>
+                        <div class="qinjeeDialogSmallCont">
+                            <el-form :model="addPositionForm" label-width="100px">
+                                <el-form-item label="所属职位族">
+                                    <el-input v-model="addPositionForm.groupName" size="mini"></el-input>
+                                </el-form-item>
+                                <el-form-item label="职位名称">
+                                    <el-input v-model="addPositionForm.positionName" size="mini"></el-input>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="positionDialog = false">取 消</el-button>
+                            <el-button size="small" type="primary" @click="addPositiionReq">确 定</el-button>
+                        </span>
+                    </el-dialog>
                 </div>
             </el-tab-pane>
 
             <!-- 职级设置 -->
-            <el-tab-pane label="职级设置" name="position_level">
+            <el-tab-pane label="职级设置" name="position_level" class="position_level">
                 <commonTable :table="positionLevelTable" class="position_level"></commonTable>
             </el-tab-pane>
 
             <!-- 职等设置 -->
-            <el-tab-pane label="职等设置" name="position_grade">
+            <el-tab-pane label="职等设置" name="position_grade" class="position_grade">
                 <commonTable :table="positionGradeTable"></commonTable>
             </el-tab-pane>
         </el-tabs>
@@ -118,7 +174,8 @@ import {
     positionGroup_api3,
     positionGroup_api4,
     positionLevel_api1,
-    positionGrade_api1
+    positionGrade_api1,
+    position_api1
 } from "../../request/api";
 import commonTable from "../../components/table/commonTable";
 import tree from "../../components/tree/tree";
@@ -128,7 +185,7 @@ export default {
     name: "position" /* 职位体系 */,
     data() {
         return {
-            activeName: "systematic",
+            activeName: "position",
             // 职位族
             positionGroupTable: {
                 head: [
@@ -164,7 +221,7 @@ export default {
                     {
                         type: "buttons" /* 下拉按钮 */,
                         text: "更多操作",
-                        btnType: "primary",
+                        btnType: "plain",
                         defaultIconHide: false /* 非必须，默认图标是否不显示，默认显示，true-不显示，false-显示 */,
                         list: [
                             /* 必须，更多按钮的数据组成的数组 */
@@ -199,22 +256,25 @@ export default {
             },
             GroupDelList: [],
             groupDelDialog: false,
+
             //职位
             positionTree: {
-                data: [] /* 必须，树形结构数据 */,
+                data: [],
                 // nodeKey: "positionGroupId",
                 props: {
-                    /* 必须，树形结构数据绑字段配置 */
-                    children: "positionList" /* 必须，子集key */,
-                    label:
-                        "positionGroupName" /* 必须，菜单节点要显示的文字对应的字段 */
+                    children: "positionList",
+                    label: "positionGroupName"
                 },
                 icons: [
-                    /* 非必须，树形结构层级图标配置 */
                     {
-                        key: "",
-                        val: "" /* 必须，key对应的值 */,
-                        icon: "" /* 必须，图标类名 */
+                        key: "postType",
+                        val: "POSTGROUP",
+                        icon: "qj-danwei"
+                    },
+                    {
+                        key: "postType",
+                        val: "POST",
+                        icon: "qj-nav_client"
                     }
                 ],
                 showCheckbox: false /* 非必须，是否显示多选框 */,
@@ -224,6 +284,68 @@ export default {
                 showAllNode: false /* 非必须，是否展开所有的子节点*/,
                 nodeClick: this.positionTreeClick
             },
+            positionTable: {
+                head: [
+                    {
+                        name: "职位族",
+                        key: "positionGroupName",
+                        isShow: true
+                    },
+                    {
+                        name: "职位名称",
+                        key: "positionName",
+                        isShow: true
+                    }
+                ],
+                data: [],
+                total: 0,
+                bar: [
+                    {
+                        type: "button",
+                        text: "新增",
+                        btnType: "primary",
+                        method: this.addPosition
+                    },
+                    {
+                        type: "button",
+                        text: "删除",
+                        btnType: "plain",
+                        method: this.delPosition
+                    },
+                    {
+                        type: "buttons",
+                        text: "更多操作",
+                        btnType: "plain",
+                        defaultIconHide: false,
+                        list: [
+                            { text: "排序", method: this.btn1 },
+                            { text: "导入", method: this.btn2 },
+                            { text: "导出", method: this.btn3 }
+                        ]
+                    }
+                ],
+                showSelect: true,
+                selectChange: this.postSelectChange,
+                loading: false,
+                pageResize: false,
+                loading: false,
+                page: {
+                    pageSizes: [10, 20, 30],
+                    pageSize: 10
+                },
+                pageHide: false,
+                pageSizeChange: this.postPageSizeChange,
+                pageChange: this.postPageChange
+            },
+            positionNode: "",
+            postCurrentPage: 1,
+            postPageSize: 10,
+            positionDialog: false,
+            addPositionForm:{
+                groupName:"",
+                positionName:"",
+            },
+
             // 职级
             positionLevelTable: {
                 head: [
@@ -355,7 +477,9 @@ export default {
                     .GradePageSizeChange /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */,
                 pageChange: this
                     .GradePageChange /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
-            }
+            },
+            //职位体系
+            positionRadio: ""
         };
     },
     components: {
@@ -380,7 +504,6 @@ export default {
         },
         //职等--多选框被点击
         GradeSelectChange() {},
-
         //职等--表格页容量改变
         GradePageSizeChange() {},
         //职等--表格页码改变
@@ -403,9 +526,39 @@ export default {
             });
         },
 
+        //职位 -- 新增按钮
+        addPosition() {
+            this.positionDialog = true;
+        },
+        //职位--新增请求接口
+        addPositiionReq() {
+            this.positionDialog = false;
+        },
+        //职位 -- 删除按钮
+        delPosition() {
+            console.log("点击职位删除");
+        },
+        //职位-- 获取表格请求
+        positionTableReq() {
+            let send = {
+                currentPage: this.postCurrentPage,
+                pageSize: this.postPageSize,
+                positionGroupId: this.positionNode.positionGroupId
+            };
+            base.log("s", "获取职位表格", send);
+            position_api1(send, res => {
+                base.log("r", "获取职位表格", res.data);
+                if (res.data.success) {
+                    this.positionTable.data = res.data.result.list;
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
         //职位 -- 树形被点击
         positionTreeClick(node) {
-            console.log(node);
+            this.positionNode = node;
+            this.positionTableReq();
         },
         //职位 -- 获取树形结构
         getPositionTreeReq() {
@@ -414,7 +567,16 @@ export default {
                 if (res.data.success) {
                     let newTree = JSON.parse(JSON.stringify(res.data.result));
                     this.positionTreeFormatter(newTree);
-                    this.positionTree.data = newTree;
+                    let treeObj = [
+                        {
+                            positionList: newTree,
+                            postType: "POSTGROUP",
+                            positionGroupName: "职位族",
+                            positionGroupId: ""
+                        }
+                    ];
+                    this.positionTree.data = treeObj;
+                    console.log(treeObj);
                 } else {
                     base.error(res.data);
                 }
@@ -423,8 +585,10 @@ export default {
         //职位 -- 格式化职位树形
         positionTreeFormatter(newTree) {
             newTree.forEach(item => {
+                item.postType = "POSTGROUP";
                 if (item.positionList) {
                     item.positionList.forEach(item => {
+                        item.postType = "POST";
                         item.positionGroupName = item.positionName;
                     });
                 }
@@ -483,6 +647,7 @@ export default {
                 base.log("r", "删除职位族", res.data);
                 if (res.data.success) {
                     this.$message.success("删除成功");
+                    this.groupDelDialog = false;
                     this.getAllPositionGroup();
                 } else {
                     base.error(res.data);

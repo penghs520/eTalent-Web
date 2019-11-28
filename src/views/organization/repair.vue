@@ -941,7 +941,7 @@ export default {
                 return;
             }
             this.getOrgType(); //获取所有数据类型
-            this.editOrgForm = { ...this.editOrglist[0] };
+            this.editOrgForm = { ...this.editOrglist[0]};
             this.editOrgDialog = true;
         },
         //编辑机构--请求接口
@@ -980,7 +980,6 @@ export default {
             this.isIndeterminate =
                 checkedCount > 0 && checkedCount < this.delOrgList.length;
         },
-
         //删除机构,编辑机构,封存,解封,合并,划转
         orgSelectChange(node) {
             console.log(node);
@@ -1095,6 +1094,7 @@ export default {
             }
         },
 
+
         //机构表--页码改变
         orgPageChange(page) {
             this.currentPage = page;
@@ -1103,6 +1103,7 @@ export default {
         //机构表--页容量改变
         orgPageSizeChange(pageSize) {
             this.currentPage = 1;
+            this.orgTable.pageResize = true;
             this.pageSize = pageSize;
             this.getOrgTable();
         },

@@ -43,11 +43,19 @@ export default {
                     { name: "单位", key: "businessUnitName", isShow: true },
                     { name: "部门", key: "orgName", isShow: true },
                     { name: "岗位", key: "postName", isShow: true },
-                    { name: "入职日期", key: "firstWorkDate", isShow: true},
-                    { name: "试用期到期日期", key: "probationDueDate", isShow: true },
-                    { name: "直接上级", key: "supervisorUserName", isShow: true },
+                    { name: "入职日期", key: "firstWorkDate", isShow: true },
+                    {
+                        name: "试用期到期日期",
+                        key: "probationDueDate",
+                        isShow: true
+                    },
+                    {
+                        name: "直接上级",
+                        key: "supervisorUserName",
+                        isShow: true
+                    },
                     { name: "联系电话", key: "tel", isShow: true },
-                    { name: "任职类型", key: "attritionType", isShow: true },
+                    { name: "任职类型", key: "attritionType", isShow: true }
                 ],
                 data: [] /* 必须，表格要渲染的数据，数组格式 */,
                 total: 0 /* 必须，数据的总条数，用于翻页 */,
@@ -87,50 +95,46 @@ export default {
                 loading: false /* 非必须，加载动画 */,
                 pageResize: false /* 非必须，页码重置 */,
                 pageResize: false,
-                pageSizeChange: this
-                    .pageSizeChange /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */,
-                pageChange: this
-                    .pageChange /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
+                pageSizeChange: this.pageSizeChange,
+                pageChange: this.pageChange
             },
-            currentPage: 1 /* 页面要用到的页码变量 */,
-            pageSize: 10
         };
     },
     mounted() {
-        this.getInfoReq()
+        this.getInfoReq();
     },
     methods: {
         //获取档案 -- 请求接口
-        getInfoReq(){
+        getInfoReq() {
             let send = {
-                Integer:28,
-                comanyId:28,
-            }
-            base.log("s","获取档案信息",send)
-            archives_api1(send,res=>{
-                base.log("r","获取档案信息",res.data)
-                if(res.data.success){
-                    this.archivesTable.data = res.data.result.list
-                    this.archivesTable.total = res.data.result.total
-                }else{
-                    base.error(res.data)
+                Integer: 28,
+                comanyId: 28
+            };
+            base.log("s", "获取档案信息", send);
+            archives_api1(send, res => {
+                base.log("r", "获取档案信息", res.data);
+                if (res.data.success) {
+                    this.archivesTable.data = res.data.result.list;
+                    this.archivesTable.total = res.data.result.total;
+                } else {
+                    base.error(res.data);
                 }
-            })
-        },         
-        
+            });
+        },
+
         // 新增
         add() {
-            this.$message.warning("点击新增")
+            this.$message.warning("点击新增");
         },
 
         // 删除
         delet(searchData, radioData, checkboxData) {
-            this.$message.warning("点击删除")
+            this.$message.warning("点击删除");
         },
 
         // 打印
         print(searchData, radioData, checkboxData) {
-            this.$message.warning("点击打印")
+            this.$message.warning("点击打印");
         },
 
         // 删除恢复
@@ -146,7 +150,7 @@ export default {
         pageSizeChange(size) {},
 
         // 翻页
-        pageChange(index) {}    
+        pageChange(index) {}
     }
 };
 </script>

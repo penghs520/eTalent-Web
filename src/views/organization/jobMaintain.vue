@@ -584,7 +584,7 @@ export default {
         //解存--点击按钮
         Enable() {
             if (this.EnableList.length === 0) {
-                this.$message.error("请选择已封存的岗位");
+                this.$message.warning("请选择已封存的岗位");
                 return;
             }
             this.EnableAll = true;
@@ -627,7 +627,7 @@ export default {
         //岗位封存--点击按钮
         notEnable() {
             if (this.notEnableList.length === 0) {
-                this.$message.error("请选择未封存的岗位");
+                this.$message.warning("请选择未封存的岗位");
                 return;
             }
             this.notEnableAll = true;
@@ -653,7 +653,7 @@ export default {
         //删除岗位-- 按钮点击
         delPost() {
             if (this.delPostList.length === 0) {
-                this.$message.error("未选中岗位");
+                this.$message.warning("未选中岗位");
                 return;
             }
             this.delPostDialog = true;
@@ -678,7 +678,7 @@ export default {
         //岗位编辑--按钮
         editPost() {
             if (this.editPostList.length === 0) {
-                this.$message.error("请至少选择一个岗位");
+                this.$message.warning("请至少选择一个岗位");
                 return;
             }
             this.editPostDialog = true;

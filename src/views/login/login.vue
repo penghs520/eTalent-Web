@@ -12,7 +12,7 @@
         height: 600px;
         padding: 80px 88px 0px;
         background: rgba(241, 242, 242, 1);
-        border-radius: 12px;
+        border-radius: 0px 12px 12px 0px;  
         text-align: left;
         .code {
             position: absolute;
@@ -383,7 +383,7 @@ export default {
         //获取验证码 , 验证码倒计时
         getCode() {
             if (this.mobileForm.phone.length == 0) {
-                this.$message.error("请输入手机号");
+                this.$message.warning("请输入手机号");
                 return;
             }
             //验证码倒计时
@@ -412,7 +412,7 @@ export default {
                     this.loginForm.password.length == 0 ||
                     this.loginForm.userName.length == 0
                 ) {
-                    this.$message.error("输入内容为空");
+                    this.$message.warning("输入内容为空");
                     return;
                 }
                 this.$refs["loginForm"].validate(valid => {
@@ -422,7 +422,7 @@ export default {
                 });
             } else {
                 if (this.mobileForm.phone.length == 0) {
-                    this.$message.error("输入内容为空");
+                    this.$message.warning("输入内容为空");
                     return;
                 }
                 this.$refs["mobileForm"].validate(valid => {

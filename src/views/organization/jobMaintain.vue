@@ -132,37 +132,47 @@
                                 <el-form-item label="岗位名称" prop="postName">
                                     <el-input v-model="addPostForm.postName" placeholder="请输入"></el-input>
                                 </el-form-item>
-                                <el-form-item label="所属部门" prop="orgId">
-                                    <el-select v-model="addPostForm.orgId" placeholder="请选择">
-                                        <div v-for="item in orgTypeList" :key="item.id">
-                                            <el-option
-                                                :label="item.dictValue"
-                                                :value="item.dictCode"
-                                            ></el-option>
-                                        </div>
+                                <el-form-item label="所属部门" prop="orgName">
+                                    <el-select
+                                        v-model="addPostForm.orgName"
+                                        placeholder="请选择"
+                                        ref="selectTree"
+                                        popper-class="base_treeSelect"
+                                        style="width:100%"
+                                    >
+                                        <el-option
+                                            :label="addPostForm.orgName"
+                                            :value="addPostForm.orgName"
+                                        >
+                                            <tree :treeData="orgTree"></tree>
+                                        </el-option>
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="上级岗位">
-                                    <el-select v-model="addPostForm.parentPostId" placeholder="请选择">
+                                    <el-select
+                                        v-model="addPostForm.parentPostId"
+                                        placeholder="请选择"
+                                        :clearable="true"
+                                    >
                                         <el-option
                                             v-for="item in orgParenList"
-                                            :key="item.orgParentId"
-                                            :label="item.orgName"
-                                            :value="item.orgId"
+                                            :key="item.postId"
+                                            :label="item.postName"
+                                            :value="item.postId"
                                         ></el-option>
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="职位" prop="positionId">
                                     <el-select
                                         v-model="addPostForm.positionId"
-                                        placeholder="输入查找"
+                                        placeholder="请选择"
                                         filterable
                                     >
                                         <el-option
                                             v-for="item in positionList"
                                             :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value"
+                                            :label="item.positionName"
+                                            :value="item.positionId"
                                         ></el-option>
                                     </el-select>
                                 </el-form-item>
@@ -202,39 +212,46 @@
                                     <el-input v-model="editPostForm.postName" placeholder="请输入"></el-input>
                                 </el-form-item>
                                 <el-form-item label="所属部门" prop="orgId">
-                                    <el-select v-model="editPostForm.orgId" placeholder="请选择">
-                                        <div v-for="item in orgTypeList" :key="item.id">
-                                            <el-option
-                                                :label="item.dictValue"
-                                                :value="item.dictCode"
-                                            ></el-option>
-                                        </div>
+                                    <el-select
+                                        v-model="editPostForm.orgName"
+                                        placeholder="请选择"
+                                        ref="selectTree"
+                                        popper-class="base_treeSelect"
+                                        style="width:100%"
+                                    >
+                                        <el-option
+                                            :label="editPostForm.orgName"
+                                            :value="editPostForm.orgName"
+                                        >
+                                            <tree :treeData="orgTree"></tree>
+                                        </el-option>
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="上级岗位">
                                     <el-select
                                         v-model="editPostForm.parentPostId"
+                                        clearable
                                         placeholder="请选择"
                                     >
                                         <el-option
                                             v-for="item in orgParenList"
-                                            :key="item.orgParentId"
-                                            :label="item.orgName"
-                                            :value="item.orgId"
+                                            :key="item.postId"
+                                            :label="item.postName"
+                                            :value="item.postId"
                                         ></el-option>
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="职位" prop="positionId">
                                     <el-select
                                         v-model="editPostForm.positionId"
-                                        placeholder="输入查找"
+                                        placeholder="请选择"
                                         filterable
                                     >
                                         <el-option
                                             v-for="item in positionList"
                                             :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value"
+                                            :label="item.positionName"
+                                            :value="item.positionId"
                                         ></el-option>
                                     </el-select>
                                 </el-form-item>
@@ -398,7 +415,14 @@
 <script>
 import tree from "../../components/tree/tree";
 import commonTable from "../../components/table/commonTable";
-import { postRepair_api1, postRepair_api2 } from "../../request/api";
+import {
+    postRepair_api1,
+    postRepair_api2,
+    postRepair_api3,
+    postRepair_api4,
+    postRepair_api5,
+    postRepair_api6
+} from "../../request/api";
 import base from "../../assets/js/base";
 
 export default {
@@ -449,7 +473,7 @@ export default {
             postTable: {
                 head: [
                     { name: "封存", key: "isEnable", isShow: true },
-                    { name: "岗位编码", key: "postId", isShow: true },
+                    { name: "岗位编码", key: "postCode", isShow: true },
                     { name: "岗位名称", key: "postName", isShow: true },
                     { name: "所属部门", key: "orgName", isShow: true },
                     { name: "职位名称", key: "positionName", isShow: true },
@@ -521,11 +545,13 @@ export default {
             orgNode: "",
             currentPage: 1,
             pageSize: 10,
+            postId: "",
             //岗位--新增
             addPostDialog: false,
             addPostForm: {
                 postCode: "",
                 postName: "",
+                orgName: "",
                 orgId: "",
                 parentPostId: "",
                 positionId: ""
@@ -537,14 +563,26 @@ export default {
                 postName: [
                     { required: true, message: "请输入", trigger: "blur" }
                 ],
-                orgId: [{ required: true, message: "请输入", trigger: "blur" }],
+                orgName: [
+                    { required: true, message: "请输入", trigger: "blur" }
+                ],
                 positionId: [
                     { required: true, message: "请输入", trigger: "blur" }
                 ]
             },
-            orgTypeList: [],
             orgParenList: [],
             positionList: [],
+            maxCodeAdd: "",
+            orgTree: {
+                data: [],
+                props: {
+                    children: "childList",
+                    label: "orgName"
+                },
+                showDefaultIcon: true,
+                defaultIconExpandNode: true,
+                nodeClick: this.selectTreeClick
+            },
             //岗位编辑
             editPostList: [],
             editPostForm: {
@@ -552,6 +590,7 @@ export default {
                 postName: "",
                 postId: "",
                 orgId: "",
+                orgName: "",
                 parentPostId: "",
                 positionId: ""
             },
@@ -580,7 +619,6 @@ export default {
         this.getPostTreeReq();
     },
     methods: {
-
         //解存--点击按钮
         Enable() {
             if (this.EnableList.length === 0) {
@@ -635,7 +673,6 @@ export default {
             this.notEnableCheckedList = this.notEnableList;
         },
 
-
         //删除岗位--弹出框全选删除
         CheckAllChange(val) {
             this.delCheckedList = val ? this.delPostList : [];
@@ -661,15 +698,33 @@ export default {
         },
         //删除岗位--请求接口
         delPostReq() {
-            console.log("删除岗位了");            
+            let send = this.delCheckedList.map(item => item.postId);
+            base.log("s", "编辑岗位", send);
+            postRepair_api6(send, res => {
+                if (res.data.success) {
+                    base.log("r", "编辑岗位", res.data);
+                    this.delPostDialog = false;
+                    this.getPostTableReq()
+                } else {
+                    base.error(res.data);
+                }
+            });
         },
-
 
         //岗位编辑--请求接口
         editPostReq(formName) {
             this.$refs[formName].validate(valid => {
                 if (valid) {
-                    this.editPostDialog = false;
+                    let send = this.editPostForm;
+                    base.log("s", "编辑岗位", send);
+                    postRepair_api5(send, res => {
+                        if (res.data.success) {
+                            base.log("r", "编辑岗位", res.data);
+                            this.editPostDialog = false;
+                        } else {
+                            base.error(res.data);
+                        }
+                    });
                 } else {
                     return false;
                 }
@@ -677,30 +732,104 @@ export default {
         },
         //岗位编辑--按钮
         editPost() {
-            if (this.editPostList.length === 0) {
-                this.$message.warning("请至少选择一个岗位");
+            this.getAllPositionReq();
+            if (this.editPostList.length != 1) {
+                this.$message.warning("请选择一个岗位");
                 return;
             }
+
+            this.editPostForm.postCode = this.editPostList[0].postCode;
+            this.editPostForm.postName = this.editPostList[0].postName;
+            this.editPostForm.orgName = this.editPostList[0].orgName;
+            this.editPostForm.orgId = this.editPostList[0].orgId;
+            this.editPostForm.parentPostId = this.editPostList[0].parentPostId
+                ? this.editPostList[0].parentPostId
+                : "";
+            this.editPostForm.positionId = this.editPostList[0].positionId;
+            this.editPostForm.postId = this.editPostList[0].postId;
             this.editPostDialog = true;
         },
 
-
-        //岗位新增--按钮
+        //岗位新增--表格按钮
         addPost() {
+            if (this.orgNode === "") {
+                this.$message.warning("请选择机构");
+                return;
+            }
+            if (this.orgNode.orgType !== "POST") {
+                this.addPostForm.orgName = this.orgNode.orgName;
+                this.addPostForm.orgId = this.orgNode.orgId;
+            } else {
+                this.addPostForm.orgName = "";
+            }
+            this.getAllPositionReq();
+            this.addPostForm.postCode = this.maxCodeAdd;
             this.dialogType = true;
             this.addPostDialog = true;
         },
-        //岗位新增--接口请求
+        //岗位新增 --获取所有职位请求
+        getAllPositionReq() {
+            let send = {};
+            base.log("s", "获取所有职位", send);
+            postRepair_api3(send, res => {
+                base.log("r", "获取所有职位", res.data);
+                if (res.data.success) {
+                    this.positionList = res.data.result.list;
+                    console.log(this.positionList);
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
+        //岗位新增--新增接口请求
         addPostReq(formName) {
             this.$refs[formName].validate(valid => {
                 if (valid) {
-                    this.addPostDialog = false;
+                    let send = {
+                        orgId: this.addPostForm.orgId,
+                        parentPostId: this.addPostForm.parentPostId
+                            ? this.addPostForm.parentPostId
+                            : 0,
+                        positionId: this.addPostForm.positionId,
+                        postName: this.addPostForm.postName
+                    };
+                    base.log("s", "新增岗位", send);
+                    postRepair_api4(send, res => {
+                        base.log("r", "新增岗位", res.data);
+                        if (res.data.success) {
+                            this.addPostDialog = false;
+                            this.$message.success("新增成功");
+                            this.getPostTableReq();
+                            this.getPostTreeReq();
+                        } else {
+                            base.error(res.data);
+                        }
+                    });
                 } else {
                     return false;
                 }
             });
         },
-        //岗位表-- 格式化
+        //岗位新增--所有部门下拉树形点击
+        selectTreeClick(node) {
+            this.addPostForm.orgName = node.orgName;
+            this.addPostForm.orgId = node.orgId;
+            this.editPostForm.orgName = node.orgName;
+            this.editPostForm.orgId = node.orgId;
+            this.$refs.selectTree.blur();
+        },
+        //岗位新增 -- 获取下级岗位最大编码(根据岗位表)
+        getPostMaxCode(postList, nodeData) {
+            if (postList.length != 0) {
+                let codeList = postList.map(item => item.postCode);
+                let maxCode = Math.max.apply(this, codeList);
+                this.maxCodeAdd = maxCode + 1;
+            } else {
+                this.maxCodeAdd = nodeData.orgCode + "01";
+            }
+        },
+
+        //岗位表-- 格式化封存样式
         formatter(key, val) {
             if (key == "isEnable") {
                 val = val === 1 ? "否" : "是";
@@ -715,7 +844,8 @@ export default {
                 currentPage: this.currentPage,
                 isEnable: this.isEnable ? 0 : 1,
                 orgId: this.orgNode.orgId,
-                pageSize: this.pageSize
+                pageSize: this.pageSize,
+                postId: this.postId
             };
             base.log("s", "获取岗位表", send);
             postRepair_api2(send, res => {
@@ -723,6 +853,17 @@ export default {
                 if (res.data.success) {
                     this.postTable.data = res.data.result.list;
                     this.postTable.total = res.data.result.total;
+                    this.getPostMaxCode(res.data.result.list, this.orgNode); //获取最大下级岗位编码
+                    if (res.data.result.total === 0) {
+                        //获取上级岗位
+                        this.orgParenList = [];
+                        this.addPostForm.parentPostId = "";
+                    } else if (this.orgNode.orgType === "POST") {
+                        this.orgParenList = res.data.result.list;
+                        this.addPostForm.parentPostId = "";
+                    } else {
+                        this.orgParenList = res.data.result.list;
+                    }
                 } else {
                     base.error(res.data);
                 }
@@ -734,13 +875,23 @@ export default {
             this.delPostList = val; //删除多选赋值
             this.notEnableList = val; //封存多选赋值
             this.EnableList = val; //解封多选赋值
+
             console.log(val);
         },
-
+        //岗位表--页码改变
+        postPageChange(page) {
+            this.currentPage = page;
+            this.getPostTableReq();
+        },
+        //岗位表--页容量改变
+        postPageSizeChange(pageSize) {
+            this.currentPage = 1;
+            this.pageSize = pageSize;
+            this.getPostTableReq();
+        },
 
         //tab栏点击
         handleClick(command) {},
-
 
         //岗位树-- 获取岗位树请求
         getPostTreeReq() {
@@ -751,6 +902,7 @@ export default {
             postRepair_api1(send, res => {
                 base.log("r", "获取岗位树", res.data);
                 if (res.data.success) {
+                    this.orgTree.data = res.data.result; //赋值机构部门树
                     let newTree = JSON.parse(JSON.stringify(res.data.result));
                     this.postTreeFormatter(newTree);
                     this.postTree.data = newTree;
@@ -759,7 +911,7 @@ export default {
                 }
             });
         },
-        //岗位数--格式化岗位树
+        //岗位树--格式化岗位树
         postTreeFormatter(newTree) {
             for (let i = 0; i < newTree.length; i++) {
                 let temp = newTree[i];
@@ -789,8 +941,14 @@ export default {
         //岗位树--节点被点击
         nodeClick(node) {
             this.orgNode = node;
-            this.getPostTableReq();
-            console.log(this.orgNode);
+            if (node.orgType !== "POST") {
+                this.postId = "";
+                this.getPostTableReq();
+            } else {
+                this.postId = node.postId;
+                this.getPostTableReq();
+            }
+            console.log(node);
         }
     }
 };

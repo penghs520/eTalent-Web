@@ -138,6 +138,10 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         // 岗位维护
         const postRepair_api1    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationPostTree`, data, callback)};
         const postRepair_api2    = (data, callback) => {request('post', `api/masterdata/post/getPostList`, data, callback)};
+        const postRepair_api3    = (data, callback) => {request('post', `api/masterdata/position/getPositionPage`, data, callback)};
+        const postRepair_api4    = (data, callback) => {request('post', `api/masterdata/post/addPost`, data, callback)};
+        const postRepair_api5    = (data, callback) => {request('form', `api/masterdata/post/editPost`, data, callback)};
+        const postRepair_api6    = (data, callback) => {request('post', `api/masterdata/post/deletePost`, data, callback)};
        
 
 export {
@@ -198,6 +202,6 @@ export {
 
         // 岗位管理
             // 岗位维护
-            postRepair_api1,postRepair_api2,
+            postRepair_api1,postRepair_api2,postRepair_api3,postRepair_api4,postRepair_api5,postRepair_api6,
 
 }

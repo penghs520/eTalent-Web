@@ -55,6 +55,25 @@ let base = {
             return '请传入正确的身份证号码：字符串格式、18位'
         }
     },
+
+    blobDownLoad(response) {
+        if (response.status === 200) {
+            // 
+            let blob = new Blob([response.data]);
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.href = url;
+            a.download = "文件.xls";
+            a.click();
+            // 释放这个临时的对象url
+            window.URL.revokeObjectURL(url);
+        }else{
+            Message({
+                message: `下载失败，http status: ${response.status}`,
+                type: 'error'
+            })
+        }
+    },
 };
 
 export default base;

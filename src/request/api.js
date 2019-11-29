@@ -35,6 +35,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     const entry_api9     = (data, callback) => {request('post', `api/masterdata/staffarc/sendMessage`, data, callback)};
     const entry_api10     = (data, callback) => {request('post', `api/masterdata/staffarc/exportPreFile`, data, callback, 'blob')};
     const entry_api11     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentField`, data, callback)};
+    const entry_api12     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmployment`, data, callback)};
 
     // 参数设置
         //合同参数
@@ -149,7 +150,7 @@ export {
         staff_api1, staff_api2, staff_api3,
         // 入职管理
         entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6, entry_api7, entry_api8, entry_api9, entry_api10,
-        entry_api11, 
+        entry_api11, entry_api12,
 
         // 档案管理
             // 信息维护

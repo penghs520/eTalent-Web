@@ -347,7 +347,7 @@
 <script>
 import base from '../../../assets/js/base';
 import tree from '../../../components/tree/tree';
-import {sys_api1, staff_api1, staff_api2, entry_api8, entry_api11} from "../../../request/api";
+import {sys_api1, staff_api1, staff_api2, entry_api8, entry_api11, entry_api12} from "../../../request/api";
 
 export default {
     name: 'userInfo',                       /* 个人基本信息组件 */
@@ -427,6 +427,9 @@ export default {
                 joinPost: '',                   /* 入职岗位 */
                 backup: '',                     /* 备注 */
             },
+            entryRules: {
+                joinDate: [{required: true, message: '请选择计划入职日期', trigger: 'change'}]
+            },
         };
     },
     watch: {
@@ -465,8 +468,8 @@ export default {
                 6: '6个月',
             };
             this.selectData.idType = data.idTypeName;                       /* 证件类型 */
-            this.selectData.maritalStatus = '';                             /* 婚姻状况 */
-            this.selectData.degree = '';                                    /* 学历 */
+            this.selectData.maritalStatus = data.marryStatusName;                             /* 婚姻状况 */
+            this.selectData.degree = data.highestDegreeName;                                    /* 学历 */
             this.selectData.testDate = testList[data.probationPeriod];                   /* 试用期 */
             this.selectData.joinDepartment = data.orgName;                  /* 入职部门 */
             this.selectData.joinPost = data.postName;                       /* 入职岗位 */
@@ -615,6 +618,7 @@ export default {
         maritalStatusChange(v) {
             console.log(v)
             this.selectData_2.maritalStatus = this.getShowName(this.marryStatusList,v);
+            console.log(this.selectData_2.maritalStatus)
         },
 
         // 学历改变

@@ -1,4 +1,5 @@
 <style scoped lang="scss">
+@import url(../../assets/js/orgChart/orgchart-webcomponents.css);
 #organization_repair {
     display: flex;
     height: 100%;
@@ -20,14 +21,13 @@
         flex: 1;
         height: 100%;
         border: 10px solid #f0f0f0;
-        padding-left: 24px;
         border-bottom: none;
         box-sizing: border-box;
         overflow: auto;
         text-align: left;
         background-color: #fff;
         .org_table {
-            margin-top: 30px;
+            margin-top: 18px;
         }
         .qj-form,
         .qj-map {
@@ -87,6 +87,31 @@
     border: 1px solid #dbdbdbff;
     border-radius: 3px;
 }
+
+.operation{
+    padding: 18px 24px;
+}
+.chart{
+    margin: 0 24px 18px 24px;
+    border: 1px solid rgba(241,242,242,1);
+}
+
+
+</style>
+<style lang="scss">
+.organization_repair_tabsBar{
+    height: 100%;
+    .el-tabs__header{
+        padding: 0 24px;
+        border-bottom: 1px solid rgba(241,242,242,1);
+    }
+    .el-tabs__content{
+        height: calc(100% - 64px);
+        #pane-orgPic{
+            height: 100%;
+        }
+    }
+}
 </style>
 
 
@@ -105,7 +130,7 @@
         </div>
         <!-- 右侧表格 -->
         <div class="content">
-            <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tabs v-model="activeName" class="organization_repair_tabsBar" @tab-click="handleClick">
                 <el-tab-pane name="orgForm">
                     <span slot="label">
                         <i class="qj-form"></i>机构表
@@ -516,6 +541,27 @@
                     <span slot="label">
                         <i class="qj-map"></i>机构图
                     </span>
+
+                    <el-row :gutter="16" class="operation" >
+                        <el-col :span=".5">
+                            <el-select v-model="direction" size="small" placeholder="显示方向" @change="directionChange" >
+                                <el-option value="t2b" label="竖" ></el-option>
+                                <el-option value="l2r" label="横" ></el-option>
+                            </el-select>
+                        </el-col>
+                        <el-col :span=".5">
+                            <el-select v-model="tier" size="small" placeholder="显示层级" @change="tierChange" >
+                                <el-option :value="0" label="全部显示" ></el-option>
+                                <el-option v-for="item in tierList" :key="item" :value="item" :label="`${item}层`" ></el-option>
+                            </el-select>
+                        </el-col>
+                        <el-col :span=".5">
+                            <el-button type="primary" size="small" @click="download" >导出</el-button>
+                        </el-col>
+                    </el-row>
+
+                    <div class="chart" id="orgChart">
+                    </div>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -524,6 +570,9 @@
 
 <script>
 import base from "../../assets/js/base";
+import tree from "../../components/tree/tree";
+import commonTable from "../../components/table/commonTable";
+import OrgChart from "../../assets/js/orgChart/orgchart-webcomponents.js"
 import {
     orgRepair_api1,
     orgRepair_api2,
@@ -534,10 +583,10 @@ import {
     orgRepair_api7,
     orgRepair_api8,
     orgRepair_api9,
-    orgRepair_api10
+    orgRepair_api10,
+    orgRepair_api11
 } from "../../request/api";
-import tree from "../../components/tree/tree";
-import commonTable from "../../components/table/commonTable";
+
 
 export default {
     name: "repair" /* 机构维护 */,
@@ -737,8 +786,15 @@ export default {
             enrolAll: true,
             enrolisIndet: false,
             enrolCheckedList: [],
-            enrolList: []
+            enrolList: [],
             //机构导入
+
+
+            // 机构图
+            direction: 't2b',                       /* 显示方向 */
+            tier: 0,                                /* 显示层级 */
+            tierList: [1,2,3,4,5,6,7,8,9,10],       /* 显示层级 */
+            orgChartData: null,                     /* 机构图数据 */
         };
     },
     components: {
@@ -1148,20 +1204,30 @@ export default {
         handleClick(tab) {
             if (tab.name == "orgForm") {
                 console.log("机构表");
+                if (this.orgParent) {
+                    this.getOrgTable(); //获取机构表
+                    this.getMaxOrgCode(this.orgParent); //获取最大下级机构编码
+                }
             } else if (tab.name == "orgPic") {
                 console.log("机构图");
+                if (this.orgParent) {
+                    this.getChartData(this.orgParent);
+                }
             }
         },
 
         //树形--节点点击
         nodeClick(node) {
-            console.log(node);
-
             this.orgParent = node;
-            this.getOrgTable(); //获取机构表
-            this.getMaxOrgCode(node); //获取最大下级机构编码
-
-            this.orgParenList = [node]; //获取上级机构
+            if (this.activeName === 'orgForm') {
+                this.getOrgTable(); //获取机构表
+                this.getMaxOrgCode(node); //获取最大下级机构编码
+    
+                this.orgParenList = [node]; //获取上级机构
+            }else if (this.activeName === 'orgPic') {
+                // 获取机构图
+                this.getChartData(node);
+            }
         },
         //树形--封存
         switchChange() {
@@ -1183,7 +1249,68 @@ export default {
                     base.error(d);
                 }
             });
-        }
+        },
+
+        // 获取机构图数据
+        getChartData(node) {
+            let send = {
+                "isContainsActualMembers": true,
+                "isContainsCompiler": true,
+                "isEnable": Number(this.value),
+                "layer": 0,
+                "orgId": node.orgId
+            };
+            base.log('s', '机构图', send);
+            orgRepair_api11(send, res => {
+                let d = res.data;
+                base.log('r', '机构图', res);
+                if (d.success) {
+                    this.orgChartData = d.result[0];
+                    this.createChart(this.direction,this.tier);
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 显示方向改变
+        directionChange(v) {
+            this.createChart(v,this.tier);
+        },
+
+        // 层级改变
+        tierChange(v) {
+            this.createChart(this.direction,v);
+        },
+
+        // 导出
+        download() {
+        },
+
+        // 创建机构图
+        /**
+         * @param {string} direction    图形显示方向，可能的值：'l2r'-从左到右、't2b'-从上到下
+         * @param {number} tier         显示的层级,，0是全显示
+         */
+        createChart(direction='t2b',tier) {
+            let orgchart = new OrgChart({
+                'chartContainer': '#orgChart',
+                'chartClass': 'orgchartSingleClassName',
+                'data' : this.orgChartData,
+                'nodeTitle': 'orgName',                 /* 节点标题字段 */
+                'childTitle': 'childList',
+                'zoom': true,                           /* 鼠标滚轮缩放 */
+                'pan': true,                      /* 是否可以拖动 */
+                'depth': tier ? tier : 999,
+                'nodeContent': 'orgType',
+                'direction': direction
+            });
+            let chartNode = document.querySelector('.orgchartSingleClassName');
+            if (chartNode) {
+                document.querySelector('#orgChart').removeChild(chartNode);
+            };
+            document.querySelector('#orgChart').appendChild(orgchart);
+        },
     }
 };
 </script>

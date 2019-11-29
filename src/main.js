@@ -11,6 +11,7 @@ import '@/assets/css/theme/element.scss'
 import '@/assets/icon/iconfont.css'
 
 
+
 // 处理element-ui路由，点击已经打开的路由报错的问题
 const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {

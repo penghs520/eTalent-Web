@@ -426,7 +426,7 @@ export default {
         //弹出框点击搜索
         searchUser() {
             if (this.searchVal.length == 0) {
-                this.$message.error("请输入搜索内容");
+                this.$message.warning("请输入搜索内容");
                 return;
             }
             this.searchPersonList();

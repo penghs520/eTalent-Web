@@ -12,7 +12,7 @@
         padding: 80px 88px 0px;
         text-align: left;
         background: rgba(241, 242, 242, 1);
-        border-radius:12px;        
+        border-radius: 0px 12px 12px 0px;       
         h1 {
             margin-bottom: 20px;
             font-size: 28px;
@@ -278,7 +278,7 @@ export default {
         //验证码倒计时
         getCode() {
             if(this.mobileForm.phone.length == 0){
-                this.$message.error('请输入手机')
+                this.$message.warning('请输入手机')
                 return
             }
             let timestamp = localStorage.setItem("findTime", Date.now());

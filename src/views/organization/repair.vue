@@ -758,7 +758,7 @@ export default {
         //划转机构--点击按钮
         enrolOrg() {
             if (this.enrolList.length < 1) {
-                this.$message.error("请选择至少一个机构");
+                this.$message.warning("请选择至少一个机构");
                 return;
             }
             this.enrolDialog = true;
@@ -818,7 +818,7 @@ export default {
         //合并机构--点击按钮
         mergeOrg() {
             if (this.mergeList.length < 2) {
-                this.$message.error("请选择2个以上的机构");
+                this.$message.warning("请选择2个以上的机构");
                 return;
             }
             this.mergeAll = true;
@@ -857,7 +857,7 @@ export default {
         Enable() {
             let status = this.EnableList.find(item => item.isEnable === 1); //找出未封存的数据
             if (this.EnableList.length === 0 || status) {
-                this.$message.error("请选择已封存的机构");
+                this.$message.warning("请选择已封存的机构");
                 return;
             }
             this.EnableAll = true;
@@ -881,7 +881,7 @@ export default {
             console.log("点击");
             let send = this.EnableCheckedList.map(item => item.orgId);
             if (send.length === 0) {
-                this.$message.error("请选择解封机构");
+                this.$message.warning("请选择解封机构");
                 return;
             }
             orgRepair_api8(send, res => {
@@ -900,7 +900,7 @@ export default {
             let status = this.notEnableList.find(item => item.isEnable === 0); //找出已封存的数据
             console.log("封存状态", status);
             if (this.notEnableList.length === 0 || status) {
-                this.$message.error("请选择未被封存的机构");
+                this.$message.warning("请选择未被封存的机构");
                 return;
             }
             this.notEnableAll = true;
@@ -937,7 +937,7 @@ export default {
         //编辑机构--弹出框
         editOrg() {
             if (this.editOrglist.length != 1) {
-                this.$message.error("编辑机构当前必须只能选中一个");
+                this.$message.warning("编辑机构当前必须只能选中一个");
                 return;
             }
             this.getOrgType(); //获取所有数据类型
@@ -994,7 +994,7 @@ export default {
         //删除机构--表格点击删除按钮
         delOrg() {
             if (this.delOrgList.length === 0) {
-                this.$message.error("未选中机构");
+                this.$message.warning("未选中机构");
                 return;
             }
             this.delOrgDialog = true;
@@ -1004,7 +1004,7 @@ export default {
         delOrgReq() {
             let send = this.delCheckedList.map(item => item.orgId);
             if (send.length === 0) {
-                this.$message.error("未删除机构");
+                this.$message.warning("未删除机构");
                 return;
             }
             orgRepair_api5(send, res => {
@@ -1024,7 +1024,7 @@ export default {
         //新增机构--弹出弹框
         addOrg() {
             if (this.orgParent.length === 0) {
-                this.$message.error("请选择机构");
+                this.$message.warning("请选择机构");
                 // let maxCodeList = this.treeData.data.map(item => item.orgCode);
                 // let maxCode = Math.max.apply(this, maxCodeList);
                 // this.addOrgForm.orgCode = maxCode + 1;

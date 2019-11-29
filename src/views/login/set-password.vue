@@ -112,7 +112,7 @@ export default {
         // 设置新密码
         setPwd(formName) {
             if(this.pwdForm.pwd1 != this.pwdForm.pwd2){
-                this.$message.error('两次密码输入不一致')
+                this.$message.warning('两次密码输入不一致')
                 return
             }
             this.$refs[formName].validate(valid => {

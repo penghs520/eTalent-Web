@@ -1,6 +1,7 @@
 <style scoped lang="scss" >
 #staffEntry{
     height: 100%;
+    overflow: auto;
 }
 
 .sendEntryApply .title{

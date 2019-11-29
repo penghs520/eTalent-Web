@@ -136,7 +136,7 @@
                                     <el-select
                                         v-model="addPostForm.orgName"
                                         placeholder="请选择"
-                                        ref="selectTree"
+                                        ref="selectTree1"
                                         popper-class="base_treeSelect"
                                         style="width:100%"
                                     >
@@ -215,7 +215,7 @@
                                     <el-select
                                         v-model="editPostForm.orgName"
                                         placeholder="请选择"
-                                        ref="selectTree"
+                                        ref="selectTree2"
                                         popper-class="base_treeSelect"
                                         style="width:100%"
                                     >
@@ -401,6 +401,51 @@
                             <el-button size="small" type="primary" @click="EnableReq">确 定</el-button>
                         </span>
                     </el-dialog>
+                    <!-- 复制岗位弹窗 -->
+                    <el-dialog
+                        :visible.sync="copyPostDialog"
+                        class="qinjeeDialogMini"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">机构复制</span>
+                        <div class="qinjeeDialogSmallMini">
+                            <el-form
+                                :model="copyPostForm"
+                                :rules="rules"
+                                ref="copyPostForm"
+                                label-width="120px"
+                                class="demo-ruleForm"
+                                size="mini"
+                            >
+                                <el-form-item label="选择目标机构" prop="targetOrgName">
+                                    <el-select
+                                        v-model="copyPostForm.targetOrgName"
+                                        placeholder="请选择"
+                                        ref="selectTree3"
+                                        popper-class="base_treeSelect"
+                                        style="width:100%"
+                                    >
+                                        <el-option
+                                            :label="copyPostForm.targetOrgName"
+                                            :value="copyPostForm.targetOrgName"
+                                        >
+                                            <tree :treeData="orgTree"></tree>
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="copyPostDialog = false">取 消</el-button>
+                            <el-button
+                                size="small"
+                                type="primary"
+                                @click="copyPostReq('copyPostForm')"
+                            >确 定</el-button>
+                        </span>
+                    </el-dialog>
                 </el-tab-pane>
                 <!-- 岗位图 -->
                 <el-tab-pane name="post_pic">
@@ -421,7 +466,10 @@ import {
     postRepair_api3,
     postRepair_api4,
     postRepair_api5,
-    postRepair_api6
+    postRepair_api6,
+    postRepair_api7,
+    postRepair_api8,
+    postRepair_api9
 } from "../../request/api";
 import base from "../../assets/js/base";
 
@@ -511,7 +559,7 @@ export default {
                             { text: "解封", method: this.Enable },
                             { text: "排序", method: this.btn2 },
                             { text: "模板下载", method: this.btn2 },
-                            { text: "复制", method: this.btn2 },
+                            { text: "复制", method: this.copyPost },
                             { text: "导入", method: this.btn2 },
                             { text: "导出", method: this.btn2 }
                         ]
@@ -568,7 +616,10 @@ export default {
                 ],
                 positionId: [
                     { required: true, message: "请输入", trigger: "blur" }
-                ]
+                ],
+                targetOrgName: [
+                    { required: true, message: "请选择", trigger: "blur" }
+                ],
             },
             orgParenList: [],
             positionList: [],
@@ -612,16 +663,52 @@ export default {
             EnableAll: true,
             EnableCheckedList: [],
             EnableList: [],
-            EnableDialog: false
+            EnableDialog: false,
+            //岗位复制
+            copyPostList: [],
+            copyPostDialog: false,
+            copyPostForm: {
+                targetOrgName: "",
+                targetOrgId:"",
+            }
         };
     },
     mounted() {
         this.getPostTreeReq();
     },
     methods: {
-        //解存--点击按钮
+        //岗位复制--按钮
+        copyPost() {
+            if(this.copyPostList.length === 0){
+                this.$message.warning("请选择岗位")
+                return
+            }
+            this.copyPostDialog = true;
+        },
+        //岗位复制--请求接口
+        copyPostReq(formName) {
+            this.$refs[formName].validate(valid => {
+                if (valid) {
+                    let send = {};
+                    base.log("s", "复制岗位", send);
+                    postRepair_api9(send, res => {
+                        base.log("r", "复制岗位", res.data);
+                        if (res.data.success) {
+                            this.copyPostDialog = false;
+                        } else {
+                            base.error(res.data);
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
+        },
+
+        //岗位解存--点击按钮
         Enable() {
-            if (this.EnableList.length === 0) {
+            let status = this.EnableList.find(item => item.isEnable === 1); //数据中有未封存的数据
+            if (this.EnableList.length === 0 || status) {
                 this.$message.warning("请选择已封存的岗位");
                 return;
             }
@@ -629,26 +716,48 @@ export default {
             this.EnableDialog = true;
             this.EnableCheckedList = this.EnableList;
         },
-        //解存--全选状态改变
+        //岗位解存--全选状态改变
         EnableAllChange(val) {
             this.EnableCheckedList = val ? this.EnableList : [];
             this.isIndet2 = false;
         },
-        //解存--弹出框多选改变
+        //岗位解存--弹出框多选改变
         EnableChange(value) {
             let checkedCount = value.length;
             this.EnableAll = checkedCount === this.EnableList.length;
             this.isIndet2 =
                 checkedCount > 0 && checkedCount < this.EnableList.length;
         },
-        //解存--请求接口
+        //岗位解存--请求接口
         EnableReq() {
-            console.log("点击解封");
+            let send = this.EnableCheckedList.map(item => item.postId);
+            base.log("s", "解封岗位", send);
+            postRepair_api8(send, res => {
+                base.log("r", "解封岗位", res.data);
+                if (res.data.success) {
+                    this.$message.success("解封成功");
+                    this.getPostTableReq();
+                    this.EnableDialog = false;
+                } else {
+                    base.error(res.data);
+                }
+            });
         },
 
         //岗位封存--请求接口
         notEnableReq() {
-            console.log("请求封存了");
+            let send = this.notEnableCheckedList.map(item => item.postId);
+            base.log("s", "封存岗位", send);
+            postRepair_api7(send, res => {
+                base.log("r", "封存岗位", res.data);
+                if (res.data.success) {
+                    this.$message.success("封存成功");
+                    this.getPostTableReq();
+                    this.notEnableDialog = false;
+                } else {
+                    base.error(res.data);
+                }
+            });
         },
         //岗位封存--全选状态改变
         notEnableAllChange(val) {
@@ -701,10 +810,10 @@ export default {
             let send = this.delCheckedList.map(item => item.postId);
             base.log("s", "编辑岗位", send);
             postRepair_api6(send, res => {
+                base.log("r", "编辑岗位", res.data);
                 if (res.data.success) {
-                    base.log("r", "编辑岗位", res.data);
                     this.delPostDialog = false;
-                    this.getPostTableReq()
+                    this.getPostTableReq();
                 } else {
                     base.error(res.data);
                 }
@@ -814,9 +923,22 @@ export default {
         selectTreeClick(node) {
             this.addPostForm.orgName = node.orgName;
             this.addPostForm.orgId = node.orgId;
+
             this.editPostForm.orgName = node.orgName;
             this.editPostForm.orgId = node.orgId;
-            this.$refs.selectTree.blur();
+
+            this.copyPostForm.targetOrgName = node.orgName;
+            this.copyPostForm.targetOrgId = node.orgId;
+
+            if (this.$refs.selectTree1) {
+                this.$refs.selectTree1.blur();
+            }
+            if (this.$refs.selectTree2) {
+                this.$refs.selectTree2.blur();
+            }
+            if (this.$refs.selectTree3) {
+                this.$refs.selectTree3.blur();
+            }
         },
         //岗位新增 -- 获取下级岗位最大编码(根据岗位表)
         getPostMaxCode(postList, nodeData) {
@@ -869,12 +991,13 @@ export default {
                 }
             });
         },
-        //岗位表--多选点击
+        //岗位表--多选点击赋值
         postSelectChange(val) {
-            this.editPostList = val; //编辑多选赋值
-            this.delPostList = val; //删除多选赋值
-            this.notEnableList = val; //封存多选赋值
-            this.EnableList = val; //解封多选赋值
+            this.editPostList = val;   //编辑多选赋值
+            this.delPostList = val;    //删除多选赋值
+            this.notEnableList = val;  //封存多选赋值
+            this.EnableList = val;     //解封多选赋值
+            this.copyPostList = val    //赋值多选赋值
 
             console.log(val);
         },

@@ -855,7 +855,7 @@ export default {
 
         //解存--点击按钮
         Enable() {
-            let status = this.EnableList.find(item => item.isEnable === 1); //找出未封存的数据
+            let status = this.EnableList.find(item => item.isEnable === 1); //数据中有未封存的数据  
             if (this.EnableList.length === 0 || status) {
                 this.$message.warning("请选择已封存的机构");
                 return;
@@ -980,7 +980,7 @@ export default {
             this.isIndeterminate =
                 checkedCount > 0 && checkedCount < this.delOrgList.length;
         },
-        //删除机构,编辑机构,封存,解封,合并,划转
+        //删除机构,编辑机构,封存,解封,合并,划转--多选赋值
         orgSelectChange(node) {
             console.log(node);
             this.delOrgList = node; //删除数据赋值

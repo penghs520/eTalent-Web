@@ -560,8 +560,7 @@
                         </el-col>
                     </el-row>
 
-                    <div class="chart" id="orgChart">
-                    </div>
+                    <div class="chart" id="orgChart"></div>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -1302,8 +1301,30 @@ export default {
                 'zoom': true,                           /* 鼠标滚轮缩放 */
                 'pan': true,                      /* 是否可以拖动 */
                 'depth': tier ? tier : 999,
-                'nodeContent': 'orgType',
-                'direction': direction
+                'direction': direction,
+                // 'nodeContent': 'orgType',
+                'createNode': function(node, data) {
+                    // 创建节点
+                    let cont = document.createElement('div');
+
+                    // 添加点击事件
+                    cont.addEventListener('click', (event) => {
+                        // 这里可以添加点击事件
+                    });
+                    // 添加属性
+                    cont.setAttribute('class', 'nodeCont');
+                    // 添加内容
+                    let html = `<div>
+                                    <img class="personPic" src="${data.attachmentUrl}">
+                                    <div class="info">
+                                        <p class="text" title="${data.orgManagerName}/${data.orgManagerPositionName}" >${data.orgManagerName}/${data.orgManagerPositionName}</p>
+                                        <p class="number">${data.staffNumbers}/${data.planNumbers}</p>
+                                    </div>
+                                </div>`;
+                    cont.innerHTML = html;
+                    // 插入节点内
+                    node.appendChild(cont);
+                }
             });
             let chartNode = document.querySelector('.orgchartSingleClassName');
             if (chartNode) {

@@ -559,3 +559,39 @@ org-chart .node .content{
   border: none;
   background-color: #fff;
 }
+org-chart .nodeCont{
+  padding: 8px;
+  text-align: left;
+}
+org-chart .nodeCont>div{
+  display: flex;
+  align-items: center;
+}
+org-chart .nodeCont img{
+  margin-right: 4px;
+  width: 36px;
+  height: 36px;
+}
+org-chart .nodeCont .info{
+  width: calc(100% - 36px);
+}
+org-chart .nodeCont .text{
+  width: 100%;
+  font-size: 12px;
+  color: #676B6D;
+  line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+org-chart .nodeCont .number{
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #19ADE6;
+  font-size: 12px;
+}
+org-chart .node {
+  width: 140px;
+}

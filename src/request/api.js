@@ -106,12 +106,14 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const positionGroup_api3    = (data, callback) => {request('post', `api/masterdata/positionGroup/deletePositionGroup`, data, callback)};
         const positionGroup_api4    = (data, callback) => {request('get', `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
         const positionGroup_api5    = (data, callback) => {request('post', `api/masterdata/positionGroup/editPositionGroup`, data, callback)};
+        const positionGroup_api6    = (data, callback) => {request('get', `api/masterdata/positionGroup/sortPositionGroup`, data, callback)};
 
         // 职位设置
         const position_api1    = (data, callback) => {request('post', `api/masterdata/position/getPositionPage`, data, callback)};
         const position_api2    = (data, callback) => {request('form', `api/masterdata/position/addPosition`, data, callback)};
         const position_api3    = (data, callback) => {request('form', `api/masterdata/position/editPosition`, data, callback)};
         const position_api4    = (data, callback) => {request('post', `api/masterdata/position/deletePosition`, data, callback)};
+        const position_api5    = (data, callback) => {request('get', `api/masterdata/position/sortPositionGroup`, data, callback)};
         
         // 职级设置
         const positionLevel_api1    = (data, callback) => {request('get', `api/masterdata/positionLevel/getPositionLevelList`, data, callback)};
@@ -189,10 +191,10 @@ export {
     // 组织中台
         // 职位管理
             // 职位族设置
-            positionGroup_api1,positionGroup_api2,positionGroup_api3,positionGroup_api4,positionGroup_api5,
+            positionGroup_api1,positionGroup_api2,positionGroup_api3,positionGroup_api4,positionGroup_api5, positionGroup_api6,
             
             //职位设置
-            position_api1,position_api2,position_api3,position_api4,
+            position_api1,position_api2,position_api3,position_api4, position_api5,
             
             //职级设置
             positionLevel_api1,

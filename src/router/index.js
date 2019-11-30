@@ -56,12 +56,11 @@ const router = new VueRouter({
 
 //路由导航前置钩子
 router.beforeEach((to, from, next) => {
-  
   let pathArr = ['/','/register',"/findpassword",'/setsuccess','/setpassword']
   if (!pathArr.includes(to.path)) {
     let userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    let cookie = document.cookie.split("=")[0]
-    if (!userInfo || cookie != "SESSION_KEY") {
+    let cookie = document.cookie;
+    if (!userInfo || !cookie.includes("SESSION_KEY")) {
       next('/')
     }
   }

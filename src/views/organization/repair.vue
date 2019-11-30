@@ -571,7 +571,8 @@
 import base from "../../assets/js/base";
 import tree from "../../components/tree/tree";
 import commonTable from "../../components/table/commonTable";
-import OrgChart from "../../assets/js/orgChart/orgchart-webcomponents.js"
+import OrgChart from "../../assets/js/orgChart/orgchart-webcomponents.js";
+import file from "../../request/filePath";
 import {
     orgRepair_api1,
     orgRepair_api2,
@@ -583,7 +584,8 @@ import {
     orgRepair_api8,
     orgRepair_api9,
     orgRepair_api10,
-    orgRepair_api11
+    orgRepair_api11,
+    orgRepair_api12
 } from "../../request/api";
 
 
@@ -674,9 +676,9 @@ export default {
                             { text: "合并", method: this.mergeOrg },
                             { text: "划转", method: this.enrolOrg },
                             { text: "排序", method: this.btn2 },
-                            { text: "模板下载", method: this.btn2 },
+                            { text: "模板下载", method: this.downloadModle },
                             { text: "导入", method: this.btn2 },
-                            { text: "导出", method: this.btn2 }
+                            { text: "导出", method: this.downloadTable }
                         ]
                     }
                 ],
@@ -1334,6 +1336,34 @@ export default {
                 document.querySelector('#orgChart').removeChild(chartNode);
             };
             document.querySelector('#orgChart').appendChild(orgchart);
+        },
+
+        // 模板下载
+        downloadModle() {
+            let url = file['机构导入'];
+            if (url) {
+                window.open(url,'_self');
+            }
+        },
+
+        // 导出表格
+        downloadTable(searchData,radioData,checkboxData) {
+            if (!this.orgParent) {
+                this.$message({
+                    message: '请先从左侧机构树中选择机构',
+                    type: 'warning'
+                });
+                return false;
+            };
+            let send = {
+                "orgId": this.orgParent.orgId,
+                "orgIds": !checkboxData || checkboxData.length === 0 ? [] : checkboxData.map(item => {return item.orgId})
+            };
+            base.log('s', '导出', send);
+            orgRepair_api12(send, res => {
+                console.log(res)
+                base.blobDownLoad(res);
+            })
         },
     }
 };

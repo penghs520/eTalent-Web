@@ -189,13 +189,19 @@
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="上级机构" prop="orgParentId">
-                                    <el-select v-model="addOrgForm.orgParentId" placeholder="请选择">
+                                    <el-select
+                                        v-model="addOrgForm.orgParentName"
+                                        placeholder="请选择"
+                                        ref="selectTree1"
+                                        popper-class="base_treeSelect"
+                                        style="width:100%"
+                                    >
                                         <el-option
-                                            v-for="item in orgParenList"
-                                            :key="item.orgParentId"
-                                            :label="item.orgName"
-                                            :value="item.orgId"
-                                        ></el-option>
+                                            :label="addOrgForm.orgParentName"
+                                            :value="addOrgForm.orgParentName"
+                                        >
+                                            <tree :treeData="enrolTree"></tree>
+                                        </el-option>
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="机构负责人" prop="orgManagerId">
@@ -301,13 +307,19 @@
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="上级机构" prop="orgParentId">
-                                    <el-select v-model="editOrgForm.orgParentId" placeholder="请选择">
+                                    <el-select
+                                        v-model="editOrgForm.orgParentName"
+                                        placeholder="请选择"
+                                        ref="selectTree2"
+                                        popper-class="base_treeSelect"
+                                        style="width:100%"
+                                    >
                                         <el-option
-                                            v-for="item in orgParenList"
-                                            :key="item.orgParentId"
-                                            :label="item.orgName"
-                                            :value="item.orgId"
-                                        ></el-option>
+                                            :label="editOrgForm.orgParentName"
+                                            :value="editOrgForm.orgParentName"
+                                        >
+                                            <tree :treeData="enrolTree"></tree>
+                                        </el-option>
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="机构负责人" prop="orgManagerId">
@@ -507,7 +519,7 @@
                                     <el-select
                                         v-model="enrolForm.reachOrgName"
                                         placeholder="请选择"
-                                        ref="selectTree"
+                                        ref="selectTree3"
                                         popper-class="base_treeSelect"
                                         style="width:100%"
                                     >
@@ -772,6 +784,7 @@ export default {
                 orgName: "",
                 orgType: "",
                 orgParentId: "",
+                orgParentName: "",
                 orgManagerId: ""
             },
             rules: {
@@ -795,7 +808,6 @@ export default {
                 ]
             },
             orgTypeList: [],
-            orgParenList: [],
             orgManagerList: [
                 { label: "负责人", value: "1" },
                 { label: "负责人001", value: "2" }
@@ -876,11 +888,11 @@ export default {
         //机构排序--表格按钮
         sortOrg() {
             if (!this.orgParent) {
-                this.$message.warning("请先点击左侧机构树")
-                return
+                this.$message.warning("请先点击左侧机构树");
+                return;
             }
             this.sortOrgList = [];
-            this.getNeedSortOrgReq();           
+            this.getNeedSortOrgReq();
         },
         //机构排序--请求接口
         sortOrgReq() {
@@ -922,7 +934,22 @@ export default {
         selectTreeClick(node) {
             this.enrolForm.reachOrgName = node.orgName;
             this.enrolForm.reachOrgValue = node.orgId;
-            this.$refs.selectTree.blur();
+
+            this.addOrgForm.orgParentName = node.orgName;
+            this.addOrgForm.orgParentId = node.orgId;
+
+            this.editOrgForm.orgParentName = node.orgParentName;
+            this.editOrgForm.orgParentId = node.orgParentId;
+
+            if (this.$refs.selectTree1) {
+                this.$refs.selectTree1.blur();
+            }
+            if (this.$refs.selectTree2) {
+                this.$refs.selectTree1.blur();
+            }
+            if (this.$refs.selectTree3) {
+                this.$refs.selectTree1.blur();
+            }
         },
         //划转机构--点击按钮
         enrolOrg() {
@@ -1210,6 +1237,7 @@ export default {
             this.addOrgDialog = true;
             this.addOrgForm.orgCode = Number(this.maxCodeAdd);
             this.addOrgForm.orgParentId = this.orgParent.orgId;
+            this.addOrgForm.orgParentName = this.orgParent.orgName;
         },
         // 新增机构--请求接口
         addOrgReq(formName) {
@@ -1340,8 +1368,6 @@ export default {
                 this.orgTable.pageResize = true;
                 this.getOrgTable(); //获取机构表
                 this.getMaxOrgCode(node); //获取最大下级机构编码
-
-                this.orgParenList = [node]; //获取上级机构
             } else if (this.activeName === "orgPic") {
                 // 获取机构图
                 this.getChartData(node);

@@ -992,7 +992,7 @@ export default {
         //编辑机构--弹出框
         editOrg() {
             if (this.editOrglist.length != 1) {
-                this.$message.warning("编辑机构当前必须只能选中一个");
+                this.$message.warning("请选择一个机构");
                 return;
             }
             this.getOrgType(); //获取所有数据类型
@@ -1194,6 +1194,7 @@ export default {
                 if (res.data.success) {
                     this.orgTable.data = res.data.result.list;
                     this.orgTable.total = res.data.result.total;
+                    this.orgTable.pageResize = false
                 } else {
                     base.error(res.data);
                 }
@@ -1219,6 +1220,8 @@ export default {
         nodeClick(node) {
             this.orgParent = node;
             if (this.activeName === 'orgForm') {
+                this.currentPage = 1
+                this.orgTable.pageResize = true
                 this.getOrgTable(); //获取机构表
                 this.getMaxOrgCode(node); //获取最大下级机构编码
     

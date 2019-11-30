@@ -938,17 +938,17 @@ export default {
             this.addOrgForm.orgParentName = node.orgName;
             this.addOrgForm.orgParentId = node.orgId;
 
-            this.editOrgForm.orgParentName = node.orgParentName;
-            this.editOrgForm.orgParentId = node.orgParentId;
+            this.editOrgForm.orgParentName = node.orgName;
+            this.editOrgForm.orgParentId = node.orgId;
 
             if (this.$refs.selectTree1) {
                 this.$refs.selectTree1.blur();
             }
             if (this.$refs.selectTree2) {
-                this.$refs.selectTree1.blur();
+                this.$refs.selectTree2.blur();
             }
             if (this.$refs.selectTree3) {
-                this.$refs.selectTree1.blur();
+                this.$refs.selectTree3.blur();
             }
         },
         //划转机构--点击按钮

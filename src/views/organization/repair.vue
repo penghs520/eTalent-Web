@@ -652,7 +652,7 @@ import {
     orgRepair_api11,
     orgRepair_api12,
     orgRepair_api13,
-    orgRepair_api14,
+    orgRepair_api14
 } from "../../request/api";
 
 export default {
@@ -874,20 +874,24 @@ export default {
     },
     methods: {
         //机构排序--表格按钮
-        sortOrg() {            
+        sortOrg() {
+            if (!this.orgParent) {
+                this.$message.warning("请先点击左侧机构树")
+                return
+            }
             this.sortOrgList = [];
-            this.getNeedSortOrgReq();
+            this.getNeedSortOrgReq();           
         },
         //机构排序--请求接口
         sortOrgReq() {
-            let send = this.sortOrgList.map(item=>item.orgId)
+            let send = this.sortOrgList.map(item => item.orgId);
             base.log("s", "排序机构", send);
             orgRepair_api13(send, res => {
                 base.log("s", "排序机构", res.data);
                 if (res.data.success) {
                     this.sortDialog = false;
-                    this.$message.success("排序成功")
-                    this.getOrgTable()
+                    this.$message.success("排序成功");
+                    this.getOrgTable();
                 } else {
                     base.error(res.data);
                 }
@@ -902,9 +906,9 @@ export default {
             orgRepair_api12(send, res => {
                 base.log("s", "获取需排序机构", res.data);
                 if (res.data.success) {
-                    if(res.data.result.total === 0){
-                        this.$message.warning("该机构无下级机构")
-                        return
+                    if (res.data.result.total === 0) {
+                        this.$message.warning("该机构无下级机构");
+                        return;
                     }
                     this.sortDialog = true;
                     this.sortOrgList = res.data.result.list;
@@ -1442,37 +1446,42 @@ export default {
             });
             let chartNode = document.querySelector(".orgchartSingleClassName");
             if (chartNode) {
-                document.querySelector('#orgChart').removeChild(chartNode);
-            };
-            document.querySelector('#orgChart').appendChild(orgchart);
+                document.querySelector("#orgChart").removeChild(chartNode);
+            }
+            document.querySelector("#orgChart").appendChild(orgchart);
         },
 
         // 模板下载
         downloadModle() {
-            let url = file['机构导入'];
+            let url = file["机构导入"];
             if (url) {
-                window.open(url,'_self');
+                window.open(url, "_self");
             }
         },
 
         // 导出表格
-        downloadTable(searchData,radioData,checkboxData) {
+        downloadTable(searchData, radioData, checkboxData) {
             if (!this.orgParent) {
                 this.$message({
-                    message: '请先从左侧机构树中选择机构',
-                    type: 'warning'
+                    message: "请先从左侧机构树中选择机构",
+                    type: "warning"
                 });
                 return false;
-            };
+            }
             let send = {
-                "orgId": this.orgParent.orgId,
-                "orgIds": !checkboxData || checkboxData.length === 0 ? [] : checkboxData.map(item => {return item.orgId})
+                orgId: this.orgParent.orgId,
+                orgIds:
+                    !checkboxData || checkboxData.length === 0
+                        ? []
+                        : checkboxData.map(item => {
+                              return item.orgId;
+                          })
             };
-            base.log('s', '导出', send);
+            base.log("s", "导出", send);
             orgRepair_api14(send, res => {
                 base.blobDownLoad(res);
-            })
-        },
+            });
+        }
     }
 };
 </script>

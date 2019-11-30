@@ -7,6 +7,8 @@ let pageRoute = {
         '机构维护': 'organization_repair',
         '职位体系': 'organization_position',
 
+        '用户信息': 'organization_userInfo',
+
     // 员工管理 staff
         // 入职管理
         '入职管理': 'staff_jobEntry',

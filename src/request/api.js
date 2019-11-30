@@ -134,7 +134,11 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const orgRepair_api9     = (data, callback) => {request('post', `api/masterdata/organization/mergeOrganization`, data, callback)};
         const orgRepair_api10    = (data, callback) => {request('post', `api/masterdata/organization/transferOrganization2`, data, callback)};
         const orgRepair_api11    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationGraphics`, data, callback)};
-     
+    
+    //用户管理
+        //用户信息
+        const org_userInfo_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const org_userInfo_api2     = (data, callback) => {request('post', `api/masterdata/userArchive/getUserArchiveList`, data, callback)};
         
     // 岗位管理
         // 岗位维护
@@ -147,6 +151,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const postRepair_api7    = (data, callback) => {request('post', `api/masterdata/post/lockPostByIds`, data, callback)};
         const postRepair_api8    = (data, callback) => {request('post', `api/masterdata/post/unlockPostByIds`, data, callback)};
         const postRepair_api9    = (data, callback) => {request('post', `api/masterdata/post/copyPost`, data, callback)};
+        const postRepair_api10    = (data, callback) => {request('get', `api/masterdata/post/getPostSuccessive`, data, callback)};
        
 
 export {
@@ -208,6 +213,10 @@ export {
         // 岗位管理
             // 岗位维护
             postRepair_api1,postRepair_api2,postRepair_api3,postRepair_api4,postRepair_api5,postRepair_api6,postRepair_api7,
-            postRepair_api8,postRepair_api9,
+            postRepair_api8,postRepair_api9,postRepair_api10,
+
+        //用户管理
+            //用户信息
+            org_userInfo_api1,org_userInfo_api2,
 
 }

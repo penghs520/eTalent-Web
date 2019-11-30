@@ -92,7 +92,12 @@
 .el-select {
     width: 100%;
 }
+.el-button {
+    cursor: default;
+}
 </style>
+
+
 <template>
     <div id="organization_jobMaintain">
         <!-- 岗位树 -->
@@ -446,6 +451,20 @@
                             >确 定</el-button>
                         </span>
                     </el-dialog>
+                    <!-- 查看历任弹窗 -->
+                    <el-dialog
+                        :visible.sync="postSuccessiveDialog"
+                        class="qinjeeDialogBig"
+                        id="successive_table"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">历任人员信息</span>
+                        <div class="qinjeeDialogBigCont">
+                            <commonTable :table="postSuccessiveTable"></commonTable>
+                        </div>
+                    </el-dialog>
                 </el-tab-pane>
                 <!-- 岗位图 -->
                 <el-tab-pane name="post_pic">
@@ -469,7 +488,8 @@ import {
     postRepair_api6,
     postRepair_api7,
     postRepair_api8,
-    postRepair_api9
+    postRepair_api9,
+    postRepair_api10
 } from "../../request/api";
 import base from "../../assets/js/base";
 
@@ -582,8 +602,8 @@ export default {
                 loading: false,
                 pageResize: false,
                 page: {
-                    pageSizes: [10, 20, 30],
-                    pageSize: 10
+                    pageSizes: [4, 8, 12],
+                    pageSize: 4
                 },
                 pageHide: false,
                 pageSizeChange: this.postPageSizeChange,
@@ -619,7 +639,7 @@ export default {
                 ],
                 targetOrgName: [
                     { required: true, message: "请选择", trigger: "blur" }
-                ],
+                ]
             },
             orgParenList: [],
             positionList: [],
@@ -669,19 +689,85 @@ export default {
             copyPostDialog: false,
             copyPostForm: {
                 targetOrgName: "",
-                targetOrgId:"",
-            }
+                targetOrgId: ""
+            },
+            //查看历任
+            postSuccessiveDialog: false,
+            postSuccessiveTable: {
+                head: [
+                    { name: "姓名", key: "userName", isShow: true },
+                    { name: "工号", key: "employeeNumber", isShow: true },
+                    { name: "岗位", key: "postName", isShow: true },
+                    {
+                        name: "起任日期",
+                        key: "employmentBeginDate",
+                        isShow: true
+                    },
+                    {
+                        name: "任免日期",
+                        key: "employmentEndDate",
+                        isShow: true
+                    },
+                    {
+                        name: "任免原因",
+                        key: "appointDismissalReason",
+                        isShow: true
+                    }
+                ],
+                data: [],
+                bar: [],
+                total: 0,
+                pageHide: true,
+                formatter: this.timeFormatter
+            },
+            SuccessiveInfo: true,
+            columnValue: null
         };
     },
     mounted() {
         this.getPostTreeReq();
     },
     methods: {
+        //查看历任--按钮
+        columnBtn(row) {
+            this.columnValue = row;
+            this.postSuccessiveReq();
+            this.postSuccessiveDialog  = true;
+        },
+        //查看历任 -- 时间格式化
+        timeFormatter(key, val) {
+            if (key == "employmentBeginDate") {
+                val = val.split("T")[0];
+                return val;
+            } else if (key == "employmentEndDate") {
+                val = val.split("T")[0];
+                return val;
+            } else {
+                return val;
+            }
+        },
+        //查看历任--请求接口
+        postSuccessiveReq() {
+            let send = {
+                postId:this.columnValue.postId
+                // postId: 1
+            };
+            base.log("s", "查看历任", send);
+            postRepair_api10(send, res => {
+                base.log("r", "查看历任", res.data);
+                if (res.data.success) {
+                    this.postSuccessiveTable.data = res.data.result;
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
+
         //岗位复制--按钮
         copyPost() {
-            if(this.copyPostList.length === 0){
-                this.$message.warning("请选择岗位")
-                return
+            if (this.copyPostList.length === 0) {
+                this.$message.warning("请选择岗位");
+                return;
             }
             this.copyPostDialog = true;
         },
@@ -694,6 +780,7 @@ export default {
                     postRepair_api9(send, res => {
                         base.log("r", "复制岗位", res.data);
                         if (res.data.success) {
+                            this.$message.success("复制成功");
                             this.copyPostDialog = false;
                         } else {
                             base.error(res.data);
@@ -976,6 +1063,8 @@ export default {
                     this.postTable.data = res.data.result.list;
                     this.postTable.total = res.data.result.total;
                     this.getPostMaxCode(res.data.result.list, this.orgNode); //获取最大下级岗位编码
+                    this.postTable.pageResize = false
+
                     if (res.data.result.total === 0) {
                         //获取上级岗位
                         this.orgParenList = [];
@@ -993,11 +1082,11 @@ export default {
         },
         //岗位表--多选点击赋值
         postSelectChange(val) {
-            this.editPostList = val;   //编辑多选赋值
-            this.delPostList = val;    //删除多选赋值
-            this.notEnableList = val;  //封存多选赋值
-            this.EnableList = val;     //解封多选赋值
-            this.copyPostList = val    //赋值多选赋值
+            this.editPostList = val; //编辑多选赋值
+            this.delPostList = val; //删除多选赋值
+            this.notEnableList = val; //封存多选赋值
+            this.EnableList = val; //解封多选赋值
+            this.copyPostList = val; //赋值多选赋值
 
             console.log(val);
         },
@@ -1010,6 +1099,7 @@ export default {
         postPageSizeChange(pageSize) {
             this.currentPage = 1;
             this.pageSize = pageSize;
+            this.postTable.pageResize = true;            
             this.getPostTableReq();
         },
 
@@ -1066,8 +1156,12 @@ export default {
             this.orgNode = node;
             if (node.orgType !== "POST") {
                 this.postId = "";
+                this.currentPage = 1
+                this.postTable.pageResize = true
                 this.getPostTableReq();
             } else {
+                this.currentPage = 1
+                this.postTable.pageResize = true
                 this.postId = node.postId;
                 this.getPostTableReq();
             }

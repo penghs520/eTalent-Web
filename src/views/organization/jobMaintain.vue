@@ -731,7 +731,7 @@ export default {
     methods: {
         //模板下载
         tempDownload(){
-            let url = file['机构导入'];
+            let url = file['岗位导入'];
             if (url) {
                 window.open(url,'_self');
             }

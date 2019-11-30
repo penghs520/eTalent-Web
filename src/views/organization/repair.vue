@@ -631,11 +631,12 @@
 </template>
 
 <script>
+import draggable from "vuedraggable";
+
 import base from "../../assets/js/base";
 import tree from "../../components/tree/tree";
 import commonTable from "../../components/table/commonTable";
 import OrgChart from "../../assets/js/orgChart/orgchart-webcomponents.js";
-import draggable from "vuedraggable";
 import {
     orgRepair_api1,
     orgRepair_api2,

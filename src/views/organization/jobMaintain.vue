@@ -492,6 +492,7 @@ import {
     postRepair_api10
 } from "../../request/api";
 import base from "../../assets/js/base";
+import file from "../../request/filePath";
 
 export default {
     name: "jobMaintain" /* 岗位维护 */,
@@ -578,7 +579,7 @@ export default {
                             { text: "封存", method: this.notEnable },
                             { text: "解封", method: this.Enable },
                             { text: "排序", method: this.btn2 },
-                            { text: "模板下载", method: this.btn2 },
+                            { text: "模板下载", method: this.tempDownload },
                             { text: "复制", method: this.copyPost },
                             { text: "导入", method: this.btn2 },
                             { text: "导出", method: this.btn2 }
@@ -728,6 +729,14 @@ export default {
         this.getPostTreeReq();
     },
     methods: {
+        //模板下载
+        tempDownload(){
+            let url = file['机构导入'];
+            if (url) {
+                window.open(url,'_self');
+            }
+        },
+
         //查看历任--按钮
         columnBtn(row) {
             this.columnValue = row;

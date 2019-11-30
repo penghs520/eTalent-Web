@@ -109,7 +109,7 @@
             v-if="!table.pageHide"
             @size-change="pageSizeChange"
             @current-change="pageCurrentChange"
-            :current-page="currentPage"
+            :current-page.sync="currentPage"
             :page-sizes="page.pageSizes"
             :page-size="page.pageSize"
             layout="total, sizes, prev, pager, next, jumper"
@@ -159,7 +159,7 @@ export default {
         },
     },
     watch: {
-        table: {
+        'table.pageResize': {
             handler: function(val) {
                 // 页码重置
                 if (val.pageResize) {

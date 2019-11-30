@@ -612,7 +612,7 @@ export default {
             },
             orgNode: "",
             currentPage: 1,
-            pageSize: 10,
+            pageSize: 4,
             postId: "",
             //岗位--新增
             addPostDialog: false,
@@ -1097,6 +1097,7 @@ export default {
         },
         //岗位表--页容量改变
         postPageSizeChange(pageSize) {
+            console.log('咱大爷')
             this.currentPage = 1;
             this.pageSize = pageSize;
             this.postTable.pageResize = true;            

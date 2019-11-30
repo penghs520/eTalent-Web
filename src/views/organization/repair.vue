@@ -945,6 +945,8 @@ export default {
                 base.log("s", "解封机构", send);
                 base.log("r", "解封机构", res.data);
                 if (res.data.success) {
+                     this.$message.success("解封成功")
+                     this.getOrgTable(); //刷新表格
                     this.EnableDialog = false;
                 } else {
                     base.error(res.data);
@@ -983,6 +985,7 @@ export default {
                 base.log("s", "封存机构", send);
                 base.log("r", "封存机构", res.data);
                 if (res.data.success) {
+                    this.$message.success("封存成功")
                     this.getOrgTable(); //刷新表格
                     this.notEnableDialog = false;
                 } else {

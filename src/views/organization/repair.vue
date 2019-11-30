@@ -1470,6 +1470,7 @@ export default {
             };
             base.log('s', '导出', send);
             orgRepair_api14(send, res => {
+                console.log(res)
                 base.blobDownLoad(res);
             })
         },

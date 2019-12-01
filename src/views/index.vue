@@ -13,6 +13,13 @@
     text-align: center;
 }
 
+.el-menu--horizontal  .el-menu-item,
+.el-menu--horizontal  .el-menu-item.active{
+    border-bottom-width: 4px !important;
+    height: 64px !important;
+    line-height: 64px !important;
+}
+
 .el-aside {
     background-color: #666c7b;
     color: #333;
@@ -36,14 +43,32 @@
 .el-menu {
     width: calc(100% - 240px);
 }
-.el-menu-item {
-    height: 63px !important;
+.el-menu-item{
+    padding-left: 24px !important;
+    font-size: 16px !important;
+}
+.el-submenu .el-menu-item {
+    height: 40px !important;
+    line-height: 40px !important;
+    // margin-left: 78px;
+    // padding: 0 !important;
+    padding: 0 24px 0 78px !important;
 }
 .topMenu {
     box-shadow: 0px -2px 3px #252525;
 }
 .el-menu {
     width: 100%;
+    text-align: left;
+}
+.el-aside .el-menu-item.is-active{
+    background-color: #FF8C58 !important;
+    color: #fff !important;
+}
+.el-submenu__title{
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    font-size: 16px !important;
 }
 #index {
     height: 100%;
@@ -71,7 +96,7 @@
         color: #fff;
         font-size: 16px;
     }
-    .el-icon-arrow-down {
+    .el-icon-caret-bottom {
         box-sizing: border-box;
         padding: 15px 5px;
         color: #fff;
@@ -86,6 +111,9 @@
     justify-content: space-between;
     padding: 16px 24px;
 }
+.menuIcon{
+    margin-right: 16px !important;
+}
 .menuTitle .text{
     color: #FFFFFF;
     font-size: 16px;
@@ -98,7 +126,13 @@
     cursor: pointer;
 }
 </style>
+<style>
 
+#index .el-aside .el-menu-item.is-active{
+    background-color: #FF8C58 !important;
+    color: #fff !important;
+}
+</style>
 <template>
     <div id="index">
         <el-container>
@@ -114,7 +148,7 @@
                     background-color="#666C7B"
                     text-color="#fff"
                     @select="topSelect"
-                    active-text-color="#ffd04b"
+                    active-text-color="#fff"
                 >
                     <el-menu-item
                         v-for="(item,index) in topMenu"
@@ -132,7 +166,7 @@
                         </div>
                         <el-dropdown class="headerSelect" @command="handleCommand" trigger="click">
                             <span class="el-dropdown-link">
-                                <i class="el-icon-arrow-down el-icon--right"></i>
+                                <i class="el-icon-caret-bottom el-icon--right"></i>
                             </span>
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item command="logOut">退出</el-dropdown-item>
@@ -162,13 +196,13 @@
                     >
                         <div v-for="(item,index) in sideMenu" :key="index">
                             <el-menu-item v-if="!item.children" :index="item.path">
-                                <i class="el-icon-menu"></i>
+                                <i class="qj-map_grey menuIcon"></i>
                                 <span slot="title">{{item.chName}}</span>
                             </el-menu-item>
                             <el-submenu v-else :index="String(index)">
                                 <template slot="title">
-                                    <i class="el-icon-location"></i>
-                                    <span>{{item.chName}}</span>
+                                    <i class="qj-map_grey menuIcon"></i>
+                                    <span >{{item.chName}}</span>
                                 </template>
                                 <el-menu-item
                                     v-for="(menu, menuIndex) in item.children"

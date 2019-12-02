@@ -80,12 +80,14 @@
                         <span class="text">{{data.uploadDescription}}</span>
                     </div>
                 </el-upload>
+                <!-- 表格 -->
+                  <commonTable :table="table" ref="commonTable" ></commonTable>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button size="small" @click="cancel" v-show="active <= 2" :loading="cancelLoading" >取 消</el-button>
                 <el-button size="small" @click="uploadShow = false" v-show="active > 2">关 闭</el-button>
-                <el-button size="small" type="primary" @click="upload" v-show="active === 0" :loading="uploadLoading" :disabled="fileList.length === 0" >上 传</el-button>
-                <el-button size="small" type="primary" @click="check" v-show="active === 1" :loading="checkLoading" :disabled="active !== 1" >校 验</el-button>
+                <el-button size="small" type="primary" @click="upload" v-show="active === 0" :loading="uploadLoading" :disabled="fileList.length === 0" >校验</el-button>
+                <el-button size="small" type="primary" @click="check" v-show="active === 1" :loading="checkLoading" :disabled="active !== 1" >上传</el-button>
                 <el-button size="small" type="primary" @click="finish" v-show="active === 2" :loading="finishLoading" >完 成</el-button>
             </span>
         </el-dialog>
@@ -93,6 +95,9 @@
 </template>
 
 <script>
+import file from '../../request/filePath'
+import commonTable from "../table/commonTable"
+
 export default {
     name: 'commonUpload',               // 导入
     props: {
@@ -119,11 +124,21 @@ export default {
     },
     mounted() {},
     methods: {
+        // 默认下载模板方法
+        downloadModle(name) {
+            let url = file[name];
+            if (url) {
+                window.open(url, "_self");
+            }
+        },
         // 下载模板
         download() {
-            if (data.download) {
-                data.download();
-            }
+            if (this.data.templateName) {
+                this.downloadModle(this.data.templateName)
+            };
+            if (this.data.download) {
+                this.data.download();
+            };
         },
 
         // 关闭弹窗

@@ -107,6 +107,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const positionGroup_api4    = (data, callback) => {request('get', `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
         const positionGroup_api5    = (data, callback) => {request('post', `api/masterdata/positionGroup/editPositionGroup`, data, callback)};
         const positionGroup_api6    = (data, callback) => {request('get', `api/masterdata/positionGroup/sortPositionGroup`, data, callback)};
+        const positionGroup_api7    = (data, callback) => {request('get', `api/masterdata/positionGroup/downloadExcel`, data, callback, 'blob')};
 
         // 职位设置
         const position_api1    = (data, callback) => {request('post', `api/masterdata/position/getPositionPage`, data, callback)};
@@ -114,6 +115,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const position_api3    = (data, callback) => {request('form', `api/masterdata/position/editPosition`, data, callback)};
         const position_api4    = (data, callback) => {request('post', `api/masterdata/position/deletePosition`, data, callback)};
         const position_api5    = (data, callback) => {request('get', `api/masterdata/position/sortPositionGroup`, data, callback)};
+        const position_api6    = (data, callback) => {request('get', `api/masterdata/position/downloadExcel`, data, callback, 'blob')};
         
         // 职级设置
         const positionLevel_api1    = (data, callback) => {request('get', `api/masterdata/positionLevel/getPositionLevelList`, data, callback)};
@@ -157,6 +159,10 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const postRepair_api8    = (data, callback) => {request('post', `api/masterdata/post/unlockPostByIds`, data, callback)};
         const postRepair_api9    = (data, callback) => {request('post', `api/masterdata/post/copyPost`, data, callback)};
         const postRepair_api10    = (data, callback) => {request('get', `api/masterdata/post/getPostSuccessive`, data, callback)};
+        const postRepair_api11    = (data, callback) => {request('get', `api/masterdata/post/getPostGraphics`, data, callback)};
+        const postRepair_api12    = (data, callback) => {request('post', `api/masterdata/post/getDirectPostPageList`, data, callback)};
+        const postRepair_api13    = (data, callback) => {request('post', `api/masterdata/post/sortPorts`, data, callback)};
+        const postRepair_api14    = (data, callback) => {request('post', `api/masterdata/post/sortPorts`, data, callback)};
        
 
 export {
@@ -200,9 +206,10 @@ export {
         // 职位管理
             // 职位族设置
             positionGroup_api1,positionGroup_api2,positionGroup_api3,positionGroup_api4,positionGroup_api5, positionGroup_api6,
+            positionGroup_api7,
             
             //职位设置
-            position_api1,position_api2,position_api3,position_api4, position_api5,
+            position_api1,position_api2,position_api3,position_api4, position_api5,position_api6,
             
             //职级设置
             positionLevel_api1,
@@ -218,7 +225,7 @@ export {
         // 岗位管理
             // 岗位维护
             postRepair_api1,postRepair_api2,postRepair_api3,postRepair_api4,postRepair_api5,postRepair_api6,postRepair_api7,
-            postRepair_api8,postRepair_api9,postRepair_api10,
+            postRepair_api8,postRepair_api9,postRepair_api10,postRepair_api11,postRepair_api12,postRepair_api13,postRepair_api14,
 
         //用户管理
             //用户信息

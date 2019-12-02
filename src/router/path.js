@@ -4,6 +4,7 @@ const organization_jobMaintain       = () => import(/* webpackChunkName: "group-
 
 const organization_repair    = () => import(/* webpackChunkName: "group-organization" */ '../views/organization/repair.vue');
 const organization_position  = () => import(/* webpackChunkName: "group-organization" */ '../views/organization/position.vue');
+const organization_register  = () => import(/* webpackChunkName: "group-organization" */ '../views/organization/register.vue');
 const organization_userInfo  = () => import(/* webpackChunkName: "group-organization" */ '../views/organization/userInfo.vue');
 
 // 员工管理
@@ -32,6 +33,7 @@ let path = {
         
         organization_repair,
         organization_position,
+        organization_register,
         organization_userInfo,
 
     // 员工管理

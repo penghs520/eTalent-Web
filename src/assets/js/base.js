@@ -59,6 +59,9 @@ let base = {
     blobDownLoad(response) {
         if (response.status === 200) {
             // 
+            // let nameCode = response.headers['content-disposition'].split('filename=')[1];
+            // console.log(nameCode);
+            // console.log(decodeURI(nameCode))
             let blob = new Blob([response.data]);
             let url = window.URL.createObjectURL(blob);
             let a = document.createElement("a");

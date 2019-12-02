@@ -25,6 +25,7 @@ export default {
                         {
                             type: String,                       /* 必须，DOM类型，可能值：input-输入框、textarea-文本框、select-单选下拉框、selectMore-多选下拉框、
                                                                 checkbox-多选框、radio-单选框、time-时间选择框、date-日期选择框、dateTime-日期时间选择框、orgTree-机构树下拉框 */
+                            fieldName: String,                  /* 必须，表单的label */
                             key: String,                        /* 必须，该DOM绑定的字段 */
                             default: String/Array,              /* 非必须，默认值，值类型要与type相应 */
                             placeholder: String,                /* 非必须，输入框中的提示信息 */
@@ -51,6 +52,11 @@ export default {
                     ]
                 },
             ],
+            option: {
+                showType: 'form',           /* 显示样式类型 */
+                biserial: true,             /* 单双列，true-双列、false-单列 */
+                labelWidth: '100px',        /* label宽度 */
+            }
         },
     }
 }

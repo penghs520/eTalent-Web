@@ -142,13 +142,13 @@
             <tree :treeData="treeData"></tree>
         </div>
         <!-- 右侧表格 -->
-        <div class="content">
-            <!-- 机构表 -->
+        <div class="content">          
             <el-tabs
                 v-model="activeName"
                 class="organization_repair_tabsBar"
                 @tab-click="handleClick"
             >
+                <!-- 机构表 -->
                 <el-tab-pane name="orgForm">
                     <span slot="label">
                         <i class="qj-form"></i>机构表
@@ -601,7 +601,6 @@
                     <span slot="label">
                         <i class="qj-map"></i>机构图
                     </span>
-
                     <el-row :gutter="16" class="operation">
                         <el-col :span=".5">
                             <el-select
@@ -631,13 +630,14 @@
                             </el-select>
                         </el-col>
                         <el-col :span=".5">
-                            <el-button type="primary" size="small" @click="download">导出</el-button>
+                            <el-button type="primary" size="small" @click="downloadPic">导出</el-button>
                         </el-col>
                     </el-row>
-
                     <div class="chart" id="orgChart"></div>
                 </el-tab-pane>
             </el-tabs>
+            <!-- 导入弹框 -->
+            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"></commonUpload>
         </div>
     </div>
 </template>
@@ -650,6 +650,8 @@ import tree from "../../components/tree/tree";
 import commonTable from "../../components/table/commonTable";
 import OrgChart from "../../assets/js/orgChart/orgchart-webcomponents.js";
 import file from "../../request/filePath";
+import commonUpload from "../../components/upload/upload";
+
 import {
     orgRepair_api1,
     orgRepair_api2,
@@ -755,13 +757,15 @@ export default {
                             { text: "划转", method: this.enrolOrg },
                             { text: "排序", method: this.sortOrg },
                             { text: "模板下载", method: this.downloadModle },
-                            { text: "导入", method: this.btn2 },
+                            { text: "导入", method: this.uploadPostTable },
                             { text: "导出", method: this.downloadTable }
                         ]
                     }
                 ],
                 showSelect: true /* 非必须，是否显示select勾选框 */,
                 selectChange: this.orgSelectChange,
+                activeColumn: "机构名称",
+                cellClick: this.cellClick,
                 loading: false /* 非必须，加载动画 */,
                 pageResize: false /* 非必须，页码重置 */,
                 page: {
@@ -873,18 +877,48 @@ export default {
             orgChartData: null /* 机构图数据 */,
             //机构排序
             sortDialog: false,
-            sortOrgList: []
+            sortOrgList: [],
+            //机构导入
+            uploadActive: 0,
+            uploadShow: false,
+            uploadData: {
+                title: "导入机构",
+                download: this.importTempDownload,
+                fileFormatDescription:
+                    "仅支持扩展名：.xls .xles，大小不能超过5M",
+                uploadDescription: "这句话的内容还需要和产品沟通",
+                templateName: "工作经历",
+                uploadUrl: "",
+                uploadSuccess: this.uploadSuccess, // 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
+                uploadError: this.uploadError, // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
+                cancel: this.uploadCancel, // 必须，取消操作
+                check: this.uploadCheck, // 必须，校验操作
+                finish: this.uploadFinish, // 必须，完成操作
+                cancelLoading: false, // 必须，取消loading
+                checkLoading: false, // 必须，校验loading
+                finishLoading: false // 必须，完成loading
+            },
         };
     },
     components: {
         tree,
         commonTable,
-        draggable
+        draggable,
+        commonUpload
     },
     mounted() {
         this.getTreeReq();
     },
     methods: {
+        //机构导入--取消/关闭按钮
+        uploadCancel() {
+            this.uploadShow = false;
+        },
+        //机构导入--点击表格按钮
+        uploadPostTable() {
+            this.uploadShow = true;
+        },
+
         //机构排序--表格按钮
         sortOrg() {
             if (!this.orgParent) {
@@ -1133,6 +1167,12 @@ export default {
             });
         },
 
+        //编辑机构--点击机构名称编辑
+        cellClick(key, row, value) {
+            this.getOrgType();
+            this.editOrgForm = { ...row };
+            this.editOrgDialog = true;
+        },
         //编辑机构--弹出框
         editOrg() {
             if (this.editOrglist.length != 1) {
@@ -1327,7 +1367,7 @@ export default {
         getOrgTable() {
             let send = {
                 currentPage: this.currentPage,
-                isEnable: this.value ? 0 : 1,
+                isEnable: this.value ? 1 : 0,
                 orgParentId: this.orgParent.orgId,
                 pageSize: this.pageSize,
                 querFieldVos: []
@@ -1380,7 +1420,7 @@ export default {
         //树形--获取树形
         getTreeReq() {
             let send = {
-                isEnable: this.value ? 0 : 1
+                isEnable: this.value ? 1 : 0
             };
             orgRepair_api1(send, res => {
                 base.log("s", "查询树", send);
@@ -1395,7 +1435,7 @@ export default {
             });
         },
 
-        // 获取机构图数据
+        // 机构图--获取机构图数据
         getChartData(node) {
             let send = {
                 isContainsActualMembers: true,
@@ -1417,7 +1457,7 @@ export default {
             });
         },
 
-        // 显示方向改变
+        // 机构图--显示方向改变
         directionChange(v) {
             this.createChart(v, this.tier);
         },
@@ -1427,8 +1467,10 @@ export default {
             this.createChart(this.direction, v);
         },
 
-        // 导出
-        download() {},
+        // 机构图--导出按钮
+        downloadPic() {
+            console.log("导出机构图");
+        },
 
         // 创建机构图
         /**
@@ -1484,8 +1526,7 @@ export default {
                 window.open(url, "_self");
             }
         },
-
-        // 导出表格
+        // 机构表--导出表格
         downloadTable(searchData, radioData, checkboxData) {
             if (!this.orgParent) {
                 this.$message({
@@ -1505,7 +1546,7 @@ export default {
             };
             base.log("s", "导出", send);
             orgRepair_api14(send, res => {
-                console.log(res)
+                console.log(res);
                 base.blobDownLoad(res);
             });
         }

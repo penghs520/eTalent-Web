@@ -59,17 +59,17 @@
     width: 100%;
 }
 
-.sortComponent{
+.sortComponent {
     width: 100%;
 }
-.sortList{
+.sortList {
     margin: 8px 0;
     cursor: pointer;
     width: 100%;
     font-size: 14px;
     line-height: 24px;
 }
-.sortList:hover{
+.sortList:hover {
     background-color: #ffefe8ff;
 }
 </style>
@@ -95,7 +95,8 @@
                     class="qinjeeDialogMini"
                     :append-to-body="true"
                     :close-on-click-modal="false"
-                    center>
+                    center
+                >
                     <span slot="title">新增</span>
                     <div class="qinjeeDialogSmallCont">
                         <el-form :model="GroupForm" label-width="100px">
@@ -115,7 +116,8 @@
                     class="qinjeeDialogMini"
                     :append-to-body="true"
                     :close-on-click-modal="false"
-                    center>
+                    center
+                >
                     <span slot="title">新增</span>
                     <div class="qinjeeDialogSmallCont">
                         <el-form :model="editGroupForm" label-width="100px">
@@ -135,7 +137,8 @@
                     class="qinjeeDialogMini"
                     :append-to-body="true"
                     :close-on-click-modal="false"
-                    center>
+                    center
+                >
                     <span slot="title">确认删除</span>
                     <div class="qinjeeDialogMiniCont">
                         <div>
@@ -169,7 +172,8 @@
                         class="qinjeeDialogMini"
                         :append-to-body="true"
                         :close-on-click-modal="false"
-                        center>
+                        center
+                    >
                         <span slot="title">新增</span>
                         <div class="qinjeeDialogSmallCont">
                             <el-form
@@ -216,7 +220,8 @@
                         class="qinjeeDialogMini"
                         :append-to-body="true"
                         :close-on-click-modal="false"
-                        center>
+                        center
+                    >
                         <span slot="title">编辑</span>
                         <div class="qinjeeDialogSmallCont">
                             <el-form
@@ -264,7 +269,8 @@
                         class="qinjeeDialogMini"
                         :append-to-body="true"
                         :close-on-click-modal="false"
-                        center>
+                        center
+                    >
                         <span slot="title">确认删除</span>
                         <div class="qinjeeDialogMiniCont">
                             <div>
@@ -306,16 +312,33 @@
             class="qinjeeDialogMini"
             :append-to-body="true"
             :close-on-click-modal="false"
-            center>
-            <span slot="title" >{{sortTitle}}</span>
+            center
+        >
+            <span slot="title">{{sortTitle}}</span>
             <div class="qinjeeDialogMiniCont">
-                <draggable class="sortComponent" v-model="sortData" group="people" @start="drag=true" @end="drag=false">
-                    <div class="sortList" v-for="element in sortData" :key="element.id">{{element.name}}</div>
+                <draggable
+                    class="sortComponent"
+                    v-model="sortData"
+                    group="people"
+                    @start="drag=true"
+                    @end="drag=false"
+                >
+                    <div
+                        class="sortList"
+                        v-for="element in sortData"
+                        :key="element.id"
+                    >{{element.name}}</div>
                 </draggable>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button size="small" @click="sortDialog = false">取 消</el-button>
-                <el-button size="small" type="primary" @click="sortSure" :disabled="sortData.length === 0" :loading="sortLoading" >确 定</el-button>
+                <el-button
+                    size="small"
+                    type="primary"
+                    @click="sortSure"
+                    :disabled="sortData.length === 0"
+                    :loading="sortLoading"
+                >确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -328,17 +351,19 @@ import {
     positionGroup_api4,
     positionGroup_api5,
     positionGroup_api6,
+    positionGroup_api7,
     positionLevel_api1,
     positionGrade_api1,
     position_api1,
     position_api2,
     position_api3,
     position_api4,
-    position_api5
+    position_api5,
+    position_api6,
 } from "../../request/api";
 import commonTable from "../../components/table/commonTable";
 import tree from "../../components/tree/tree";
-import draggable from 'vuedraggable'
+import draggable from "vuedraggable";
 import base from "../../assets/js/base";
 
 export default {
@@ -528,7 +553,7 @@ export default {
                                 method: this.positionGroupSort
                             },
                             { text: "导入", method: this.btn2 },
-                            { text: "导出", method: this.btn3 }
+                            { text: "导出", method: this.exportGroupTable }
                         ]
                     }
                 ],
@@ -629,7 +654,7 @@ export default {
                         list: [
                             { text: "排序", method: this.positionSort },
                             { text: "导入", method: this.btn2 },
-                            { text: "导出", method: this.btn3 }
+                            { text: "导出", method: this.exportPositionTable }
                         ]
                     }
                 ],
@@ -685,9 +710,14 @@ export default {
 
             // 排序
             sortDialog: false,
-            sortTitle: '',
+            sortTitle: "",
             sortData: [],
             sortLoading: false,
+
+            //职位族导出
+            exportGroupList: [],
+            //职位导出
+            exportPositionList: []
         };
     },
     components: {
@@ -697,37 +727,64 @@ export default {
     },
     mounted() {},
     methods: {
+        //职位导出
+        exportPositionTable(searchData, radioData, checkboxData) {
+            if(!this.positionNode){
+                this.$message.warning("请点击左侧职位族树")
+                return
+            }
+            let ids = this.exportPositionList.map(item => item.positionGroupId);
+            let send = ids;
+            base.log("s", "职位导出", send);
+            position_api6(send, res => {
+                console.log(res);
+                base.blobDownLoad(res);
+            });
+        },
+        //职位族导出
+        exportGroupTable(searchData, radioData, checkboxData) {
+            let ids = this.exportGroupList.map(item => item.positionGroupId);
+            let send = this.exportGroupList.length === 0 ? [] : ids;
+            base.log("s", "职位族导出", send);
+            positionGroup_api7(send, res => {
+                console.log(res);
+                base.blobDownLoad(res);
+            });
+        },
         // 职位族--排序
         positionGroupSort() {
-            this.sortTitle = '职位族排序';
+            this.sortTitle = "职位族排序";
             let data = JSON.parse(JSON.stringify(this.positionGroupTable.data));
             this.sortData = data.map(item => {
-                return {id: item.positionGroupId, name: item.positionGroupName};
-            })
+                return {
+                    id: item.positionGroupId,
+                    name: item.positionGroupName
+                };
+            });
             this.sortDialog = true;
         },
         // 职位--排序
         positionSort() {
-            this.sortTitle = '职位排序';
+            this.sortTitle = "职位排序";
             let data = JSON.parse(JSON.stringify(this.positionTable.data));
             this.sortData = data.map(item => {
-                return {id: item.positionId, name: item.positionName};
-            })
+                return { id: item.positionId, name: item.positionName };
+            });
             this.sortDialog = true;
         },
         // 排序--确定
         sortSure() {
             this.sortLoading = true;
-            let list = this.sortData.map(item => item.id)
+            let list = this.sortData.map(item => item.id);
             switch (this.sortTitle) {
-                case '职位族排序':
+                case "职位族排序":
                     this.positionGroupSortSubmit(list);
                     break;
-                
-                case '职位排序':
+
+                case "职位排序":
                     this.positionSortSubmit(list);
                     break;
-            
+
                 default:
                     break;
             }
@@ -735,41 +792,41 @@ export default {
         // 职位族排序提交
         positionGroupSortSubmit(list) {
             let send = {
-                "positionGroupIds": list
+                positionGroupIds: list
             };
-            base.log('s', '职位族排序', send);
+            base.log("s", "职位族排序", send);
             positionGroup_api6(send, res => {
                 this.sortLoading = false;
                 let d = res.data;
-                base.log('r', '职位族排序', d);
+                base.log("r", "职位族排序", d);
                 if (d.success) {
                     this.sortDialog = false;
                     base.success(d);
                     this.positionGroupTable.loading = true;
                     this.getAllPositionGroup();
-                }else{
+                } else {
                     base.error(d);
                 }
-            })
+            });
         },
         // 职位排序提交
         positionSortSubmit(list) {
             let send = {
-                "positionGroupIds": list
+                positionGroupIds: list
             };
-            base.log('s', '职位排序', send);
+            base.log("s", "职位排序", send);
             position_api5(send, res => {
                 this.sortLoading = false;
                 let d = res.data;
-                base.log('r', '职位排序', d);
+                base.log("r", "职位排序", d);
                 if (d.success) {
                     this.sortDialog = false;
                     base.success(d);
                     this.positionTableReq();
-                }else{
+                } else {
                     base.error(d);
                 }
-            })
+            });
         },
 
         //职位删除--请求接口
@@ -777,7 +834,7 @@ export default {
             let delList = this.delPositionList.map(item => item.positionId);
             console.log(delList);
 
-            let send = delList
+            let send = delList;
             base.log("s", "删除职位", send);
             position_api4(send, res => {
                 base.log("r", "删除职位", res.data);
@@ -803,6 +860,7 @@ export default {
         postSelectChange(node) {
             this.delPositionList = node;
             this.editPositionList = node;
+            this.exportPositionList = node;
             console.log(node);
         },
         //职位-- 编辑按钮
@@ -894,6 +952,7 @@ export default {
                 base.log("r", "获取职位表格", res.data);
                 if (res.data.success) {
                     this.positionTable.data = res.data.result.list;
+                    this.exportPositionList= res.data.result.list
                     this.positionTable.total = res.data.result.total;
                 } else {
                     base.error(res.data);
@@ -953,8 +1012,8 @@ export default {
         },
         //职位族--编辑请求接口
         editGroupReq() {
-            if(this.editGroupForm.GroupName.trim().length === 0){
-                this.$message.warning("请输入内容")
+            if (this.editGroupForm.GroupName.trim().length === 0) {
+                this.$message.warning("请输入内容");
             }
             let send = {
                 positionGroupId: this.editGroupList[0].positionGroupId,
@@ -964,8 +1023,8 @@ export default {
             positionGroup_api5(send, res => {
                 base.log("r", "编辑职位族", res.data);
                 if (res.data.success) {
-                    this.$message.success("编辑成功")
-                    this.editGroupDialog = false
+                    this.$message.success("编辑成功");
+                    this.editGroupDialog = false;
                     this.getAllPositionGroup();
                 } else {
                     base.error(res.data);
@@ -1006,6 +1065,7 @@ export default {
         GroupselectChange(node) {
             this.GroupDelList = node;
             this.editGroupList = node;
+            this.exportGroupList = node;
             console.log(node);
         },
         //职位族--删除,点击删除按钮

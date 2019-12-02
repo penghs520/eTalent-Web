@@ -1,4 +1,5 @@
-<style lang="scss" scoped>
+<style lang="scss" scoped >
+@import url(../../assets/js/orgChart/orgchart-webcomponents.css);
 #organization_jobMaintain {
     display: flex;
     height: 100%;
@@ -94,6 +95,15 @@
 }
 .el-button {
     cursor: default;
+}
+//岗位图
+.operation {
+    padding: 18px 24px;
+}
+.chart {
+    margin: 0 24px 18px 24px;
+    border: 1px solid rgba(241, 242, 242, 1);
+    height: 600px;
 }
 </style>
 
@@ -414,7 +424,7 @@
                         :close-on-click-modal="false"
                         center
                     >
-                        <span slot="title">机构复制</span>
+                        <span slot="title">岗位复制</span>
                         <div class="qinjeeDialogSmallMini">
                             <el-form
                                 :model="copyPostForm"
@@ -465,20 +475,89 @@
                             <commonTable :table="postSuccessiveTable"></commonTable>
                         </div>
                     </el-dialog>
+                    <!-- 岗位排序弹窗 -->
+                    <el-dialog
+                        :visible.sync="sortPostDialog"
+                        class="qinjeeDialogMini"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center
+                    >
+                        <span slot="title">岗位排序</span>
+                        <div class="qinjeeDialogMiniCont">
+                            <draggable
+                                class="sortComponent"
+                                v-model="sortPostList"
+                                group="org"
+                                @start="drag=true"
+                                @end="drag=false"
+                            >
+                                <div
+                                    class="sortList"
+                                    v-for="item in sortPostList"
+                                    :key="item.postId"
+                                >{{item.postName}}</div>
+                            </draggable>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="sortPostDialog = false">取 消</el-button>
+                            <el-button size="small" type="primary" @click="sortPostReq">确 定</el-button>
+                        </span>
+                    </el-dialog>
                 </el-tab-pane>
                 <!-- 岗位图 -->
                 <el-tab-pane name="post_pic">
                     <span slot="label">
                         <i class="qj-form"></i>岗位图
                     </span>
+
+                    <el-row :gutter="16" class="operation">
+                        <el-col :span=".5">
+                            <el-select
+                                v-model="direction"
+                                size="small"
+                                placeholder="显示方向"
+                                @change="directionChange"
+                            >
+                                <el-option value="t2b" label="竖"></el-option>
+                                <el-option value="l2r" label="横"></el-option>
+                            </el-select>
+                        </el-col>
+                        <el-col :span=".5">
+                            <el-select
+                                v-model="tier"
+                                size="small"
+                                placeholder="显示层级"
+                                @change="tierChange"
+                            >
+                                <el-option :value="0" label="全部显示"></el-option>
+                                <el-option
+                                    v-for="item in tierList"
+                                    :key="item"
+                                    :value="item"
+                                    :label="`${item}层`"
+                                ></el-option>
+                            </el-select>
+                        </el-col>
+                        <el-col :span=".5">
+                            <el-button type="primary" size="small" @click="downloadChart">导出</el-button>
+                        </el-col>
+                    </el-row>
+
+                    <div class="chart" id="postChart"></div>
                 </el-tab-pane>
             </el-tabs>
         </div>
     </div>
 </template>
 <script>
+import draggable from "vuedraggable";
+
 import tree from "../../components/tree/tree";
 import commonTable from "../../components/table/commonTable";
+import OrgChart from "../../assets/js/orgChart/orgchart-webcomponents.js";
+import base from "../../assets/js/base";
+import file from "../../request/filePath";
 import {
     postRepair_api1,
     postRepair_api2,
@@ -489,16 +568,19 @@ import {
     postRepair_api7,
     postRepair_api8,
     postRepair_api9,
-    postRepair_api10
+    postRepair_api10,
+    postRepair_api11,
+    postRepair_api12,
+    postRepair_api13,
+    postRepair_api14
 } from "../../request/api";
-import base from "../../assets/js/base";
-import file from "../../request/filePath";
 
 export default {
     name: "jobMaintain" /* 岗位维护 */,
     components: {
         tree,
-        commonTable
+        commonTable,
+        draggable
     },
     data() {
         return {
@@ -578,11 +660,11 @@ export default {
                         list: [
                             { text: "封存", method: this.notEnable },
                             { text: "解封", method: this.Enable },
-                            { text: "排序", method: this.btn2 },
+                            { text: "排序", method: this.sortPostBtn },
                             { text: "模板下载", method: this.tempDownload },
                             { text: "复制", method: this.copyPost },
                             { text: "导入", method: this.btn2 },
-                            { text: "导出", method: this.btn2 }
+                            { text: "导出", method: this.exportPostTable }
                         ]
                     }
                 ],
@@ -722,26 +804,172 @@ export default {
                 formatter: this.timeFormatter
             },
             SuccessiveInfo: true,
-            columnValue: null
+            columnValue: null,
+            //岗位导出
+            exportPostList: [],
+            //岗位排序
+            sortPostList: [],
+            sortPostDialog: false,
+            //岗位图
+            direction: "t2b",
+            tier: 0,
+            tierList: [1, 2, 3, 4],
+            postChartData: null
         };
     },
     mounted() {
         this.getPostTreeReq();
     },
     methods: {
+        //岗位图--导出(未做)
+        downloadChart() {},
+        // 岗位图--显示方向改变
+        directionChange(v) {
+            this.createChart(v, this.tier);
+        },
+        // 岗位图--层级改变
+        tierChange(v) {
+            this.createChart(this.direction, v);
+        },
+        //岗位图--获取岗位图请求
+        getChartReq() {
+            let send = {
+                isContainsActualMembers: true,
+                isContainsCompiler: true,
+                isEnable: this.isEnable ? 1 : 0,
+                layer: 3,
+                postId: this.orgNode.postId
+            };
+            base.log("s", "获取岗位图", send);
+            postRepair_api11(send, res => {
+                base.log("r", "获取岗位图", res.data);
+                if (res.data.success) {
+                    this.postChartData = res.data.result[0];
+                    this.createChart(this.direction, this.tier);
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
+        //岗位图--创建岗位图
+        createChart(direction = "t2b", tier) {
+            let orgchart = new OrgChart({
+                chartContainer: "#postChart",
+                chartClass: "orgchartSingleClassName",
+                data: this.postChartData,
+                nodeTitle: "postName" /* 节点标题字段 */,
+                childTitle: "childList",
+                zoom: true /* 鼠标滚轮缩放 */,
+                pan: true /* 是否可以拖动 */,
+                depth: tier ? tier : 999,
+                direction: direction,
+                // 'nodeContent': 'orgType',
+                createNode: function(node, data) {
+                    // 创建节点
+                    let cont = document.createElement("div");
+
+                    // 添加点击事件
+                    cont.addEventListener("click", event => {
+                        // 这里可以添加点击事件
+                    });
+                    // 添加属性
+                    cont.setAttribute("class", "nodeCont");
+                    // 添加内容
+                    let html = `<div>
+                                    <div class="info">
+                                        <p class="number">${data.staffNumbers}/${data.planNumbers}</p>
+                                    </div>
+                                </div>`;
+                    cont.innerHTML = html;
+                    // 插入节点内
+                    node.appendChild(cont);
+                }
+            });
+            let chartNode = document.querySelector(".orgchartSingleClassName");
+            if (chartNode) {
+                document.querySelector("#postChart").removeChild(chartNode);
+            }
+            document.querySelector("#postChart").appendChild(orgchart);
+        },
+
+        //岗位排序--表格按钮
+        sortPostBtn() {
+            if (!this.orgNode) {
+                this.$message.warning("请选择左侧机构树");
+                return;
+            }
+            this.getNeedSortPost();
+        },
+        //岗位排序--请求接口
+        sortPostReq() {
+            let ids = this.sortPostList.map(item => item.postId);
+            let send = ids
+            base.log("s", "岗位排序", send);
+            postRepair_api13(send, res => {
+                base.log("r", "岗位排序", res.data);
+                if (res.data.success) {
+                    this.getPostTableReq();
+                    this.$message.success("排序成功");
+                    this.sortPostDialog = false;
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
+        //岗位排序--请求获取需要排序的岗位
+        getNeedSortPost() {
+            let send = {
+                orgId: this.orgNode.orgId,
+                parentPostId: this.orgNode.postId ? this.orgNode.postId : "",
+                isEnable: 1
+            };
+            base.log("s", "获取需排序的岗位", send);
+            postRepair_api12(send, res => {
+                base.log("r", "获取需排序的岗位", res.data);
+                if (res.data.success) {
+                    if (res.data.result.list.length < 2) {
+                        this.$message.warning("该机构岗位数少于2");
+                        return;
+                    }
+                    this.sortPostList = res.data.result.list;
+                    this.sortPostDialog = true;
+                    this.getPostTableReq();
+                } else {
+                    console.log("错误了");
+                    base.error(res.data);
+                }
+            });
+        },
+
+        //岗位导出--请求接口(未完成)
+        exportPostTable(searchData, radioData, checkboxData) {
+            if (!this.orgNode) {
+                this.$message.warning("请点击左侧机构树");
+                return;
+            }
+            let ids = this.exportPostList.map(item => item.postId);
+            let send = ids;
+            base.log("s", "岗位导出", send);
+            // postRepair_api14(send, res => {
+            //     base.log("r", "岗位导出", res);
+            //     base.blobDownLoad(res);
+            // });
+        },
+
         //模板下载
-        tempDownload(){
-            let url = file['岗位导入'];
-            if (url) {
-                window.open(url,'_self');
-            }
+        tempDownload() {
+            let url = file["岗位导入"];
+            console.log("岗位模板下载");
+            if (url) {
+                window.open(url, "_self");
+            }
         },
 
         //查看历任--按钮
         columnBtn(row) {
             this.columnValue = row;
             this.postSuccessiveReq();
-            this.postSuccessiveDialog  = true;
+            this.postSuccessiveDialog = true;
         },
         //查看历任 -- 时间格式化
         timeFormatter(key, val) {
@@ -758,7 +986,7 @@ export default {
         //查看历任--请求接口
         postSuccessiveReq() {
             let send = {
-                postId:this.columnValue.postId
+                postId: this.columnValue.postId
                 // postId: 1
             };
             base.log("s", "查看历任", send);
@@ -784,12 +1012,17 @@ export default {
         copyPostReq(formName) {
             this.$refs[formName].validate(valid => {
                 if (valid) {
-                    let send = {};
+                    let postIds = this.copyPostList.map(item => item.postId);
+                    let send = {
+                        postIds: postIds,
+                        orgId: this.copyPostForm.targetOrgId
+                    };
                     base.log("s", "复制岗位", send);
                     postRepair_api9(send, res => {
                         base.log("r", "复制岗位", res.data);
                         if (res.data.success) {
                             this.$message.success("复制成功");
+                            this.getPostTableReq();
                             this.copyPostDialog = false;
                         } else {
                             base.error(res.data);
@@ -1017,6 +1250,8 @@ export default {
         },
         //岗位新增--所有部门下拉树形点击
         selectTreeClick(node) {
+            console.log(node);
+
             this.addPostForm.orgName = node.orgName;
             this.addPostForm.orgId = node.orgId;
 
@@ -1060,7 +1295,7 @@ export default {
         getPostTableReq() {
             let send = {
                 currentPage: this.currentPage,
-                isEnable: this.isEnable ? 0 : 1,
+                isEnable: this.isEnable ? 1 : 0,
                 orgId: this.orgNode.orgId,
                 pageSize: this.pageSize,
                 postId: this.postId
@@ -1072,7 +1307,8 @@ export default {
                     this.postTable.data = res.data.result.list;
                     this.postTable.total = res.data.result.total;
                     this.getPostMaxCode(res.data.result.list, this.orgNode); //获取最大下级岗位编码
-                    this.postTable.pageResize = false
+                    this.postTable.pageResize = false;
+                    this.exportPostList = res.data.result.list; //导出文件列表
 
                     if (res.data.result.total === 0) {
                         //获取上级岗位
@@ -1089,13 +1325,14 @@ export default {
                 }
             });
         },
-        //岗位表--多选点击赋值
+        //岗位表--多选框点击赋值
         postSelectChange(val) {
             this.editPostList = val; //编辑多选赋值
             this.delPostList = val; //删除多选赋值
             this.notEnableList = val; //封存多选赋值
             this.EnableList = val; //解封多选赋值
             this.copyPostList = val; //赋值多选赋值
+            this.exportPostList = val; //导出多选赋值
 
             console.log(val);
         },
@@ -1106,20 +1343,33 @@ export default {
         },
         //岗位表--页容量改变
         postPageSizeChange(pageSize) {
-            console.log('咱大爷')
+            console.log("咱大爷");
             this.currentPage = 1;
             this.pageSize = pageSize;
-            this.postTable.pageResize = true;            
+            this.postTable.pageResize = true;
             this.getPostTableReq();
         },
 
         //tab栏点击
-        handleClick(command) {},
+        handleClick(tab) {
+            if (tab.name == "post_table") {
+                if (this.orgNode) {
+                    this.getPostTableReq();
+                    console.log("岗位树");
+                }
+            } else if (tab.name == "post_pic") {
+                if (this.orgNode.orgType === "POST") {
+                    this.getChartReq();
+                } else {
+                    this.$message.warning("请选择岗位");
+                }
+            }
+        },
 
         //岗位树-- 获取岗位树请求
         getPostTreeReq() {
             let send = {
-                isEnable: this.isEnable ? 0 : 1
+                isEnable: this.isEnable ? 1 : 0
             };
             base.log("s", "获取岗位树", send);
             postRepair_api1(send, res => {
@@ -1164,16 +1414,22 @@ export default {
         //岗位树--节点被点击
         nodeClick(node) {
             this.orgNode = node;
-            if (node.orgType !== "POST") {
-                this.postId = "";
-                this.currentPage = 1
-                this.postTable.pageResize = true
-                this.getPostTableReq();
-            } else {
-                this.currentPage = 1
-                this.postTable.pageResize = true
-                this.postId = node.postId;
-                this.getPostTableReq();
+            if (this.activeName == "post_table") {
+                if (node.orgType !== "POST") {
+                    this.postId = "";
+                    this.currentPage = 1;
+                    this.postTable.pageResize = true;
+                    this.getPostTableReq();
+                } else {
+                    this.currentPage = 1;
+                    this.postTable.pageResize = true;
+                    this.postId = node.postId;
+                    this.getPostTableReq();
+                }
+            } else if (this.activeName == "post_pic") {
+                if (this.orgNode.orgType === "POST") {
+                    this.getChartReq();
+                }
             }
             console.log(node);
         }

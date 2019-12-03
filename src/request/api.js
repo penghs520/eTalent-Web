@@ -141,6 +141,8 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const orgRepair_api12    = (data, callback) => {request('post', `api/masterdata/organization/getDirectOrganizationPageList`, data, callback)};
         const orgRepair_api13    = (data, callback) => {request('post', `api/masterdata/organization/sortOrganization`, data, callback)};
         const orgRepair_api14    = (data, callback) => {request('post', `api/masterdata/organization/exportOrganization`, data, callback, 'blob')};
+        const orgRepair_api15    = (data, callback) => {request('post', `api/masterdata/organization/uploadAndCheck`, data, callback)};
+        const orgRepair_api16    = (data, callback) => {request('get', `api/masterdata/organization/importToDatabase`, data, callback)};
     
     //用户管理
         //用户信息
@@ -162,7 +164,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const postRepair_api11    = (data, callback) => {request('get', `api/masterdata/post/getPostGraphics`, data, callback)};
         const postRepair_api12    = (data, callback) => {request('post', `api/masterdata/post/getDirectPostPageList`, data, callback)};
         const postRepair_api13    = (data, callback) => {request('post', `api/masterdata/post/sortPorts`, data, callback)};
-        const postRepair_api14    = (data, callback) => {request('post', `api/masterdata/post/sortPorts`, data, callback)};
+        const postRepair_api14    = (data, callback) => {request('post', `api/masterdata/post/exportPost`, data, callback,'blob')};
        
 
 export {
@@ -220,7 +222,7 @@ export {
         // 组织机构
             //机构维护
             orgRepair_api1,orgRepair_api2,orgRepair_api3,orgRepair_api4,orgRepair_api5,orgRepair_api6,orgRepair_api7,orgRepair_api8,
-            orgRepair_api9,orgRepair_api10, orgRepair_api11,orgRepair_api12,orgRepair_api13, orgRepair_api14,
+            orgRepair_api9,orgRepair_api10, orgRepair_api11,orgRepair_api12,orgRepair_api13, orgRepair_api14,orgRepair_api15,orgRepair_api16,
 
         // 岗位管理
             // 岗位维护

@@ -547,6 +547,8 @@
                     <div class="chart" id="postChart"></div>
                 </el-tab-pane>
             </el-tabs>
+            <!-- 岗位导入 -->
+            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"></commonUpload>
         </div>
     </div>
 </template>
@@ -558,6 +560,7 @@ import commonTable from "../../components/table/commonTable";
 import OrgChart from "../../assets/js/orgChart/orgchart-webcomponents.js";
 import base from "../../assets/js/base";
 import file from "../../request/filePath";
+import commonUpload from "../../components/upload/upload";
 import {
     postRepair_api1,
     postRepair_api2,
@@ -580,7 +583,8 @@ export default {
     components: {
         tree,
         commonTable,
-        draggable
+        draggable,
+        commonUpload
     },
     data() {
         return {
@@ -663,7 +667,7 @@ export default {
                             { text: "排序", method: this.sortPostBtn },
                             { text: "模板下载", method: this.tempDownload },
                             { text: "复制", method: this.copyPost },
-                            { text: "导入", method: this.btn2 },
+                            { text: "导入", method: this.importPost },
                             { text: "导出", method: this.exportPostTable }
                         ]
                     }
@@ -814,13 +818,47 @@ export default {
             direction: "t2b",
             tier: 0,
             tierList: [1, 2, 3, 4],
-            postChartData: null
+            postChartData: null,
+            //岗位导入
+            uploadActive: 0,
+            uploadShow: false,
+            uploadData: {
+                title: "导入岗位",
+                download: this.importTempDownload,
+                fileFormatDescription:"仅支持扩展名：.xls .xles，大小不能超过5M",
+                uploadDescription: "这句话的内容还需要和产品沟通",
+                templateName: "",
+                uploadUrl: "",
+                uploadSuccess: this.uploadSuccess, // 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
+                uploadError: this.uploadError, // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
+                check: this.uploadCheck, // 必须，校验操作
+                cancel: this.uploadCancel, // 必须，取消操作
+                finish: this.uploadFinish, // 必须，完成操作
+                upload: this.uploadOrReturn, // 必须，上传操作
+                cancelLoading: false, // 必须，取消loading
+                checkLoading: false, // 必须，校验loading
+                finishLoading: false, // 必须，完成loading
+                btnText: "上传",
+                fileList: [],
+            }
+
         };
     },
     mounted() {
         this.getPostTreeReq();
     },
     methods: {
+        //岗位--导入
+        importPost() {
+            console.log("12346");
+
+            this.uploadShow = true;
+        },
+        //岗位 -- 关闭/取消
+        uploadCancel() {
+            this.uploadShow = false;
+        },
+
         //岗位图--导出(未做)
         downloadChart() {},
         // 岗位图--显示方向改变
@@ -903,7 +941,7 @@ export default {
         //岗位排序--请求接口
         sortPostReq() {
             let ids = this.sortPostList.map(item => item.postId);
-            let send = ids
+            let send = ids;
             base.log("s", "岗位排序", send);
             postRepair_api13(send, res => {
                 base.log("r", "岗位排序", res.data);
@@ -948,12 +986,15 @@ export default {
                 return;
             }
             let ids = this.exportPostList.map(item => item.postId);
-            let send = ids;
+            let send = {
+                orgId: this.orgNode.orgId,
+                postIds: ids
+            };
             base.log("s", "岗位导出", send);
-            // postRepair_api14(send, res => {
-            //     base.log("r", "岗位导出", res);
-            //     base.blobDownLoad(res);
-            // });
+            postRepair_api14(send, res => {
+                base.log("r", "岗位导出", res);
+                base.blobDownLoad(res);
+            });
         },
 
         //模板下载

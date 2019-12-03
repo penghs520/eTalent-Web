@@ -27,10 +27,19 @@ export default {
                 uploadError: Function,              // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
                 cancel: Function,                   // 必须，取消操作
                 check: Function,                    // 必须，校验操作
-                finish: Function,                   // 必须，完成操作
+                upload:Function,                    // 必须, 上传操作                
+                checkedResult:Boolean,              // 非必须，校验结果的状态
+                // finish: Function,                // 必须，完成操作
                 cancelLoading: Boolean,             // 必须，取消loading
                 checkLoading: Boolean,              // 必须，校验loading
                 finishLoading: Boolean,             // 必须，完成loading
+
+                btnText: String,                    // 必须，校验完成后按钮的显示
+                tableShow:Boolean,                  // 非必须，是否显示表格
+                tableData:Object,                   // 非必须， 表格数据(同公共表格组件格式)
+                fileList:Array,                     // 必须，  上传文件存储
+                checkedResult:Boolean,              // 必须, 校验结果
+                readReport:Function,                // 非必须, 查看校验的方法
             }
         }
     },

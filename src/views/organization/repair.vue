@@ -142,7 +142,7 @@
             <tree :treeData="treeData"></tree>
         </div>
         <!-- 右侧表格 -->
-        <div class="content">          
+        <div class="content">
             <el-tabs
                 v-model="activeName"
                 class="organization_repair_tabsBar"
@@ -666,7 +666,9 @@ import {
     orgRepair_api11,
     orgRepair_api12,
     orgRepair_api13,
-    orgRepair_api14
+    orgRepair_api14,
+    orgRepair_api15,
+    orgRepair_api16
 } from "../../request/api";
 
 export default {
@@ -884,20 +886,43 @@ export default {
             uploadData: {
                 title: "导入机构",
                 download: this.importTempDownload,
-                fileFormatDescription:
-                    "仅支持扩展名：.xls .xles，大小不能超过5M",
+                fileFormatDescription: "仅支持扩展名：.xls .xles，大小不能超过5M",
                 uploadDescription: "这句话的内容还需要和产品沟通",
                 templateName: "工作经历",
                 uploadUrl: "",
-                uploadSuccess: this.uploadSuccess, // 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
-                uploadError: this.uploadError, // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
-                cancel: this.uploadCancel, // 必须，取消操作
-                check: this.uploadCheck, // 必须，校验操作
-                finish: this.uploadFinish, // 必须，完成操作
-                cancelLoading: false, // 必须，取消loading
-                checkLoading: false, // 必须，校验loading
-                finishLoading: false // 必须，完成loading
+                uploadSuccess: this.uploadSuccess,// 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
+                uploadError: this.uploadError,   // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
+                check: this.uploadCheck,         // 必须，校验操作
+                cancel: this.uploadCancel,       // 必须，取消操作
+                finish: this.uploadFinish,       // 必须，完成操作
+                upload: this.uploadOrReturn,     // 必须，上传操作
+                cancelLoading: false,            // 必须，取消loading
+                checkLoading: false,             // 必须，校验loading
+                finishLoading: false,            // 必须，完成loading
+                btnText: "上传",                 //按钮文字
+                tableShow: false,                //是否显示表格
+                tableData: {
+                    head: [
+                        { name: "机构编码", key: "orgCode", isShow: true },
+                        { name: "机构名称", key: "orgName", isShow: true },
+                        { name: "机构类型", key: "orgType", isShow: true },
+                        {
+                            name: "上级机构编码",
+                            key: "orgParentCode",
+                            isShow: true
+                        },
+                        { name: "上级机构", key: "orgParentName", isShow: true }
+                    ],
+                    hideHeader: false,
+                    data: [],
+                    total: 0,
+                    pageHide: true
+                },
+                checkedResult: false,            //校验结果             
+                fileList: [],                    //上传的文件
+                readReport: this.readReport      //查看检验报告的回调
             },
+            orgExcelRedisKey: ""
         };
     },
     components: {
@@ -910,13 +935,84 @@ export default {
         this.getTreeReq();
     },
     methods: {
+        //机构导入--点击查看校验报告
+        readReport() {
+            console.log("123456");
+            this.uploadData.tableShow = false;
+        },
+        //机构导入--上传
+        uploadOrReturn() {
+            if (this.uploadData.btnText === "完成") {
+                this.uploadReq();
+            } else {
+                this.uploadActive = 0;
+                this.uploadData.fileList = [];
+                this.uploadData.tableShow = false;
+            }
+        },
+        //机构导入--文件上传请求
+        uploadReq() {
+            let send = {
+                orgExcelRedisKey: this.orgExcelRedisKey
+            };
+            base.log("s", "文件上传", send);
+            orgRepair_api16(send, res => {
+                base.log("r", "文件上传", res.data);
+                if (res.data.success) {
+                    this.$message.success("文件上传成功");
+                    this.uploadData.fileList = [];
+                    this.uploadActive = 3;
+                    setTimeout(() => {
+                        this.uploadShow = false;
+                    }, 800);
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
+        //机构导入--校验按钮
+        uploadCheck() {
+            this.uploadActive = 1;
+            this.uploadData.tableShow = true;
+            this.uploadCheckReq();
+        },
+        //机构导入--校验请求接口
+        uploadCheckReq() {
+            let send = this.uploadData.fileList[0].raw;
+            let fd = new FormData();
+            fd.append("multfile", send);
+            base.log("s", "机构导入校验", fd);
+            orgRepair_api15(fd, res => {
+                base.log("r", "机构导入校验", res);
+                if (res.data.success) {
+                    this.uploadData.btnText = "完成";
+                    // this.uploadData.uploadDescription = "校验成功,可导入数据";
+                    this.uploadData.tableData.data = res.data.result.excelList;
+                    this.uploadData.checkedResult = true;
+                    this.orgExcelRedisKey = res.data.result.redisKey;
+                    this.uploadActive = 2;
+                } else {
+                    this.uploadData.btnText = "返回";
+                    this.uploadData.checkedResult = false;
+                    // this.uploadData.uploadDescription="校验失败,点击此处查看校验报告";
+                    this.uploadData.tableData.data = res.data.result.excelList;
+                    this.uploadData.checkFailTable.data =
+                        res.data.result.failCheckList;
+                    
+                }
+            });
+        },
         //机构导入--取消/关闭按钮
         uploadCancel() {
             this.uploadShow = false;
+            this.uploadData.tableShow = false;
         },
         //机构导入--点击表格按钮
         uploadPostTable() {
             this.uploadShow = true;
+            this.uploadActive = 0;
+            this.uploadData.fileList = [];
+            this.uploadData.tableShow = false;
         },
 
         //机构排序--表格按钮

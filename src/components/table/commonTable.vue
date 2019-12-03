@@ -132,30 +132,34 @@ export default {
             radioChecked: null,                 /* 单选框选中的行数据 */
             radioCheckedIndex: undefined,       /* 单选框选中的index */
             barData: {},                        /* 操作栏数据绑定变量 */
+            allData: [],                        /* 所有的表格数据 */
+            data: [],                           /* 显示的表格数据 */
             page: {
                 pageSizes: [10, 20, 50, 100, 200, 500, 1000],
                 pageSize: 10
             },
             currentPage: 1,
+            pageSize: 10,
         };
     },
     created() {
         // 变量初始化
         this.barModelInit(this.table.bar);
         Object.assign(this.page, this.table.page);
+        this.pageSize = this.page.pageSize;
     },
     computed: {
         head(){
             return this.table.head;
-        },
-        data(){
-            return this.table.data;
         },
         total(){
             return this.table.total;
         },
         loading() {
             return this.table.loading;
+        },
+        webPage() {
+            return Boolean(this.table.webPage);
         },
     },
     watch: {
@@ -165,6 +169,17 @@ export default {
                 if (val.pageResize) {
                     this.currentPage = 1;
                 }
+            },
+            deep: true
+        },
+        'table.data': {
+            handler: function(val) {
+                this.allData = val;
+                if (this.webPage) {
+                    this.data = this.getCurrentPageData(val, this.currentPage, this.pageSize);
+                }else{
+                    this.data = val;
+                };
             },
             deep: true
         },
@@ -264,16 +279,34 @@ export default {
 
         // 页码--每页数量改变
         pageSizeChange(size) {
-            if (this.table.pageSizeChange) {
-                this.table.pageSizeChange(size, this.barData, this.radioChecked, this.selectChecked)
+            this.pageSize = size;
+            if (this.webPage) {
+                this.data = this.getCurrentPageData(this.allData, this.currentPage, size);
+            }else{
+                if (this.table.pageSizeChange) {
+                    this.table.pageSizeChange(size, this.barData, this.radioChecked, this.selectChecked)
+                }
             }
         },
 
         // 页码--当前页改变
         pageCurrentChange(index) {
-            if (this.table.pageChange) {
-                this.table.pageChange(index, this.barData, this.radioChecked, this.selectChecked)
+            this.currentPage = index;
+            if (this.webPage) {
+                this.data = this.getCurrentPageData(this.allData, index, this.pageSize);
+            }else{
+                if (this.table.pageChange) {
+                    this.table.pageChange(index, this.barData, this.radioChecked, this.selectChecked)
+                }
             }
+        },
+
+        // 前端分页--获取当前页数据
+        getCurrentPageData(allData, pageIndex, pagesize) {
+            let start = (pageIndex - 1) * pagesize;
+            let end = pageIndex * pagesize;
+            let result = allData.slice(start,end);
+            return result;
         },
 
         // 表格列格式化

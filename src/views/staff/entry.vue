@@ -1265,7 +1265,7 @@ export default {
 
         // 翻页
         pageChange(index) {
-            this.this.currentPage = index;
+            this.currentPage = index;
             this.getTable();
         },
 

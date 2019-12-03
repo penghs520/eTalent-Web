@@ -166,6 +166,9 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const postRepair_api12    = (data, callback) => {request('post', `api/masterdata/post/getDirectPostPageList`, data, callback)};
         const postRepair_api13    = (data, callback) => {request('post', `api/masterdata/post/sortPorts`, data, callback)};
         const postRepair_api14    = (data, callback) => {request('post', `api/masterdata/post/exportPost`, data, callback,'blob')};
+        const postRepair_api15    = (data, callback) => {request('post', `api/masterdata/post/uploadAndCheck`, data, callback,)};
+        const postRepair_api16    = (data, callback) => {request('get', `api/masterdata/post/importToDatabase`, data, callback,)};
+        const postRepair_api17    = (data, callback) => {request('get', `api/masterdata/post/exportError2Txt`, data, callback,'blob')};
        
 
 export {
@@ -230,6 +233,7 @@ export {
             // 岗位维护
             postRepair_api1,postRepair_api2,postRepair_api3,postRepair_api4,postRepair_api5,postRepair_api6,postRepair_api7,
             postRepair_api8,postRepair_api9,postRepair_api10,postRepair_api11,postRepair_api12,postRepair_api13,postRepair_api14,
+            postRepair_api15,postRepair_api16,postRepair_api17,
 
         //用户管理
             //用户信息

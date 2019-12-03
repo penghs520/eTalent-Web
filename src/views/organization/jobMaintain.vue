@@ -575,7 +575,10 @@ import {
     postRepair_api11,
     postRepair_api12,
     postRepair_api13,
-    postRepair_api14
+    postRepair_api14,
+    postRepair_api15,
+    postRepair_api16,
+    postRepair_api17,
 } from "../../request/api";
 
 export default {
@@ -584,7 +587,7 @@ export default {
         tree,
         commonTable,
         draggable,
-        commonUpload
+        commonUpload,
     },
     data() {
         return {
@@ -825,9 +828,10 @@ export default {
             uploadData: {
                 title: "导入岗位",
                 download: this.importTempDownload,
-                fileFormatDescription:"仅支持扩展名：.xls .xles，大小不能超过5M",
+                fileFormatDescription:
+                    "仅支持扩展名：.xls .xles，大小不能超过5M",
                 uploadDescription: "这句话的内容还需要和产品沟通",
-                templateName: "",
+                templateName: "工作经历",
                 uploadUrl: "",
                 uploadSuccess: this.uploadSuccess, // 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
                 uploadError: this.uploadError, // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
@@ -838,10 +842,47 @@ export default {
                 cancelLoading: false, // 必须，取消loading
                 checkLoading: false, // 必须，校验loading
                 finishLoading: false, // 必须，完成loading
-                btnText: "上传",
-                fileList: [],
-            }
 
+                btnText: "", //按钮文字
+                cancelbtn: "取消",
+                tableShow: false, //是否显示表格
+                tableData: {
+                    head: [
+                        { name: "机构编码", key: "orgCode", isShow: true },
+                        { name: "机构名称", key: "orgName", isShow: true },
+                        { name: "职位名称", key: "positionName", isShow: true },
+                        { name: "岗位编码",key: "postCode",isShow: true},
+                        { name: "岗位名称", key: "postName", isShow: true }
+                    ],
+                    hideHeader: false,
+                    data: [],
+                    total: 0,
+                    pageHide: true
+                },
+                checkedResult: "", //校验结果
+                fileList: [], //上传的文件
+                readReport: this.readReport, //查看检验报告的回调
+                checkFailshow: false,
+                checkFailTable: {
+                    head: [
+                        { name: "行号", key: "lineNumber", isShow: true },
+                        { name: "说明", key: "resultMsg", isShow: true }
+                    ],
+                    hideHeader: false,
+                    bar: [
+                        {
+                            type: "button",
+                            text: "导出Txt",
+                            btnType: "primary",
+                            method: this.exportTxTReq
+                        }
+                    ],
+                    data: [],
+                    total: 0,
+                    webPage: true
+                }
+            },
+            redisKey: ""
         };
     },
     mounted() {
@@ -850,13 +891,112 @@ export default {
     methods: {
         //岗位--导入
         importPost() {
-            console.log("12346");
-
             this.uploadShow = true;
+            this.uploadActive = 0;
+            this.uploadData.fileList = [];
+            this.uploadData.tableShow = false;
+            this.uploadData.checkFailshow = false;
+            this.uploadData.title = "机构导入";
+            this.uploadData.cancelbtn = "取消";
+            this.uploadData.checkedResult = "";
         },
-        //岗位 -- 关闭/取消
+        //岗位导入---导出txt
+        exportTxTReq() {
+            let send = {
+                redisKey: this.redisKey
+            };
+            base.log("r", "错误信息导出", send);
+            postRepair_api17(send, res => {
+                console.log(res);
+                base.blobDownLoad(res);
+            });
+        },
+        //岗位导入--点击查看校验报告
+        readReport() {
+            this.uploadData.tableShow = false;
+            this.uploadData.checkFailshow = true;
+            this.uploadData.title = "校验报告";
+            this.uploadData.btnText = "确定";
+            this.uploadData.cancelbtn = "返回";
+        },
+        //岗位导入--上传按钮
+        uploadOrReturn() {
+            if (this.uploadData.btnText === "导入") {
+                this.uploadReq();
+            } else if (this.uploadData.btnText === "返回") {
+                this.uploadActive = 0;
+                this.uploadData.fileList = [];
+                this.uploadData.tableShow = false;
+                this.uploadData.checkFailshow = false;
+                this.uploadData.title = "机构导入";
+            } else if (this.uploadData.btnText === "确定") {
+                this.uploadShow = false;
+                this.uploadData.tableShow = false;
+            }
+        },
+        //岗位导入--文件上传请求
+        uploadReq() {
+            let send = {
+                redisKey: this.redisKey
+            };
+            base.log("s", "岗位文件上传", send);
+            postRepair_api16(send, res => {
+                base.log("r", "岗位文件上传", res.data);
+                if (res.data.success) {
+                    this.$message.success("文件上传成功");
+                    this.uploadData.fileList = [];
+                    this.uploadActive = 3;
+                    setTimeout(() => {
+                        this.uploadShow = false;
+                    }, 800);
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
+        //岗位导入--点击校验按钮
+        uploadCheck() {
+            this.uploadActive = 1;
+            this.uploadData.tableShow = true;
+            this.uploadCheckReq();
+        },
+        //岗位导入--校验请求接口
+        uploadCheckReq() {
+            let send = this.uploadData.fileList[0].raw;
+            let fd = new FormData();
+            fd.append("multfile", send);
+            base.log("s", "岗位导入校验", fd);
+            postRepair_api15(fd, res => {
+                base.log("r", "岗位导入校验", res);
+                if (res.data.success) {
+                    this.uploadData.checkedResult = "success";
+                    this.uploadData.btnText = "导入";
+                    this.uploadData.tableData.data = res.data.result.excelList;
+                    this.redisKey = res.data.result.redisKey;
+                    this.uploadActive = 2;
+                } else {
+                    this.uploadData.checkedResult = "fail";
+                    this.uploadData.btnText = "返回";
+                    this.uploadData.tableData.data = res.data.result.excelList;
+                    this.uploadData.checkFailTable.data =
+                        res.data.result.failCheckList;
+                    this.uploadData.checkFailTable.total =
+                        res.data.result.failCheckList.length;
+                    this.redisKey = res.data.result.redisKey;
+                }
+            });
+        },
+        //岗位导入--取消/关闭按钮
         uploadCancel() {
-            this.uploadShow = false;
+            if (this.uploadData.cancelbtn === "取消") {
+                this.uploadShow = false;
+                this.uploadData.tableShow = false;
+            } else if (this.uploadData.cancelbtn === "返回") {
+                this.uploadData.tableShow = true;
+                this.uploadData.checkFailshow = false;
+                this.uploadData.cancelbtn = "取消";
+                this.uploadData.btnText = "返回";
+            }
         },
 
         //岗位图--导出(未做)

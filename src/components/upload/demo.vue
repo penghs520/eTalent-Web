@@ -40,6 +40,8 @@ export default {
                 fileList:Array,                     // 必须，  上传文件存储
                 checkedResult:Boolean,              // 必须, 校验结果
                 readReport:Function,                // 非必须, 查看校验的方法
+                checkFailshow:Boolean,              // 非必须, 校验结果
+                
             }
         }
     },

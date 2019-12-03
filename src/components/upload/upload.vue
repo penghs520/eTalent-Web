@@ -108,7 +108,7 @@
 
                 <!-- 表格 -->
                 <div class="table" v-if="data.tableShow">
-                    <commonTable :table="data.tableData"></commonTable>
+                    <commonTable :table="data.tableData" key="table1" ></commonTable>
                 </div>
                 <!-- 导入说明 -->
                 <div v-if="data.uploadDescription" class="el-upload__tip" slot="tip">
@@ -116,11 +116,11 @@
                     <span class="text" v-show="active === 0">
                         <span>这句话的内容还需要和产品沟通</span>
                     </span>
-                    <span class="text_success" v-show="data.checkedResult  && active !== 0">
+                    <span class="text_success" v-show="data.checkedResult ==='success'  && active !== 0">
                         <i class="el-icon-success"></i>
                         <span>校验成功,可导入数据</span>
                     </span>
-                    <span class="text_fail" v-show="!data.checkedResult  && active !== 0 ">
+                    <span class="text_fail" v-show="data.checkedResult === 'fail'  && active !== 0 ">
                         <i class="el-icon-error"></i>
                         <span class="checkFailshow">校验失败，</span>
                         <span class="report" @click="readReport">点击此处查看校验报告</span>
@@ -128,7 +128,7 @@
                 </div>
             </div>
             <div class="qinjeeDialogSmallCont" v-if="data.checkFailshow">
-                <commonTable :table="data.checkFailTable"></commonTable>
+                <commonTable :table="data.checkFailTable" key="table2" ></commonTable>
             </div>           
             <span slot="footer" class="dialog-footer">
                 <el-button
@@ -136,8 +136,8 @@
                     @click="cancel"
                     v-show="active <= 2"
                     :loading="cancelLoading"
-                >取 消</el-button>
-                <el-button size="small" @click="uploadShow = false" v-show="active > 2">关 闭</el-button>
+                >{{data.cancelbtn}}</el-button>
+                <!-- <el-button size="small" @click="uploadShow = false" v-show="active > 2">关 闭</el-button> -->
                 <el-button
                     size="small"
                     type="primary"

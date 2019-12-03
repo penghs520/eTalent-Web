@@ -902,7 +902,8 @@ export default {
                 checkLoading: false, // 必须，校验loading
                 finishLoading: false, // 必须，完成loading
 
-                btnText: "上传", //按钮文字
+                btnText: "", //按钮文字
+                cancelbtn: "取消",
                 tableShow: false, //是否显示表格
                 tableData: {
                     head: [
@@ -921,9 +922,10 @@ export default {
                     total: 0,
                     pageHide: true
                 },
-                checkedResult: false, //校验结果
+                checkedResult: "", //校验结果
                 fileList: [], //上传的文件
                 readReport: this.readReport, //查看检验报告的回调
+                checkFailshow: false,
                 checkFailTable: {
                     head: [
                         { name: "行号", key: "lineNumber", isShow: true },
@@ -940,7 +942,7 @@ export default {
                     ],
                     data: [],
                     total: 0,
-                    pageHide: true
+                    webPage: true
                 }
             },
             orgExcelRedisKey: ""
@@ -972,17 +974,22 @@ export default {
             this.uploadData.tableShow = false;
             this.uploadData.checkFailshow = true;
             this.uploadData.title = "校验报告";
+            this.uploadData.btnText = "确定";
+            this.uploadData.cancelbtn = "返回";
         },
-        //机构导入--上传
+        //机构导入--上传按钮
         uploadOrReturn() {
-            if (this.uploadData.btnText === "完成") {
+            if (this.uploadData.btnText === "导入") {
                 this.uploadReq();
-            } else {
+            } else if (this.uploadData.btnText === "返回") {
                 this.uploadActive = 0;
                 this.uploadData.fileList = [];
                 this.uploadData.tableShow = false;
                 this.uploadData.checkFailshow = false;
                 this.uploadData.title = "机构导入";
+            } else if (this.uploadData.btnText === "确定") {
+                this.uploadShow = false;
+                this.uploadData.tableShow = false;
             }
         },
         //机构导入--文件上传请求
@@ -1005,7 +1012,7 @@ export default {
                 }
             });
         },
-        //机构导入--校验按钮
+        //机构导入--点击校验按钮
         uploadCheck() {
             this.uploadActive = 1;
             this.uploadData.tableShow = true;
@@ -1020,27 +1027,34 @@ export default {
             orgRepair_api15(fd, res => {
                 base.log("r", "机构导入校验", res);
                 if (res.data.success) {
-                    this.uploadData.btnText = "完成";
-                    // this.uploadData.uploadDescription = "校验成功,可导入数据";
-                    this.uploadData.tableData.data = res.data.result.excelList;
-                    this.uploadData.checkedResult = true;
+                    this.uploadData.checkedResult = "success";
+                    this.uploadData.btnText = "导入";
+                    this.uploadData.tableData.data = res.data.result.excelList;                   
                     this.orgExcelRedisKey = res.data.result.redisKey;
                     this.uploadActive = 2;
                 } else {
-                    this.uploadData.btnText = "返回";
-                    this.uploadData.checkedResult = false;
-                    // this.uploadData.uploadDescription="校验失败,点击此处查看校验报告";
+                    this.uploadData.checkedResult = "fail";
+                    this.uploadData.btnText = "返回";                    
                     this.uploadData.tableData.data = res.data.result.excelList;
                     this.uploadData.checkFailTable.data =
                         res.data.result.failCheckList;
+                    this.uploadData.checkFailTable.total =
+                        res.data.result.failCheckList.length;
                     this.orgExcelRedisKey = res.data.result.redisKey;
                 }
             });
         },
         //机构导入--取消/关闭按钮
         uploadCancel() {
-            this.uploadShow = false;
-            this.uploadData.tableShow = false;
+            if (this.uploadData.cancelbtn === "取消") {
+                this.uploadShow = false;
+                this.uploadData.tableShow = false;
+            } else if (this.uploadData.cancelbtn === "返回") {
+                this.uploadData.tableShow = true;
+                this.uploadData.checkFailshow = false;
+                this.uploadData.cancelbtn = "取消"
+                this.uploadData.btnText = "返回"
+            }
         },
         //机构导入--点击表格按钮
         uploadPostTable() {
@@ -1050,6 +1064,8 @@ export default {
             this.uploadData.tableShow = false;
             this.uploadData.checkFailshow = false;
             this.uploadData.title = "机构导入";
+            this.uploadData.cancelbtn = "取消";
+            this.uploadData.checkedResult = "";
         },
 
         //机构排序--表格按钮

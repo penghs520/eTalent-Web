@@ -174,6 +174,8 @@ export default {
         },
         'table.data': {
             handler: function(val) {
+                console.log('咱大爷')
+                console.log(val)
                 this.allData = val;
                 if (this.webPage) {
                     this.data = this.getCurrentPageData(val, this.currentPage, this.pageSize);
@@ -191,6 +193,12 @@ export default {
         }
     },
     mounted() {
+        this.allData = this.table.data;
+        if (this.webPage) {
+            this.data = this.getCurrentPageData(this.table.data, this.currentPage, this.pageSize);
+        }else{
+            this.data = this.table.data;
+        };
     },
     methods: {
         // 重置操作栏

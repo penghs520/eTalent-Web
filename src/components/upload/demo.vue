@@ -35,13 +35,14 @@ export default {
                 finishLoading: Boolean,             // 必须，完成loading
 
                 btnText: String,                    // 必须，校验完成后按钮的显示
-                tableShow:Boolean,                  // 非必须，是否显示表格
-                tableData:Object,                   // 非必须， 表格数据(同公共表格组件格式)
-                fileList:Array,                     // 必须，  上传文件存储
-                checkedResult:Boolean,              // 必须, 校验结果
+                cancelbtn:String,                   // 必须, 取消的按钮显示
+                tableShow:Boolean,                  // 非必须,是否显示表格
+                tableData:Object,                   // 非必须，表格数据(同公共表格组件格式)
+                fileList:Array,                     // 必须，上传文件存储
+                checkedResult:String,              // 必须, 校验结果
                 readReport:Function,                // 非必须, 查看校验的方法
                 checkFailshow:Boolean,              // 非必须, 校验结果
-                
+
             }
         }
     },

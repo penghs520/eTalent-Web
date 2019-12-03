@@ -127,6 +127,9 @@
                     </span>
                 </div>
             </div>
+            <div class="qinjeeDialogSmallCont" v-if="data.checkFailshow">
+                <commonTable :table="data.checkFailTable"></commonTable>
+            </div>           
             <span slot="footer" class="dialog-footer">
                 <el-button
                     size="small"

@@ -668,7 +668,8 @@ import {
     orgRepair_api13,
     orgRepair_api14,
     orgRepair_api15,
-    orgRepair_api16
+    orgRepair_api16,
+    orgRepair_api17
 } from "../../request/api";
 
 export default {
@@ -886,21 +887,23 @@ export default {
             uploadData: {
                 title: "导入机构",
                 download: this.importTempDownload,
-                fileFormatDescription: "仅支持扩展名：.xls .xles，大小不能超过5M",
+                fileFormatDescription:
+                    "仅支持扩展名：.xls .xles，大小不能超过5M",
                 uploadDescription: "这句话的内容还需要和产品沟通",
                 templateName: "工作经历",
                 uploadUrl: "",
-                uploadSuccess: this.uploadSuccess,// 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
-                uploadError: this.uploadError,   // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
-                check: this.uploadCheck,         // 必须，校验操作
-                cancel: this.uploadCancel,       // 必须，取消操作
-                finish: this.uploadFinish,       // 必须，完成操作
-                upload: this.uploadOrReturn,     // 必须，上传操作
-                cancelLoading: false,            // 必须，取消loading
-                checkLoading: false,             // 必须，校验loading
-                finishLoading: false,            // 必须，完成loading
-                btnText: "上传",                 //按钮文字
-                tableShow: false,                //是否显示表格
+                uploadSuccess: this.uploadSuccess, // 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
+                uploadError: this.uploadError, // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
+                check: this.uploadCheck, // 必须，校验操作
+                cancel: this.uploadCancel, // 必须，取消操作
+                finish: this.uploadFinish, // 必须，完成操作
+                upload: this.uploadOrReturn, // 必须，上传操作
+                cancelLoading: false, // 必须，取消loading
+                checkLoading: false, // 必须，校验loading
+                finishLoading: false, // 必须，完成loading
+
+                btnText: "上传", //按钮文字
+                tableShow: false, //是否显示表格
                 tableData: {
                     head: [
                         { name: "机构编码", key: "orgCode", isShow: true },
@@ -918,9 +921,27 @@ export default {
                     total: 0,
                     pageHide: true
                 },
-                checkedResult: false,            //校验结果             
-                fileList: [],                    //上传的文件
-                readReport: this.readReport      //查看检验报告的回调
+                checkedResult: false, //校验结果
+                fileList: [], //上传的文件
+                readReport: this.readReport, //查看检验报告的回调
+                checkFailTable: {
+                    head: [
+                        { name: "行号", key: "lineNumber", isShow: true },
+                        { name: "说明", key: "resultMsg", isShow: true }
+                    ],
+                    hideHeader: false,
+                    bar: [
+                        {
+                            type: "button",
+                            text: "导出Txt",
+                            btnType: "primary",
+                            method: this.exportTxTReq
+                        }
+                    ],
+                    data: [],
+                    total: 0,
+                    pageHide: true
+                }
             },
             orgExcelRedisKey: ""
         };
@@ -935,10 +956,22 @@ export default {
         this.getTreeReq();
     },
     methods: {
+        //机构导入---导出txt
+        exportTxTReq() {
+            let send = {
+                redisKey: this.orgExcelRedisKey
+            };
+            base.log("r", "错误信息导出", send);
+            orgRepair_api17(send, res => {
+                console.log(res);
+                base.blobDownLoad(res);
+            });
+        },
         //机构导入--点击查看校验报告
         readReport() {
-            console.log("123456");
             this.uploadData.tableShow = false;
+            this.uploadData.checkFailshow = true;
+            this.uploadData.title = "校验报告";
         },
         //机构导入--上传
         uploadOrReturn() {
@@ -948,6 +981,8 @@ export default {
                 this.uploadActive = 0;
                 this.uploadData.fileList = [];
                 this.uploadData.tableShow = false;
+                this.uploadData.checkFailshow = false;
+                this.uploadData.title = "机构导入";
             }
         },
         //机构导入--文件上传请求
@@ -998,7 +1033,7 @@ export default {
                     this.uploadData.tableData.data = res.data.result.excelList;
                     this.uploadData.checkFailTable.data =
                         res.data.result.failCheckList;
-                    
+                    this.orgExcelRedisKey = res.data.result.redisKey;
                 }
             });
         },
@@ -1013,6 +1048,8 @@ export default {
             this.uploadActive = 0;
             this.uploadData.fileList = [];
             this.uploadData.tableShow = false;
+            this.uploadData.checkFailshow = false;
+            this.uploadData.title = "机构导入";
         },
 
         //机构排序--表格按钮

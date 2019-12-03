@@ -126,7 +126,7 @@ html,body,#app,.el-container{
 .removeNumberInput input[type="number"] {
     -moz-appearance: textfield;
 }
-/* 去掉数字输入框右边的小箭头-----------开始 */
+/* 去掉数字输入框右边的小箭头-----------结束 */
 
 /* elemebt-ui steps步骤条样式修改-----------开始 */
 .el-step__main{

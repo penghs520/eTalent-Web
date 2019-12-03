@@ -826,12 +826,11 @@ export default {
             uploadActive: 0,
             uploadShow: false,
             uploadData: {
-                title: "导入岗位",
+                title: "岗位导入",
                 download: this.importTempDownload,
-                fileFormatDescription:
-                    "仅支持扩展名：.xls .xles，大小不能超过5M",
+                fileFormatDescription: "仅支持扩展名：.xls .xles，大小不能超过5M",
                 uploadDescription: "这句话的内容还需要和产品沟通",
-                templateName: "工作经历",
+                templateName: "岗位导入",
                 uploadUrl: "",
                 uploadSuccess: this.uploadSuccess, // 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
                 uploadError: this.uploadError, // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
@@ -842,8 +841,7 @@ export default {
                 cancelLoading: false, // 必须，取消loading
                 checkLoading: false, // 必须，校验loading
                 finishLoading: false, // 必须，完成loading
-
-                btnText: "", //按钮文字
+                btnText: "返回", //按钮文字
                 cancelbtn: "取消",
                 tableShow: false, //是否显示表格
                 tableData: {
@@ -889,14 +887,14 @@ export default {
         this.getPostTreeReq();
     },
     methods: {
-        //岗位--导入
+        //岗位--导入按钮
         importPost() {
             this.uploadShow = true;
             this.uploadActive = 0;
             this.uploadData.fileList = [];
             this.uploadData.tableShow = false;
             this.uploadData.checkFailshow = false;
-            this.uploadData.title = "机构导入";
+            this.uploadData.title = "岗位导入";
             this.uploadData.cancelbtn = "取消";
             this.uploadData.checkedResult = "";
         },
@@ -905,10 +903,11 @@ export default {
             let send = {
                 redisKey: this.redisKey
             };
-            base.log("r", "错误信息导出", send);
+            base.log("s", "错误信息导出", send);
             postRepair_api17(send, res => {
                 console.log(res);
                 base.blobDownLoad(res);
+                // window.open(res.data.result,"_self")
             });
         },
         //岗位导入--点击查看校验报告
@@ -928,7 +927,7 @@ export default {
                 this.uploadData.fileList = [];
                 this.uploadData.tableShow = false;
                 this.uploadData.checkFailshow = false;
-                this.uploadData.title = "机构导入";
+                this.uploadData.title = "岗位导入";
             } else if (this.uploadData.btnText === "确定") {
                 this.uploadShow = false;
                 this.uploadData.tableShow = false;
@@ -978,10 +977,8 @@ export default {
                     this.uploadData.checkedResult = "fail";
                     this.uploadData.btnText = "返回";
                     this.uploadData.tableData.data = res.data.result.excelList;
-                    this.uploadData.checkFailTable.data =
-                        res.data.result.failCheckList;
-                    this.uploadData.checkFailTable.total =
-                        res.data.result.failCheckList.length;
+                    this.uploadData.checkFailTable.data =res.data.result.failCheckList;
+                    this.uploadData.checkFailTable.total =res.data.result.failCheckList.length;
                     this.redisKey = res.data.result.redisKey;
                 }
             });

@@ -887,10 +887,9 @@ export default {
             uploadData: {
                 title: "导入机构",
                 download: this.importTempDownload,
-                fileFormatDescription:
-                    "仅支持扩展名：.xls .xles，大小不能超过5M",
+                fileFormatDescription:"仅支持扩展名：.xls .xles，大小不能超过5M",
                 uploadDescription: "这句话的内容还需要和产品沟通",
-                templateName: "工作经历",
+                templateName: "机构导入",
                 uploadUrl: "",
                 uploadSuccess: this.uploadSuccess, // 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
                 uploadError: this.uploadError, // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
@@ -963,10 +962,12 @@ export default {
             let send = {
                 redisKey: this.orgExcelRedisKey
             };
-            base.log("r", "错误信息导出", send);
+            base.log("s", "错误信息导出", send);
             orgRepair_api17(send, res => {
-                console.log(res);
+               console.log(res);
+               
                 base.blobDownLoad(res);
+                // window.open(res.data.result,"_self")
             });
         },
         //机构导入--点击查看校验报告

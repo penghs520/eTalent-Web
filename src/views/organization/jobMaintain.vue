@@ -906,8 +906,7 @@ export default {
             base.log("s", "错误信息导出", send);
             postRepair_api17(send, res => {
                 console.log(res);
-                base.blobDownLoad(res);
-                // window.open(res.data.result,"_self")
+                base.blobDownLoad(res,true);
             });
         },
         //岗位导入--点击查看校验报告

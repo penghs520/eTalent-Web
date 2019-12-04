@@ -56,17 +56,29 @@ let base = {
         }
     },
 
-    blobDownLoad(response) {
+    blobDownLoad(response, isTxt=false, uncode=false) {
         if (response.status === 200) {
             // 
-            // let nameCode = response.headers['content-disposition'].split('filename=')[1];
-            // console.log(nameCode);
-            // console.log(decodeURI(nameCode))
-            let blob = new Blob([response.data]);
+            console.log(response.headers)
+            let name = response.headers['filename'];
+            if (uncode) {
+                // 解码
+                name = decodeURI(name);
+            }
+            console.log('文件名')
+            console.log(name);
+            let blob;
+            if (isTxt) {
+                blob = new Blob([JSON.stringify(response.data)]);
+            }else{
+                blob = new Blob([response.data]);
+            }
             let url = window.URL.createObjectURL(blob);
             let a = document.createElement("a");
             a.href = url;
-            a.download = "文件.xls";
+            a.download = name;
+            // document.body.appendChild(a)
+            
             a.click();
             // 释放这个临时的对象url
             window.URL.revokeObjectURL(url);

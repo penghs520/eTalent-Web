@@ -2,7 +2,7 @@
 #archives_info {
     display: flex;
     height: 100%;
-    text-align: left;
+    // text-align: left;
     .wrap {
         width: 100%;
         height: 100%;
@@ -18,6 +18,7 @@
 <template>
     <div id="archives_info">
         <div class="wrap">
+            <!-- 表格操作 -->
             <commonTable :table="archivesTable" ref="commonTable"></commonTable>
         </div>
     </div>
@@ -26,7 +27,7 @@
 <script>
 import base from "../../assets/js/base";
 import commonTable from "../../components/table/commonTable";
-import { archives_api1 } from "../../request/api";
+import { archives_api1, archives_api2 } from "../../request/api";
 
 export default {
     name: "archives_info" /* 档案管理-信息维护 */,
@@ -35,6 +36,7 @@ export default {
     },
     data() {
         return {
+            //表格
             archivesTable: {
                 head: [
                     /* 必须，表格头配置 */
@@ -64,8 +66,7 @@ export default {
                     {
                         type: "button" /* 必须，DOM类型：按钮 */,
                         text: "新增" /* 必须，按钮名称 */,
-                        method: this
-                            .add /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                        method: this.add
                     },
                     {
                         type: "button",
@@ -89,6 +90,29 @@ export default {
                             { text: "兼职维护", method: this.partTimeJob },
                             { text: "自定义导出", method: this.download }
                         ]
+                    },
+                    {
+                        type: "selectTree", //下拉树形
+                        placeholder: "请筛选",
+                        key: "typeTree",
+                        showKey: 'typeTreeName',
+                        defaultVal: [456,457],
+                        defaultShowVal: '深圳总部2,南宁分公司2',
+                        nodeValueKey: 'orgId',
+                        nodeShowKey: 'orgName',
+                        method: this.selectValueChange,
+                        treeData: {
+                            data: [],
+                            // nodeKey: "org_id",
+                            props: {
+                                children: "childList",
+                                label: "orgName"
+                            },
+                            showDefaultIcon: true,
+                            nodeClick: this.selectTreeNodeClick,
+                            defaultIconExpandNode: true,
+                            showCheckbox: true,
+                        }
                     }
                 ],
                 showSelect: true /* 非必须，是否显示select勾选框 */,
@@ -96,19 +120,65 @@ export default {
                 pageResize: false /* 非必须，页码重置 */,
                 pageResize: false,
                 pageSizeChange: this.pageSizeChange,
-                pageChange: this.pageChange
+                pageChange: this.pageChange,
+                selectTreeValue:"",
+                selectTree: {
+                    data: [],
+                    // nodeKey: "org_id",
+                    props: {
+                        children: "childList",
+                        label: "orgName"
+                    },
+                    showDefaultIcon: true,
+                    nodeClick: this.selectTreeNodeClick,
+                    defaultIconExpandNode: true
+                }
             },
+            currentPage: 1,
+            pageSize: 10,
+            orgNode: ""
+            //机构树形
         };
     },
     mounted() {
+        this.getOrgTree()
         this.getInfoReq();
     },
     methods: {
-        //获取档案 -- 请求接口
+        //机构树--下拉树形节点被点击
+        selectTreeNodeClick(node) {
+            console.log(node);
+            this.archivesTable.selectTreeValue = node.orgName;
+            this.orgNode =node
+            
+        },
+        //机构树--下拉树选择值改变的回调
+        selectValueChange(val) {
+            console.log(val);
+        },
+
+        //机构树 -- 获取树形请求
+        getOrgTree() {
+            let send = {
+                isEnable: 1
+            };
+            archives_api2(send, res => {
+                base.log("s", "查询树", send);
+                let d = res.data;
+                base.log("r", "查询树", d);
+                if (d.success) {                  
+                    this.archivesTable.bar[4].treeData.data = d.result.list;
+                } else {
+                    base.error(d);
+                }
+            });
+        },
+        //获取档案表 -- 请求接口
         getInfoReq() {
             let send = {
-                Integer: 28,
-                comanyId: 28
+                currentPage: 1,
+                orgId: 28,
+                pageSize: 10
             };
             base.log("s", "获取档案信息", send);
             archives_api1(send, res => {
@@ -122,34 +192,37 @@ export default {
             });
         },
 
-        // 新增
+        // 档案表--新增按钮
         add() {
             this.$message.warning("点击新增");
         },
 
-        // 删除
+        // 档案表--删除按钮
         delet(searchData, radioData, checkboxData) {
             this.$message.warning("点击删除");
         },
 
-        // 打印
+        // 档案表--打印按钮
         print(searchData, radioData, checkboxData) {
-            this.$message.warning("点击打印");
+            console.log('点击打印');
+            console.log(searchData);
+            console.log(radioData);
+            console.log(checkboxData);
         },
 
-        // 删除恢复
+        // 档案表--删除恢复按钮
         deleteRecover() {},
 
-        // 兼职维护
+        // 档案表--兼职维护按钮
         partTimeJob(searchData, radioData, checkboxData) {},
 
-        // 自定义导出
+        // 档案表--自定义导出按钮
         download(searchData, radioData, checkboxData) {},
 
-        // 改变页容量
+        // 档案表--改变页容量
         pageSizeChange(size) {},
 
-        // 翻页
+        // 档案表--翻页
         pageChange(index) {}
     }
 };

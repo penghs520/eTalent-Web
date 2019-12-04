@@ -4,7 +4,7 @@
 <template>
     <div id="treeDemo">
         <h1>树形结构</h1>
-        <tree :treeData="treeData"></tree>
+        <tree :treeData="treeData" @nodeClick="domNodeClick" @selectChange="selectChange"></tree>
     </div>
 </template>
 
@@ -61,7 +61,13 @@ export default {
         nodeClick(node) {
             console.log("节点被点击");
             console.log(node);
-        }
+        },
+
+        // 绑在dom上的方法--节点被点击,接收一个参数,节点对象
+        domNodeClick(node) {},
+
+        // 绑在dom上的方法--多选框勾选改变,接收一个参数,勾选的节点对象
+        selectChange(nodeList) {}
     }
 };
 </script>

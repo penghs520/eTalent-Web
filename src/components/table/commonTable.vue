@@ -47,6 +47,13 @@
                     <el-option v-for="li in item.list" :key="li.value" :label="li.label" :value="li.value"></el-option>
                 </el-select>
 
+                <!-- 下拉选择框树 -->
+                <el-select v-if="item.type === 'selectTree'" :ref="`selectTree_${index}`"  v-model="barData[item.showKey]" :placeholder="item.placeholder" size="small" clearable="" popper-class="base_treeSelect" style="width:100%">
+                    <el-option  :label="barData[item.showKey]" :value="barData[item.showKey]">
+                         <tree :treeData="item.treeData" @nodeClick="selectTreeNodeClick($event,item,`selectTree_${index}`)" @selectChange="selectTreeCheckedChange($event,item)" ></tree>
+                    </el-option>
+                </el-select>
+
                 <!-- 按钮 -->
                 <template v-if="item.type === 'button'">
                     <el-button v-if="item.btnType === 'plain'" plain="" size="small" :icon="item.icon" @click="btnClick(item.method)" >{{item.text}}</el-button>
@@ -120,11 +127,15 @@
 
 <script>
 import base from '../../assets/js/base';
+import tree from '../tree/tree'
 
 export default {
     name: 'commonTable',            /* 公共表格组件 */
     props: {
         table: Object
+    },
+    components:{
+        tree,
     },
     data() {
         return {
@@ -140,9 +151,12 @@ export default {
             },
             currentPage: 1,
             pageSize: 10,
+
         };
     },
     created() {
+        
+        
         // 变量初始化
         this.barModelInit(this.table.bar);
         Object.assign(this.page, this.table.page);
@@ -201,6 +215,37 @@ export default {
         };
     },
     methods: {
+        // selectTree勾选改变
+        selectTreeCheckedChange(checkedList,domOptions) {
+            let showList  = checkedList.map(item => item[domOptions.nodeShowKey]);
+            let valueList = checkedList.map(item => item[domOptions.nodeValueKey]);
+
+            // 赋值--显示值
+            this.$set(this.barData, domOptions.showKey, showList.join(','));
+            
+            // 赋值--绑定值
+            this.$set(this.barData, domOptions.key, valueList);
+        },
+
+        // selectTree节点被点击
+        selectTreeNodeClick(node,domOptions,refName) {
+            if (domOptions.treeData.showCheckbox) {
+                return false;
+            };
+            // 赋值--显示值
+            this.$set(this.barData, domOptions.showKey, node[domOptions.nodeShowKey]);
+            
+            // 赋值--绑定值
+            this.$set(this.barData, domOptions.key, node[domOptions.nodeValueKey]);
+            // 关闭select
+            this.$refs[refName][0].blur();
+        },
+        //下拉框的值改变
+        selectValueChange(val,callBack){
+           if(callBack){
+               callBack(val)
+           }
+        },
         // 重置操作栏
         resizeOperationBar() {
             this.barModelInit(this.table.bar);
@@ -248,6 +293,14 @@ export default {
                             // 单选下拉框
                             val = item.defaultVal || item.defaultVal === 0 ? item.defaultVal : '';
                             this.$set(this.barData, item.key, val);
+                            break;
+                        
+                        case 'selectTree':
+                            // 单选下拉框
+                            val = item.defaultVal || item.defaultVal === 0 ? item.defaultVal : item.treeData.showCheckbox ? [] : '';
+                            let showVal = item.defaultShowVal || item.defaultShowVal === 0 ? item.defaultShowVal : '';
+                            this.$set(this.barData, item.key, val);
+                            this.$set(this.barData, item.showKey, showVal);
                             break;
                     
                         default:

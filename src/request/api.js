@@ -47,7 +47,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     // 档案管理
         //信息维护
         const archives_api1     = (data, callback) => {request('form', `api/masterdata/staffarc/selectArchivebatch`, data, callback)};
-
+        const archives_api2     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
 
 // 系统管理
@@ -187,7 +187,7 @@ export {
 
         // 档案管理
             // 信息维护
-            archives_api1,
+            archives_api1,archives_api2,
 
         // 参数设置
             // 合同参数

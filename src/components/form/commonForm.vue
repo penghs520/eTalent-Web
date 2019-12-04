@@ -118,7 +118,7 @@
                 <div class="showBox" v-if="option.showType === 'see' || option.showType === 'seeForm'" v-show="option.showType === 'see' || !showForm[groupIndex]" >
                     <ul>
                         <li v-for="(item,index) in group.list" :key="index">
-                            <span class="label" :style="{width: option.labelWidth}">{{item.fieldName}}：</span>
+                            <span class="label" :style="{width: option.labelWidth}">{{item.label}}：</span>
                             <span class="value">{{item.default}}</span>
                         </li>
                     </ul>
@@ -127,7 +127,7 @@
                 <!-- 表单内容 -->
                 <div class="formBox" v-if="option.showType === 'form' || option.showType === 'seeForm'" v-show="option.showType === 'form' || showForm[groupIndex]" >
                     <el-form :model="form" size="small" status-icon :rules="rules" :ref="`form_${groupIndex}`" :label-width="option.labelWidth" >
-                        <el-form-item v-for="(item,index) in group.list" :key="index" :label="`${item.fieldName}：`" :prop="item.key">
+                        <el-form-item v-for="(item,index) in group.list" :key="index" :label="`${item.label}：`" :prop="item.key">
                             <!-- 输入框 -->
                             <template v-if="item.type === 'input'">
                                 <!-- 数字输入框 -->
@@ -250,6 +250,7 @@ export default {
                 showType: 'form',           /* 显示样式类型 */
                 biserial: true,             /* 单双列，true-双列、false-单列 */
                 labelWidth: '100px',        /* label宽度 */
+                formatDom: false
             },
             form: {},
             rules: {
@@ -260,9 +261,13 @@ export default {
         };
     },
     created() {
-        this.domList = this.data.domList;
         if (this.data.option) {
             Object.assign(this.option,this.data.option);
+        };
+        if (this.option.formatDom) {
+            this.domList = this.domListFormatter(this.data.domList);
+        }else{
+            this.domList = this.data.domList;
         };
 
         this.init();
@@ -271,7 +276,11 @@ export default {
     watch: {
         'data.domList': {
             handler: function(v) {
-                this.domList = v;
+                if (this.option.formatDom) {
+                    this.domList = this.domListFormatter(v);
+                }else{
+                    this.domList = v;
+                };
             },
             deep: true
         }
@@ -280,6 +289,135 @@ export default {
         // this.init();
     },
     methods: {
+        // 转换方法--后端传来的字段不是预期的字段，需要转换一下下
+        domListFormatter(initialData) {
+            let result = new Array();
+
+            if (!Array.isArray(initialData)) {
+                console.error(`commonForm提示：值类型错误：domList的值应该是数组`);
+                return result;
+            };
+            
+            initialData.forEach((group, groupIndex) => {
+                let myGroup = new Object();
+                if (group.hasOwnProperty('groupName')) {
+                    myGroup.groupTitle = group.groupName;
+                };
+                if (group.hasOwnProperty('customFieldVOList')) {
+                    if (Array.isArray(group.customFieldVOList)) {
+                        myGroup.list = new Array();
+                        let list = group.customFieldVOList;
+                        list.forEach((item,index) => {
+                            let dom = new Object();
+                            // type
+                            if (item.hasOwnProperty('fieldType')) {
+                                dom.type = item.fieldType;
+                            };
+
+                            // label
+                            if (item.hasOwnProperty('fieldName')) {
+                                dom.label = item.fieldName;
+                            };
+
+                            // key
+                            if (item.hasOwnProperty('fieldId')) {
+                                dom.key = item.fieldId;
+                            }
+
+                            // default
+                            if (item.hasOwnProperty('defaultValue')) {
+                                dom.default = item.defaultValue;
+                            }
+
+                            // placeholder
+                            if (item.hasOwnProperty('placeholder')) {
+                                dom.placeholder = item.placeholder;
+                            }
+
+                            // maxLength
+                            if (item.hasOwnProperty('maxLength')) {
+                                dom.maxLength = item.maxLength;
+                            }
+
+                            // minLength
+                            if (item.hasOwnProperty('minLength')) {
+                                dom.minLength = item.minLength;
+                            }
+
+                            // inputType
+                            if (item.hasOwnProperty('inputType')) {
+                                dom.inputType = item.inputType;
+                            }
+
+                            // max
+                            if (item.hasOwnProperty('maxNumber')) {
+                                dom.max = item.maxNumber;
+                            }
+
+                            // min
+                            if (item.hasOwnProperty('minNumber')) {
+                                dom.min = item.minNumber;
+                            }
+
+                            // floatLength
+                            if (item.hasOwnProperty('floatLength')) {
+                                dom.floatLength = item.floatLength;
+                            }
+
+                            // list
+                            if (item.hasOwnProperty('dictList')) {
+                                dom.list = item.dictList;
+                            }
+
+                            // isRange
+                            if (item.hasOwnProperty('isTimeRange')) {
+                                dom.isRange = item.isTimeRange;
+                            }
+
+                            // timeMin
+                            if (item.hasOwnProperty('minTime')) {
+                                dom.timeMin = item.minTime;
+                            }
+
+                            // timeMax
+                            if (item.hasOwnProperty('maxTime')) {
+                                dom.timeMax = item.maxTime;
+                            }
+
+                            // timeFormat
+                            if (item.hasOwnProperty('formatTime')) {
+                                dom.timeFormat = item.formatTime;
+                            }
+
+                            // isReadOnly
+                            if (item.hasOwnProperty('isOnlyRead')) {
+                                dom.isReadOnly = item.isOnlyRead;
+                            }
+
+                            // isMust
+                            if (item.hasOwnProperty('isMust')) {
+                                dom.isMust = item.isMust;
+                            }
+
+                            // rule
+                            if (item.hasOwnProperty('rule')) {
+                                dom.rule = item.rule.split(',');
+                            }
+
+                            myGroup.list[index] = dom;
+                        });
+                    }else{
+                        console.error(`commonForm提示：值类型错误：customFieldVOList的值应该是数组`);
+                    }
+                }else{
+                    console.error(`commonForm提示：后端缺少字段：customFieldVOList`);
+                };
+
+                result[groupIndex] = myGroup;
+            });
+
+            return result;
+        },
         // 初始化
         init() {
             this.domList.forEach(group => {

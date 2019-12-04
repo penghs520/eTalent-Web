@@ -53,6 +53,7 @@ export default {
                     showType: String,           /* 非必须整体显示类型，显示样式类型,默认值：form,可能取值：see-显示、form-表单、seeForm-能看能编辑 */
                     biserial: true,             /* 非必须，单双列，默认true,true-双列、false-单列 */
                     labelWidth: '100px',        /* 非必须，label宽度，默认100px */
+                    formatDom: Boolean,         /* 非必须，是否格式化dom数据，默认false, 注意：从后端请求来的数据一般都需要格式化 */
                 },
                 sure: Function,                 /* 非必须，表单格式下，"确定"按钮的回调,接收2个参数：组序号、该组数据 */
             }

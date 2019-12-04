@@ -16,6 +16,7 @@ let pageRoute = {
 
         // 档案管理
         '信息维护': 'staff_archives_info',
+        '员工台账': 'staff_archives_ledger',
 
         // 参数设置
         '工号规则':     'staff_jobNumber',

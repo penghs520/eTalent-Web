@@ -13,6 +13,7 @@ const organization_userInfo  = () => import(/* webpackChunkName: "group-organiza
 
     // 档案管理
     const staff_archives_info           = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_info.vue');
+    const staff_archives_ledger         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_ledger.vue');
 
     // 参数设置
     const staff_jobNumber               = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/jobNumber.vue');
@@ -42,6 +43,7 @@ let path = {
 
         // 档案管理
         staff_archives_info,
+        staff_archives_ledger,
 
         //参数设置
         staff_jobNumber,

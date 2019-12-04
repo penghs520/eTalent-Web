@@ -295,14 +295,14 @@
             </el-tab-pane>
 
             <!-- 职级设置 -->
-            <el-tab-pane label="职级设置" name="position_level" class="position_level">
+            <!-- <el-tab-pane label="职级设置" name="position_level" class="position_level">
                 <commonTable :table="positionLevelTable" class="position_level"></commonTable>
-            </el-tab-pane>
+            </el-tab-pane> -->
 
             <!-- 职等设置 -->
-            <el-tab-pane label="职等设置" name="position_grade" class="position_grade">
+            <!-- <el-tab-pane label="职等设置" name="position_grade" class="position_grade">
                 <commonTable :table="positionGradeTable"></commonTable>
-            </el-tab-pane>
+            </el-tab-pane> -->
         </el-tabs>
 
         <!-- 排序弹窗 -->

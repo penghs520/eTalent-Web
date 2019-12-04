@@ -36,6 +36,7 @@
             display: flex;
             box-sizing: border-box;
             height: 100%;
+            overflow: hidden;
             .sider{
                 width: 215px;
                 height: 100%;
@@ -46,6 +47,7 @@
             .common_content{
                 flex: 1;
                 height: 100%;
+             
             }
         }
 
@@ -67,6 +69,7 @@
                         inactive-color="#ccc"
                         >
                        </el-switch>
+                       <div>我是台账</div>
                     </div>
                     <div class="common_content">
 

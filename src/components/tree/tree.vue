@@ -112,6 +112,8 @@ export default {
             if (this.treeData.nodeClick) {
                 this.treeData.nodeClick(node);
             }
+            // DOM上绑定的点击事件
+            this.$emit('nodeClick',node);
         },
         showDefaultIcon(isShow) {
             let result = isShow ? "" : "hideDefaultIcon";
@@ -123,6 +125,8 @@ export default {
             if (this.treeData.checkClick) {
                 this.treeData.checkClick(data, checkedData);
             }
+            // DOM上绑定的勾选事件
+            this.$emit('selectChange',checkedData.checkedNodes);
         },
 
         // 获取已有权限的节点

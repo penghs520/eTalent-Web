@@ -45,7 +45,27 @@ export default {
                         list: [
                             {label: '类型1', value: 1},
                             {label: '类型2', value: 2},
-                        ]
+                        ],
+                    },
+                    {
+                        type: 'selectTree',                 /* 单选下拉框树形 */
+                        placeholder: '请选择',
+                        key: 'typeTree',                    // 必须,树形下拉框选择值绑定的变量
+                        showKey: '',                        // 必须,树形下拉框选择值显示的值绑定的变量
+                        defaultVal: String/Number/Array,    // 非必须,树形下拉框值默认值,如果树形有勾选框,该值类型是数组
+                        defaultShowVal: String,             // 非必须,树形下拉框默认显示值                         
+                        nodeValueKey: '',                   // 必须,树形下拉框选中的节点对象中要取的值的key
+                        nodeShowKey: '',                    // 必须,树形下拉框选中的节点对象中要显示的值的key
+                        treeData: {                         /* 必须,树形配置项,参考tree组件 */
+                            data: [],
+                            props: {
+                                children: "childList",
+                                label: "orgName"
+                            },
+                            showDefaultIcon: true,
+                            nodeClick: this.selectTreeNodeClick,
+                            defaultIconExpandNode: true
+                        }
                     },
                     {
                         type: 'button',                 /* 必须，DOM类型：按钮 */
@@ -67,7 +87,7 @@ export default {
                                 icon: 'el-icon-search'  /* 非必须，icon图标 */
                             },
                             {text: '按钮2', method: this.btn2}
-                        ]
+                        ],                       
                     }
                 ],
                 showSelect: true,                       /* 非必须，是否显示select勾选框 */

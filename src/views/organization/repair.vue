@@ -966,7 +966,7 @@ export default {
             orgRepair_api17(send, res => {
                console.log(res);
                
-                base.blobDownLoad(res);
+                base.blobDownLoad(res,true);
                 // window.open(res.data.result,"_self")
             });
         },

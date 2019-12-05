@@ -77,12 +77,12 @@
 <template>
     <div id="organization_position">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="职位体系" name="systematic">
+            <!-- <el-tab-pane label="职位体系" name="systematic">
                 <el-radio-group v-model="positionRadio" class="position_radio">
                     <el-radio :label="1">按职级</el-radio>
                     <el-radio :label="2">按职位</el-radio>
                 </el-radio-group>
-            </el-tab-pane>
+            </el-tab-pane> -->
 
             <!-- 职位族设置 -->
             <el-tab-pane label="职位族设置" name="positionGroup">
@@ -370,7 +370,7 @@ export default {
     name: "position" /* 职位体系 */,
     data() {
         return {
-            activeName: "systematic",
+            activeName: "positionGroup",
             // 职级
             positionLevelTable: {
                 head: [
@@ -562,14 +562,8 @@ export default {
                 loading: false /* 非必须，加载动画 */,
                 pageResize: false /* 非必须，页码重置 */,
                 loading: false,
-                page: {
-                    /* 非必须，页码配置 */
-                    pageSizes: [10, 20, 30] /* 非必须，页码可选的每页数量 */,
-                    pageSize: 10 /* 非必须，默认每页显示的数量 */
-                },
-                pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
-                pageSizeChange: this.GroupPageSizeChange,
-                pageChange: this.GroupPageChange
+                pageHide: true /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
+          
             },
             GroupCurrentPage: 1,
             GroupPageSize: 10,
@@ -725,7 +719,9 @@ export default {
         tree,
         draggable
     },
-    mounted() {},
+    created() {
+        this.getAllPositionGroup();
+    },
     methods: {
         //职位导出
         exportPositionTable(searchData, radioData, checkboxData) {
@@ -1108,27 +1104,11 @@ export default {
                 base.log("r", "获取所有职位族", res.data);
                 if (res.data.success) {
                     this.positionGroupTable.loading = false;
-                    this.positionGroupTable.pageResize = false;
                     this.positionGroupTable.data = res.data.result;
-                    // this.positionGroupTable.total = res.data.result
                 } else {
                     base.error(res.data);
                 }
             });
-        },
-        //职位族--表格页码改变
-        GroupPageChange(page) {
-            this.positionGroupTable.loading = true;
-            this.GroupCurrentPage = page;
-            this.getAllPositionGroup();
-        },
-        //职位族--表格页容量改变
-        GroupPageSizeChange(pageSize) {
-            this.positionGroupTable.pageResize = true;
-            this.positionGroupTable.loading = true;
-            this.GroupCurrentPage = 1;
-            this.GroupPageSize = pageSize;
-            this.getAllPositionGroup();
         },
 
         //职等--获取职等列表
@@ -1173,7 +1153,6 @@ export default {
         handleClick(tab, event) {
             if (tab.name === "positionGroup") {
                 this.positionGroupTable.loading = true;
-                this.positionGroupTable.pageResize = true;
                 this.GroupCurrentPage = 1;
                 this.getAllPositionGroup();
             } else if (tab.name === "position") {

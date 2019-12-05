@@ -40,13 +40,13 @@
         <div class="content">
              <el-tabs v-model="activeName" @tab-click="handleClick">
                
-                <el-tab-pane label="基本信息导入" name="common" class="common">                
+                <el-tab-pane label="基本信息导入" name="baseInfo" class="common">                
                 </el-tab-pane>
                  
-                <el-tab-pane label="附件信息导入" name="setting" class="common"> 
+                <el-tab-pane label="附件信息导入" name="fileImport" class="common"> 
                 </el-tab-pane>
 
-                <el-tab-pane label="照片导入" name="setting" class="common"> 
+                <el-tab-pane label="照片导入" name="photoIMport" class="common"> 
                 </el-tab-pane>
 
             </el-tabs>

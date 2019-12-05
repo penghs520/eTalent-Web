@@ -1,3 +1,25 @@
+<style lang="scss">
+#organization_jobMaintain{
+    .el-tabs{
+        box-sizing: border-box;
+        height: 100%;       
+        overflow: hidden;
+    }
+    .el-tabs__header {      
+        padding: 0 24px;
+        border-bottom: 1px solid rgba(241, 242, 242, 1);
+      
+    }
+    .el-tabs__content {
+        height: calc(100% - 64px);
+        overflow: auto;
+        height: 100%;
+        #pane-orgPic {
+            height: 100%;
+        }
+    }
+}   
+</style>
 <style lang="scss" scoped >
 @import url(../../assets/js/orgChart/orgchart-webcomponents.css);
 #organization_jobMaintain {
@@ -16,11 +38,9 @@
         flex: 1;
         height: 100%;
         border: 10px solid #f0f0f0;
-        padding-left: 24px;
         border-bottom: none;
         box-sizing: border-box;
         overflow: auto;
-        text-align: left;
         background-color: #fff;
         .post_table {
             margin-top: 30px;

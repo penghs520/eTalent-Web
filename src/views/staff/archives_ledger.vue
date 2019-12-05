@@ -24,7 +24,6 @@
 #archives_ledger {
     display: flex;
     height: 100%;
-    text-align: left;
     .content {
         width: 100%;
         height: 100%;
@@ -132,6 +131,7 @@ export default {
             ledgerTable: {
                 head: [                                 /* 必须，表格头配置 */
                     {name: '姓名', key: 'userName', isShow: true},
+                    {name: '工号', key: 'employeeNumber', isShow: true},
                     {name: '单位', key: 'employeeNumber', isShow: true},
                     {name: '部门', key: 'orgName', isShow: true},
                     {name: '人员分类', key: 'attritionType', isShow: true},

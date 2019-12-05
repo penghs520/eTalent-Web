@@ -2,7 +2,6 @@
 #staff_contract_params {
     display: flex;
     height: 100%;
-    text-align: left;
     .content {
         width: 100%;
         height: 100%;

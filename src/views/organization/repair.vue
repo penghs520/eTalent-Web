@@ -24,7 +24,6 @@
         border-bottom: none;
         box-sizing: border-box;
         overflow: auto;
-        text-align: left;
         background-color: #fff;
         .org_table {
             margin-top: 18px;

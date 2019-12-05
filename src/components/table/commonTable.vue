@@ -188,8 +188,6 @@ export default {
         },
         'table.data': {
             handler: function(val) {
-                console.log('咱大爷')
-                console.log(val)
                 this.allData = val;
                 if (this.webPage) {
                     this.data = this.getCurrentPageData(val, this.currentPage, this.pageSize);

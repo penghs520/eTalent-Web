@@ -1,5 +1,5 @@
-<style scoped lang="scss" >
-#staffEntry{
+<style lang="scss" scoped >
+.commonRightCont{
     height: 100%;
     overflow: auto;
 }
@@ -83,12 +83,83 @@
         }
     }
 }
+
+.detail{
+    width: 100%;
+    height: 100%;
+    background-color: #F0F0F0;
+    .userInfo{
+        padding: 32px 48px 48px 48px;
+        background-color: #fff;
+        display: flex;
+        justify-content: space-between;
+        .user{
+            display: flex;
+            .pic{
+                width: 104px;
+                height: 104px;
+                border-radius: 50%;
+                overflow: hidden;
+                background-color: #D3D3D5;
+                margin-right: 48px;
+            }
+            .text{
+                width: 216px;
+                .nameBox{
+                    padding-top: 16px;
+                    display: flex;
+                    align-items: center;
+                    .name{
+                        font-size: 20px;
+                        line-height: 28px;
+                        color: #676B6D;
+                    }
+                    .icon{
+                        margin: 0 8px;
+                        font-size: 14px;
+                    }
+                    .status{
+                        width: 44px;
+                        height: 22px;
+                        border-radius: 4px;
+                        border:1px solid rgba(135,232,222,1);
+                        background:rgba(230,255,251,1);
+                        color: #46D1D0;
+                        text-align: center;
+                    }
+                }
+                p{
+                    font-size: 16px;
+                    margin-top: 20px;
+                    color: #676B6D;
+                    line-height: 30px;
+                    text-align: left;
+                }
+            }
+        }
+        .operat{
+            .btns{
+                button{
+                    margin-left: 12px;
+                }
+                margin-bottom: 70px;
+            }
+            .contact{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 14px;
+                color: #676B6D;
+            }
+        }
+    }
+}
 </style>
 
 <template>
     <div id="staffEntry" class="commonRightCont">
         <!-- 主页 -->
-        <commonTable v-show="!sendEntryApply" :table="table" ref="commonTable" ></commonTable>
+        <commonTable v-show="!sendEntryApply && !detailShow" :table="table" ref="commonTable" ></commonTable>
 
         <!-- 发送入职申请 -->
         <div class="sendEntryApply" v-show="sendEntryApply" >
@@ -144,174 +215,52 @@
             </div>
         </div>
 
+        <!-- 详情 -->
+        <div class="detail" v-if="detailShow">
+            <div class="userInfo">
+                <div class="user">
+                    <span class="pic"></span>
+                    <span class="text">
+                        <div class="nameBox">
+                            <span class="name">张三疯</span>
+                            <i class="qj-man icon man"></i>
+                            <i class="qj-woman icon woman"></i>
+                            <span class="status">试用</span>
+                        </div>
+                        <p>亲姐软件深圳亲姐软件深圳亲姐软件深圳亲姐软件深圳</p>
+                    </span>
+                </div>
+                <div class="operat">
+                    <div class="btns">
+                        <el-button type="primary" plain size="small" >打印</el-button>
+                        <el-button type="primary" plain size="small" >确认入职</el-button>
+                        <el-button type="primary" plain size="small" >发送入职登记</el-button>
+                    </div>
+                    <div class="contact">
+                        <span>
+                            <i class="icon"></i>
+                            zhangsanfeng@qq.com
+                        </span>
+                        <span>
+                            <i class="icon"></i>
+                            176348165885
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 新增 -->
         <el-dialog
-            :visible.sync="addDialog"
+            :visible.sync="addDialog2"
             class="qinjeeDialogBig"
             :append-to-body="true"
             :close-on-click-modal="false"
             center>
             <span slot="title" >新增</span>
             <div class="qinjeeDialogBigCont">
-                <el-form :model="addForm" size="small" status-icon :rules="addRules" ref="addForm" label-width="110px" >
-                    <!-- 个人信息 -->
-                    <el-row :gutter="20" >
-                        <el-col :span="12">
-                            <el-form-item label="姓名" prop="name">
-                                <el-input v-model="addForm.name"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="性别" prop="sex">
-                                <el-radio v-model="addForm.sex" label="男">男</el-radio>
-                                <el-radio v-model="addForm.sex" label="女">女</el-radio>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-
-                    <el-row :gutter="20" >
-                        <el-col :span="12">
-                            <el-form-item label="手机号码" prop="phone">
-                                <el-input v-model="addForm.phone"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="个人邮箱" prop="email">
-                                <el-input v-model="addForm.email"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-
-                    <el-row :gutter="20" >
-                        <el-col :span="12">
-                            <el-form-item label="证件类型" prop="idType" >
-                                <el-select v-model="addForm.idType" style="width:100%" @change="idTypeChange" >
-                                    <el-option v-for="(item,index) in cardTyptList" :key="index" :label="item.dictValue" :value="item.dictCode" ></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="证件号码" prop="idNum">
-                                <el-input v-model="addForm.idNum" @blur="idNumberBlur" ></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-
-                    <el-row :gutter="20" >
-                        <el-col :span="12">
-                            <el-form-item label="年龄" prop="age">
-                                <el-input type="number" v-model="addForm.age" class="removeNumberInput" ></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="参加工作时间" prop="startWorkDate">
-                                <el-date-picker
-                                    style="width:100%;"
-                                    v-model="addForm.startWorkDate"
-                                    :editable="false"
-                                    size="small"
-                                    value-format="yyyy-MM-dd">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-
-                    <el-row :gutter="20" >
-                        <el-col :span="12">
-                            <el-form-item label="应聘岗位" prop="post">
-                                <el-input v-model="addForm.post" ></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="婚姻状况" prop="maritalStatus">
-                                <el-select v-model="addForm.maritalStatus" style="width:100%" >
-                                    <el-option v-for="(item,index) in marryStatusList" :key="index" :label="item.dictValue" :value="item.dictCode" ></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-
-                    <el-row :gutter="20" >
-                        <el-col :span="12">
-                            <el-form-item label="最高学历" prop="degree">
-                                <el-select v-model="addForm.degree" style="width:100%" >
-                                    <el-option v-for="(item,index) in degreeList" :key="index" :label="item.dictValue" :value="item.dictCode" ></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="毕业学校" prop="school">
-                                <el-input v-model="addForm.school"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-
-                    <el-row :gutter="20" >
-                        <el-col :span="12">
-                            <el-form-item label="毕业专业" prop="major">
-                                <el-input v-model="addForm.major" ></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="最近工作单位" prop="lastCompany">
-                                <el-input v-model="addForm.lastCompany"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-
-                    <!-- 入职信息 -->
-                    <el-row :gutter="20" >
-                        <el-col :span="12">
-                            <el-form-item label="计划入职日期" prop="joinDate">
-                                <el-date-picker
-                                    style="width:100%;"
-                                    v-model="addForm.joinDate"
-                                    :editable="false"
-                                    size="small"
-                                    value-format="yyyy-MM-dd">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="试用期" prop="testDate">
-                                <el-select v-model="addForm.testDate" style="width:100%" >
-                                    <el-option v-for="(item,index) in testList" :key="index" :label="item.label" :value="item.value" ></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-
-                    <el-row :gutter="20" >
-                        <el-col :span="12">
-                            <el-form-item label="入职部门" prop="joinDepartment">
-                                <el-select v-model="addForm.joinDepartment" ref="selectTree" popper-class="base_treeSelect" style="width:100%" >
-                                    <el-option  :label="addForm.joinDepartment" :value="addForm.joinDepartment" >
-                                        <tree :treeData="treeData"></tree>
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="入职岗位" prop="joinPost">
-                                <el-select v-model="addForm.joinPost" style="width:100%" @change="joinPostChange" >
-                                    <el-option v-for="(item,index) in postList" :key="index" :label="item.post_name" :value="item.post_id" ></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-
-                    <el-row>
-                        <el-form-item label="备注" prop="backup">
-                            <el-input v-model="addForm.backup" type="textarea" :autosize="{minRows: 4}" ></el-input>
-                        </el-form-item>
-                    </el-row>
-
-                </el-form>
+                <commonForm :data="commonForm" ref="addCommonForm" ></commonForm>
             </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button size="small" @click="addDialog = false">取 消</el-button>
-                <el-button size="small" type="primary" @click="addSure('addForm')" :loading="addLoading" >确 定</el-button>
-            </span>
         </el-dialog>
 
         <!-- 删除 -->
@@ -414,9 +363,6 @@
         </el-dialog>
 
         <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="0"></commonUpload>
-
-        <userInfo v-show='userInfoShow' :userInfo="userInfoData"></userInfo>
-
     </div>
 </template>
 
@@ -424,14 +370,30 @@
 import base from '../../assets/js/base';
 import commonTable from '../../components/table/commonTable';
 import commonUpload from '../../components/upload/upload';
+import commonForm from '../../components/form/commonForm';
 import tree from '../../components/tree/tree';
-import userInfo from './components/userInfo';
-import {sys_api1, entry_api1, entry_api2, entry_api3, staff_api1, staff_api2, staff_api3, entry_api4, entry_api5,
-        entry_api6, entry_api7, entry_api8, entry_api9, entry_api10} from "../../request/api";
+import {
+    sys_api1, 
+    custom_api1,
+    entry_api1, 
+    entry_api2, 
+    entry_api3, 
+    staff_api1, 
+    staff_api2, 
+    staff_api3, 
+    entry_api4, 
+    entry_api5,
+    entry_api6, 
+    entry_api7, 
+    entry_api8, 
+    entry_api9, 
+    entry_api10,
+    entry_api13
+} from "../../request/api";
 
 export default {
     name: 'entry',              /* 入职管理 */
-    components: {commonTable, commonUpload, tree, userInfo},
+    components: {commonTable, commonUpload, tree, commonForm},
     data() {
         return {
             cardTyptList: [],               // 证件类型
@@ -501,62 +463,6 @@ export default {
             currentPage: 1,                             /* 页面要用到的页码变量 */
             pageSize: 10,
 
-            // 新增
-            addDialog: false,
-            addLoading: false,
-            addForm: {
-                name: '',           /* 姓名 */
-                sex: '',            /* 性别 */
-                phone: '',          /* 联系电话 */
-                email: '',          /* 邮箱 */
-                idType: '',         /* 证件类型 */
-                idNum: '',          /* 证件号码 */
-                age: '',            /* 年龄 */
-                startWorkDate: '',  /* 参加工作时间 */
-                post: '',           /* 应聘岗位 */
-                maritalStatus: '',  /* 婚姻状况 */
-                degree: '',         /* 最高学历 */
-                school: '',         /* 毕业学校 */
-                major: '',          /* 毕业专业 */
-                lastCompany: '',    /* 最近工作单位 */
-
-                joinDate: '',       /* 计划入职日期 */
-                testDate: 1,        /* 试用期 */
-                joinDepartment: '', /* 入职部门名称 */
-                joinDepartmentId: '',   /* 入职部门id */
-                joinPost: '',       /* 入职岗位 */
-                joinPostId: '',     /* 入职岗位id */
-                backup: ''          /* 备注 */
-            },
-            addRules: {
-                name: [{required: true, message: '请输入姓名', trigger: 'change'}],
-                phone: [{required: true, message: '请输入手机号码', trigger: 'change'},
-                        {pattern: /^1[3,4,5,6,7,8,9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'change'}],
-                email: [{type: 'email', message: '请输入正确的邮箱地址', trigger: 'change'}],
-                joinDate: [{required: true, message: '请选择计划入职日期', trigger: 'change'}],
-            },
-            testList: [             /* 试用期 */
-                {label: '无试用期', value: 0},
-                {label: '1个月', value: 1},
-                {label: '2个月', value: 2},
-                {label: '3个月', value: 3},
-                {label: '4个月', value: 4},
-                {label: '5个月', value: 5},
-                {label: '6个月', value: 6}
-            ],
-            departmentList: [],     /* 入职部门 */
-            postList: [],           /* 入职岗位 */
-            treeData: {
-                data: [],
-                nodeKey: 'org_id',
-                props: {
-                    children: 'list',
-                    label: 'org_name'
-                },
-                showDefaultIcon: true,
-                nodeClick: this.selectTreeNodeClick,
-                defaultIconExpandNode: true,
-            },
 
             // 发送入职登记邀请
             sendEntryApply: false,
@@ -643,10 +549,26 @@ export default {
 
             userInfoShow: false,                /* 用户详细信息是否显示 */
             userInfoData: null,
+
+            // 新增表单
+            addDialog2: false,
+            commonForm: {
+                domList: [],
+                option: {
+                    labelWidth: '120px',        /* 非必须，label宽度，默认100px */
+                    formatDom: true,         /* 非必须，是否格式化dom数据，默认false, 注意：从后端请求来的数据一般都需要格式化 */
+                    isAllBtn: true,
+                },
+                allCancel: this.addCancel,
+                allSure: this.addSure,
+            },
+
+            // 详情
+            detailShow: true,
         };
     },
     mounted() {
-        this.initGetData();
+        // this.initGetData();
         this.getTable();
     },
     methods: {
@@ -795,64 +717,38 @@ export default {
 
         // 新增
         add() {
-            this.addDialog = true;
+            // this.addDialog = true;
+            // this.addDialog2 = true;
+            this.getAddForm();
+        },
+
+        // 获取新增表单配置
+        getAddForm() {
+            entry_api13(null, res => {
+                let d = res.data;
+                base.log('r', '获取新增表单配置', d);
+                this.commonForm.domList = d.result.customGroupVOList;
+                this.addDialog2 = true;
+            })
+        },
+
+        // 新增--取消
+        addCancel() {
+            this.addDialog2 = false;
         },
 
         // 新增--确定
-        addSure(formName) {
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    this.addSubmit();
-                }
-            });
+        addSure(data) {
+            this.addSubmit(data);
+            this.$refs.addCommonForm.allLoading = true;
         },
 
         // 新增提交
-        addSubmit() {
-            let send = {
-                "abandonReason":        "",                                         /* 放弃入职原因 */
-                "age":                  Number(this.addForm.age),                   /* 年龄 */
-                "applicationPosition":  this.addForm.post,                          /* 应聘岗位 */
-                "birthDate":            "",                                         /* 出生日期 */
-                "birthplace":           "",                                         /* 出生地 */
-                "blockReson":           "",                                         /* 拉黑原因 */
-                "bloodType":            "",                                         /* 血型 */
-                "dataSource":           "",                                         /* 数据来源 */
-                "delayDate":            "",                                         /* 延期日期 */
-                "delayReson":           "",                                         /* 延期原因 */
-                "description":          this.addForm.backup,                        /* 描述 */
-                "email":                this.addForm.email,                         /* 邮箱 */
-                "employmentId":         0,                                          /* 预入职ID */
-                "employmentRegister":   "",                                         /* 入职登记 */
-                "employmentState":      "",                                         /* 入职状态 */
-                "englishName":          "",                                         /* 英文名 */
-                "firstWorkDate":        this.addForm.startWorkDate,                 /* 参加工作时间 */
-                "gender":               this.addForm.sex,                           /* 性别 */
-                "graduatedSchool":      this.addForm.school,                        /* 毕业院校 */
-                "graduatedSpeciality":  this.addForm.major,                         /* 毕业专业 */
-                "height":               0,                                          /* 身高 */
-                "highestDegree":        this.addForm.degree,                        /* 最高学历 */
-                "hireDate":             this.addForm.joinDate,                      /* 入职日期 */
-                "idNumber":             this.addForm.idNum,                         /* 证件号码 */
-                "idType":               this.addForm.idType,                        /* 证件类型 */
-                "isGiveBirth":          0,                                          /* 是否已育 */
-                "lastWorkCompany":      this.addForm.lastCompany,                   /* 最近工作单位 */
-                "maritalStatus":        this.addForm.maritalStatus,                 /* 婚姻状况 */
-                "nationality":          0,                                          /* 民族 */
-                "orgId":                Number(this.addForm.joinDepartmentId),      /* 入职部门id */
-                "orgName":              this.addForm.joinDepartment,                /* 入职部门 */
-                "phone":                this.addForm.phone,                         /* 手机号 */
-                "politicalStatus":      0,                                          /* 政治面貌 */
-                "postId":               Number(this.addForm.joinPostId),            /* 入职岗位id */
-                "postName":             this.addForm.joinPost,                      /* 入职岗位 */
-                "probationPeriod":      Number(this.addForm.testDate),              /* 试用期 */
-                "residentCharacter":    "",                                         /* 户口性质 */              
-                "userName":             this.addForm.name                           /* 用户名 */
-            };
+        addSubmit(send) {
             base.log('s', '新增预入职', send);
             this.addLoading = true;
-            entry_api2(send, res => {
-                this.addLoading = false;
+            custom_api1(send, res => {
+                this.$refs.addCommonForm.allLoading = false;
                 let d = res.data;
                 base.log('r', '新增预入职', d);
                 if (d.success) {
@@ -861,7 +757,7 @@ export default {
                     this.pageSize = 10;
                     this.table.pageResize = true;
                     this.getTable();
-                    this.addDialog = false;
+                    this.addDialog2 = false;
                 }else{
                     base.error(d);
                 }

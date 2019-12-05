@@ -151,6 +151,20 @@
       "font_class": "wenjianjia",
       "unicode": "e636",
       "unicode_decimal": 58934
+    },
+    {
+      "icon_id": "12174731",
+      "name": "woman",
+      "font_class": "woman",
+      "unicode": "e638",
+      "unicode_decimal": 58936
+    },
+    {
+      "icon_id": "12174797",
+      "name": "man",
+      "font_class": "man",
+      "unicode": "e639",
+      "unicode_decimal": 58937
     }
   ]
 }

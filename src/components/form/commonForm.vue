@@ -79,6 +79,10 @@
 }
 .btnRow{
     margin-bottom: 24px;
+    text-align: center;
+    button{
+        margin: 0 8px;
+    }
 }
 .seeFormGroup:hover{
     background-color: #FAFAFA;
@@ -225,21 +229,46 @@
                                 :type="Boolean(item.isRange) ? 'datetimerange' : 'datetime'"
                                 :placeholder="item.placeholder ? item.placeholder : '选择日期时间'">
                             </el-date-picker>
+
+                            <!-- 机构树 -->
+                            <el-select v-if="item.type === 'orgTree'" :ref="`orgTree_${index}`"  v-model="orgTreeShowData[`orgTree_${index}`]" :placeholder="item.placeholder" size="small" clearable="" popper-class="base_treeSelect" style="width:100%"  :disabled="Boolean(item.isReadOnly)">
+                                <el-option  :label="orgTreeShowData[`orgTree_${index}`]" :value="orgTreeShowData[`orgTree_${index}`]">
+                                    <tree :treeData="orgTreeData" @nodeClick="org_treeNodeClick($event,item,`orgTree_${index}`)" ></tree>
+                                </el-option>
+                            </el-select>
+
+                            <!-- 岗位树 -->
+                            <!-- postTree -->
+                            <el-select v-else-if="item.type === 'postTree'" v-model="form[item.key]" style="width:100%" clearable="" :placeholder="item.placeholder" :disabled="Boolean(item.isReadOnly)" >
+                                <el-option v-for="(post,postIndex) in item.postTreeList" :key="postIndex" :label="post.label" :value="post.value" ></el-option>
+                            </el-select>
+
                         </el-form-item>
                     </el-form>
-                    <el-row class="btnRow">
+                    <el-row class="btnRow" v-if="!option.isAllBtn">
                         <el-button @click="cancel(groupIndex)" size="small" >取消</el-button>
                         <el-button @click="sure(groupIndex,`form_${groupIndex}`)" size="small" type="primary" :loading="loading[groupIndex]" >确定</el-button>
                     </el-row>
                 </div>
             </div>
+
+            <!-- 控制全部的按钮 -->
+            <el-row class="btnRow" v-if="option.isAllBtn">
+                <el-button @click="allFormCancel" size="small" >取消</el-button>
+                <el-button @click="allFormSure" size="small" type="primary" :loading="allLoading" >确定</el-button>
+            </el-row>
         </div>
     </div>
 </template>
 
 <script>
+import base from '../../assets/js/base';
+import tree from '../tree/tree';
+import {staff_api1,staff_api2,entry_api8} from '../../request/api'
+
 export default {
     name: 'commonForm',             /* 公共表单 */
+    components: {tree},
     props: {
         data: Object,
     },
@@ -250,14 +279,36 @@ export default {
                 showType: 'form',           /* 显示样式类型 */
                 biserial: true,             /* 单双列，true-双列、false-单列 */
                 labelWidth: '100px',        /* label宽度 */
-                formatDom: false
+                formatDom: false,
+                isAllBtn: false,            /* 是否显示控制所有表单的按钮 */
             },
+
             form: {},
             rules: {
                 // name: [{required: true, message: '请输入姓名', trigger: 'change'}],
             },
             showForm: {},                   /* 存储各分组的编辑状态 */
-            loading: {}
+            loading: {},
+            formRefNameList: [],            /* 表单ref名称列表 */
+            allLoading: false,              /* 总按钮的loading */
+
+            // 机构树
+            orgTreeShowData: {},            /* 机构树显示字值绑定的变量集合 */
+            orgTreeData: {
+                data: null,
+                nodeKey: 'org_id',
+                props: {
+                    children: 'list',
+                    label: 'org_name'
+                },
+                showDefaultIcon: true,
+                defaultIconExpandNode: true,
+            },
+
+            // 岗位------------
+            postTreeList: null,
+            hasOrgTree: false,
+            postKey: '',
         };
     },
     created() {
@@ -321,7 +372,7 @@ export default {
 
                             // key
                             if (item.hasOwnProperty('fieldId')) {
-                                dom.key = item.fieldId;
+                                dom.key = String(item.fieldId);
                             }
 
                             // default
@@ -365,8 +416,8 @@ export default {
                             }
 
                             // list
-                            if (item.hasOwnProperty('dictList')) {
-                                dom.list = item.dictList;
+                            if (item.hasOwnProperty('dictList') && item.dictList) {
+                                dom.list = item.dictList.map(item => ({label: item.dictValue, value: item.dictCode}));
                             }
 
                             // isRange
@@ -400,7 +451,7 @@ export default {
                             }
 
                             // rule
-                            if (item.hasOwnProperty('rule')) {
+                            if (item.hasOwnProperty('rule') && item.rule) {
                                 dom.rule = item.rule.split(',');
                             }
 
@@ -416,12 +467,18 @@ export default {
                 result[groupIndex] = myGroup;
             });
 
+            console.log(result)
             return result;
         },
         // 初始化
         init() {
-            this.domList.forEach(group => {
-                group.list.forEach(item => {
+            this.formRefNameList = new Array();
+            this.domList.forEach((group,groupIndex) => {
+                // 添加ref绑定名称
+                this.formRefNameList.push(`form_${groupIndex}`);
+                group.list.forEach((item, index) => {
+                    // 特殊dom处理
+                    this.specialDom(item, index);
                     // 添加校验规则
                     this.ruleM(item);
                     // 添加必要的绑定字段
@@ -430,6 +487,52 @@ export default {
                     this.defaultValue(item);
                 });
             });
+        },
+
+        // 处理特殊dom
+        specialDom(dom,index) {
+            // 机构树
+            if (dom.type === 'orgTree') {
+                if (!this.orgTreeData.data) {
+                    this.hasOrgTree = true;
+                    // 请求机构树
+                    this.orgTree_getCompany();
+                    // this.$set(this.orgTreeShowData, `orgTree_${index}`, )
+                }
+            }
+            if (dom.type === 'postTree') {
+                this.postKey = dom.key;
+                if (!this.postTreeList && !this.hasOrgTree) {
+                    // 请求岗位
+                    this.post_getPostList();
+                }
+            }
+        },
+
+        // 请求机构树
+        orgTree_getCompany: function() {
+            staff_api1(null, res => {
+                let d = res.data;
+                if (d.success) {
+                    this.orgTree_getDepartment(d.result);
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+        orgTree_getDepartment(id) {
+            let send = {"companyId": id};
+            base.log('s', '机构树', send);
+            staff_api2(send, res => {
+                let d = res.data;
+                base.log('r', '机构树', d);
+                if (d.success) {
+                    this.orgTreeData.data =new Array();
+                    this.orgTreeData.data.push(d.result);
+                }else{
+                    base.error(d);
+                }
+            })
         },
 
         // 添加必要绑定字段
@@ -548,8 +651,6 @@ export default {
         sure(groupIndex,formName) {
             this.$refs[formName][0].validate((valid) => {
                 if (valid) {
-                    console.log('校验通过');
-                    console.log(this.domList)
                     if (this.data.sure) {
                         let data = this.getCurrentGroupData(groupIndex);
                         this.data.sure(groupIndex,data) ;
@@ -557,6 +658,30 @@ export default {
                     }
                 }
             });
+        },
+
+        // allForm
+        allFormCancel() {
+            if (this.data.allCancel) {
+                this.data.allCancel();
+            }
+        },
+
+        // allForm
+        allFormSure() {
+            if (this.data.allSure) {
+                let pass = true;
+                this.formRefNameList.forEach(name => {
+                    this.$refs[name][0].validate((valid) => {
+                        if (!valid) {
+                            pass = false;
+                        }
+                    });
+                });
+                if (pass) {
+                    this.data.allSure(this.form);
+                }
+            }
         },
 
         // 取当前组的值
@@ -576,6 +701,36 @@ export default {
             if (this.option.showType === 'seeForm') {
                 this.$set(this.showForm, formIndex, false);
             };
+        },
+
+        // 机构树--节点被点击
+        org_treeNodeClick(node, domOption, domRef) {
+            console.log(node)
+            let dataKey = domOption.key;
+            let showKey = domRef;
+            this.$set(this.form, dataKey, node.org_id);
+            this.$set(this.orgTreeShowData, showKey, node.org_name);
+            this.$refs[domRef][0].blur();
+            if (this.postKey) {
+                this.$set(this, 'postTreeList', null);
+                this.$set(this.form, this.postKey, '');
+                this.post_getPostList(node.org_id);
+            }
+        },
+
+        // 请求岗位
+        post_getPostList(orgId=null) {
+            let send = {"orgId": orgId};
+            base.log('s', '获取入职岗位', send);
+            entry_api8(send, res => {
+                let d = res.data;
+                base.log('r', '获取入职岗位', d);
+                if (d.success) {
+                    this.postTreeList = JSON.parse(d.result);
+                }else{
+                    base.error(d);
+                }
+            })
         },
     }
 }

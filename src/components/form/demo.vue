@@ -21,7 +21,8 @@ export default {
                         list: [                             /* 必须，form字段 */
                             {
                                 type: String,                       /* 必须，DOM类型，可能值：input-输入框、textarea-文本框、select-单选下拉框、selectMore-多选下拉框、
-                                                                    checkbox-多选框、radio-单选框、time-时间选择框、date-日期选择框、dateTime-日期时间选择框、orgTree-机构树下拉框 */
+                                                                    checkbox-多选框、radio-单选框、time-时间选择框、date-日期选择框、dateTime-日期时间选择框、
+                                                                    orgTree-机构树下拉框、postTree岗位树下拉框 */
                                 fieldName: String,                  /* 必须，表单的label */
                                 key: String,                        /* 必须，该DOM绑定的字段 */
                                 default: String/Array,              /* 非必须，默认值，值类型要与type相应 */
@@ -54,8 +55,11 @@ export default {
                     biserial: true,             /* 非必须，单双列，默认true,true-双列、false-单列 */
                     labelWidth: '100px',        /* 非必须，label宽度，默认100px */
                     formatDom: Boolean,         /* 非必须，是否格式化dom数据，默认false, 注意：从后端请求来的数据一般都需要格式化 */
+                    isAllBtn: Boolean,          /* 非必须, 是否显示控制所有表单的按钮,默认值:false,一般用于弹窗,该值为true时,不显示分组按钮 */
                 },
-                sure: Function,                 /* 非必须，表单格式下，"确定"按钮的回调,接收2个参数：组序号、该组数据 */
+                sure: Function,                 /* 非必须，表单格式下，"确定"按钮的回调,接收2个参数：组序号、该组数据, option.isAllBtn为true时无效 */
+                allCancel: Function,            /* 非必须, 表单格式下,控制所有分组的"取消"按钮的回调,无参数,option.isAllBtn为false时无效 */
+                allSure: Function,              /* 非必须, 表单格式下,控制所有分组的"确定"按钮的回调,接收1个参数,所有表单的值,option.isAllBtn为false时无效 */
             }
         }
     },
@@ -65,8 +69,13 @@ export default {
         submit(groupIndex, groupData) {
             // 提交---
 
-            // 关闭提交,在提交回调中使用
+            // 分组按钮--关闭提交,在提交回调中使用
             this.$refs.commonForm.closeSubmit(groupIndex);
+
+            // 总按钮--提交时的loading控制
+            this.$refs.commonForm.allLoading = true;
+            this.$refs.commonForm.allLoading = false;
+
         },
     }
 }

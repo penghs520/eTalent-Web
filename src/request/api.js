@@ -49,6 +49,13 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const archives_api1     = (data, callback) => {request('form', `api/masterdata/staffarc/selectArchivebatch`, data, callback)};
         const archives_api2     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
+    // 档案管理
+        //员工台账
+        const archives_ledger_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const archives_ledger_api2     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBook`, data, callback)};
+        const archives_ledger_api3     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
+        const archives_ledger_api4     = (data, callback) => {request('form', `api/masterdata/staffsta/selectStaff`, data, callback)};
+
 
 // 系统管理
     // 权限管理
@@ -188,6 +195,9 @@ export {
         // 档案管理
             // 信息维护
             archives_api1,archives_api2,
+        
+            // 员工台账
+            archives_ledger_api1,archives_ledger_api2,archives_ledger_api3,archives_ledger_api4,
 
         // 参数设置
             // 合同参数

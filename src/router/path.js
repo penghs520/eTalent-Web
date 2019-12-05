@@ -14,6 +14,9 @@ const organization_userInfo  = () => import(/* webpackChunkName: "group-organiza
     // 档案管理
     const staff_archives_info           = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_info.vue');
     const staff_archives_ledger         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_ledger.vue');
+    const staff_archives_import         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_import.vue');
+    const staff_archives_file         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_file.vue');
+    const staff_archives_blacklist         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_blacklist.vue');
 
     // 参数设置
     const staff_jobNumber               = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/jobNumber.vue');
@@ -44,6 +47,9 @@ let path = {
         // 档案管理
         staff_archives_info,
         staff_archives_ledger,
+        staff_archives_import,
+        staff_archives_file,
+        staff_archives_blacklist,
 
         //参数设置
         staff_jobNumber,

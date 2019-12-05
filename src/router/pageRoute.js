@@ -17,6 +17,9 @@ let pageRoute = {
         // 档案管理
         '信息维护': 'staff_archives_info',
         '员工台账': 'staff_archives_ledger',
+        '数据导入': 'staff_archives_import',
+        '附件管理': 'staff_archives_file',
+        '黑名单管理': 'staff_archives_blacklist',
 
         // 参数设置
         '工号规则':     'staff_jobNumber',

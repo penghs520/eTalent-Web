@@ -25,7 +25,7 @@
 <template>
     <div id="componentsTree">
         <div class="title" v-if="treeData.switchOpen">
-            <span class="switch_title">显示封存:</span>
+            <span class="switch_title">{{treeData.switchTitle ? treeData.switchTitle : "显示封存:"}}</span>
             <el-switch
                 v-model="switchValue"
                 active-color="#19ADE6"

@@ -35,6 +35,7 @@ export default {
                         placeholder: '请输入',          /* 非必须，输入框提示语 */
                         key: 'name',                    /* 必须，输入框绑定的变量字符串 */
                         defaultVal: '',                 /* 非必须，默认值 */
+                        isShow: Boolean,                /* 非必须,是否显示该dom */
                         enter: this.search              /* 非必须，回车键的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
                     },
                     {

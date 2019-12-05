@@ -217,7 +217,10 @@ export default {
         },
         //树形--获取树形请求
         getOrgTreeReq() {
-            org_userInfo_api1(null, res => {
+            let send = {
+                isEnable : 0
+            }
+            org_userInfo_api1(send, res => {
                 let d = res.data;
                 base.log("r", "查询树", d);
                 if (d.success) {

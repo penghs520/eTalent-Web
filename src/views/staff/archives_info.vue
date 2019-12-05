@@ -8,7 +8,7 @@
         height: 100%;
         border: 10px solid #f0f0f0;
         border-bottom: none;
-        padding: 24px 0px 0px 24px;
+        padding-top: 24px;
         box-sizing: border-box;
         background-color: #fff;
     }
@@ -93,7 +93,7 @@ export default {
                     },
                     {
                         type: "selectTree", //下拉树形
-                        placeholder: "请筛选",
+                        placeholder: "请筛选机构",
                         key: "typeTree",
                         showKey: 'typeTreeName',
                         defaultVal: [456,457],
@@ -113,7 +113,20 @@ export default {
                             defaultIconExpandNode: true,
                             showCheckbox: true,
                         }
-                    }
+                    },
+                     {
+                        type: 'select',                 /* 单选下拉框 */
+                        placeholder: '请选择',
+                        key: 'type',
+                        defaultVal: '默认显示方案',
+                        isShow :true,
+                        list:[
+                            {value:"默认显示方案"},
+                            {value:"人员档案展示方案"},
+                            {value:"在职信息展示方案"},
+                            {value:"+新增显示方案"},
+                        ],
+                    },
                 ],
                 showSelect: true /* 非必须，是否显示select勾选框 */,
                 loading: false /* 非必须，加载动画 */,
@@ -121,18 +134,6 @@ export default {
                 pageResize: false,
                 pageSizeChange: this.pageSizeChange,
                 pageChange: this.pageChange,
-                selectTreeValue:"",
-                selectTree: {
-                    data: [],
-                    // nodeKey: "org_id",
-                    props: {
-                        children: "childList",
-                        label: "orgName"
-                    },
-                    showDefaultIcon: true,
-                    nodeClick: this.selectTreeNodeClick,
-                    defaultIconExpandNode: true
-                }
             },
             currentPage: 1,
             pageSize: 10,

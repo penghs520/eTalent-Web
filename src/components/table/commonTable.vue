@@ -40,28 +40,29 @@
             <li v-for="(item,index) in table.bar" :key="index" >
                 
                 <!-- 输入框 -->
-                <el-input v-if="item.type === 'input'"      v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @keydown.enter="inputEnter(item)" ></el-input>
+                <el-input v-if="item.type === 'input' && item.isShow !== false"   v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @keydown.enter="inputEnter(item)" ></el-input>
                 
                 <!-- 下拉框 -->
-                <el-select v-if="item.type === 'select'"    v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" >
+                <span v-if="item.type === 'select' && item.isShow !== false">{{item.label}}</span>
+                <el-select v-if="item.type === 'select' && item.isShow !== false"   v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @change="selectValueChange($event,item.method)">
                     <el-option v-for="li in item.list" :key="li.value" :label="li.label" :value="li.value"></el-option>
                 </el-select>
 
                 <!-- 下拉选择框树 -->
-                <el-select v-if="item.type === 'selectTree'" :ref="`selectTree_${index}`"  v-model="barData[item.showKey]" :placeholder="item.placeholder" size="small" clearable="" popper-class="base_treeSelect" style="width:100%">
+                <el-select v-if="item.type === 'selectTree' && item.isShow !== false" :ref="`selectTree_${index}`"  v-model="barData[item.showKey]" :placeholder="item.placeholder" size="small" clearable="" popper-class="base_treeSelect" style="width:100%">
                     <el-option  :label="barData[item.showKey]" :value="barData[item.showKey]">
                          <tree :treeData="item.treeData" @nodeClick="selectTreeNodeClick($event,item,`selectTree_${index}`)" @selectChange="selectTreeCheckedChange($event,item)" ></tree>
                     </el-option>
                 </el-select>
 
                 <!-- 按钮 -->
-                <template v-if="item.type === 'button'">
+                <template v-if="item.type === 'button' && item.isShow !== false">
                     <el-button v-if="item.btnType === 'plain'" plain="" size="small" :icon="item.icon" @click="btnClick(item.method)" >{{item.text}}</el-button>
                     <el-button v-else :type="item.btnType ? item.btnType : 'primary'" size="small" :icon="item.icon" @click="btnClick(item.method)" >{{item.text}}</el-button>
                 </template>
 
                 <!-- 二级按钮 -->
-                <el-dropdown v-if="item.type === 'buttons'" trigger="click" @command="buttonsClick" >
+                <el-dropdown v-if="item.type === 'buttons' && item.isShow !== false" trigger="click" @command="buttonsClick" >
                     <el-button v-if="item.btnType === 'plain'" plain="" size="small" :icon="item.icon">
                         {{item.text}}
                         <i v-show="!item.defaultIconHide" class="el-icon-arrow-down"></i>

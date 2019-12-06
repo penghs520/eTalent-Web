@@ -83,6 +83,9 @@
         }
     }
 }
+.tableBox{
+    padding: 16px 0;
+}
 
 .detail{
     width: 100%;
@@ -93,6 +96,7 @@
         background-color: #fff;
         display: flex;
         justify-content: space-between;
+        margin-bottom: 16px;
         .user{
             display: flex;
             .pic{
@@ -118,8 +122,14 @@
                         margin: 0 8px;
                         font-size: 14px;
                     }
+                    .man{
+                        color: #19ADE6;
+                    }
+                    .woman{
+                        color: #FF9DC6;
+                    }
                     .status{
-                        width: 44px;
+                        padding: 0 8px;
                         height: 22px;
                         border-radius: 4px;
                         border:1px solid rgba(135,232,222,1);
@@ -150,16 +160,38 @@
                 justify-content: space-between;
                 font-size: 14px;
                 color: #676B6D;
+                span{
+                    display: flex;
+                    align-items: center;
+                    .email{
+                        width: 16px;
+                        margin-right: 8px;
+                    }
+                    .phone{
+                        width: 12px;
+                        margin-right: 8px;
+                    }
+                }
             }
         }
     }
 }
 </style>
+<style>
+#staffEntry .el-tabs__nav-scroll{
+    background-color: #fff !important;
+    border-bottom: 1px solid #F1F2F2;
+    display: flex;
+    justify-content: center;
+}    
+</style>
 
 <template>
     <div id="staffEntry" class="commonRightCont">
         <!-- 主页 -->
-        <commonTable v-show="!sendEntryApply && !detailShow" :table="table" ref="commonTable" ></commonTable>
+        <div class="tableBox" v-show="!sendEntryApply && !detailShow" >
+            <commonTable :table="table" ref="commonTable" ></commonTable>
+        </div>
 
         <!-- 发送入职申请 -->
         <div class="sendEntryApply" v-show="sendEntryApply" >
@@ -216,36 +248,45 @@
         </div>
 
         <!-- 详情 -->
-        <div class="detail" v-if="detailShow">
+        <div class="detail" v-if="detailShow" v-show="!sendEntryApply">
             <div class="userInfo">
                 <div class="user">
                     <span class="pic"></span>
                     <span class="text">
                         <div class="nameBox">
-                            <span class="name">张三疯</span>
-                            <i class="qj-man icon man"></i>
-                            <i class="qj-woman icon woman"></i>
-                            <span class="status">试用</span>
+                            <span class="name">{{detailInfoData.userName}}</span>
+                            <i class="qj-man icon man" v-if="detailInfoData.gender === '男'" ></i>
+                            <i class="qj-woman icon woman" v-if="detailInfoData.gender === '女'"></i>
+                            <span class="status">{{detailInfoData.employmentState}}</span>
                         </div>
-                        <p>亲姐软件深圳亲姐软件深圳亲姐软件深圳亲姐软件深圳</p>
+                        <p>{{detailInfoData.applicationPosition}}</p>
                     </span>
                 </div>
                 <div class="operat">
                     <div class="btns">
+                        <el-button type="primary" size="small" @click="detailShow = false" >返回</el-button>
                         <el-button type="primary" plain size="small" >打印</el-button>
-                        <el-button type="primary" plain size="small" >确认入职</el-button>
-                        <el-button type="primary" plain size="small" >发送入职登记</el-button>
+                        <el-button type="primary" plain size="small" @click="detail_entrySure" >确认入职</el-button>
+                        <el-button type="primary" plain size="small" @click="detail_sendEntry" >发送入职登记</el-button>
                     </div>
                     <div class="contact">
                         <span>
-                            <i class="icon"></i>
-                            zhangsanfeng@qq.com
+                            <img class="email" src="../../assets/img/email.png" alt="">
+                            <span>{{detailInfoData.email}}</span>
                         </span>
                         <span>
-                            <i class="icon"></i>
-                            176348165885
+                            <img class="phone" src="../../assets/img/phone.png" alt="">
+                            <span>{{detailInfoData.phone}}</span>
                         </span>
                     </div>
+                </div>
+            </div>
+            <div class="cont">
+                <el-tabs v-model="tabActiveName" @tab-click="detail_tabClick">
+                    <el-tab-pane v-for="(item,index) in tabList" :key="index" :label="item.tableCode" :name="String(item.tableId)"></el-tab-pane>
+                </el-tabs>
+                <div class="detailCommonTable">
+                    <commonForm :data="detail_commonForm" ref="detail_commonForm" ></commonForm>
                 </div>
             </div>
         </div>
@@ -253,6 +294,7 @@
         <!-- 新增 -->
         <el-dialog
             :visible.sync="addDialog2"
+            v-if="addDialog2"
             class="qinjeeDialogBig"
             :append-to-body="true"
             :close-on-click-modal="false"
@@ -375,6 +417,8 @@ import tree from '../../components/tree/tree';
 import {
     sys_api1, 
     custom_api1,
+    custom_api2,
+    custom_api3,
     entry_api1, 
     entry_api2, 
     entry_api3, 
@@ -388,7 +432,8 @@ import {
     entry_api8, 
     entry_api9, 
     entry_api10,
-    entry_api13
+    entry_api13,
+    entry_api14
 } from "../../request/api";
 
 export default {
@@ -547,15 +592,12 @@ export default {
                 finishLoading: false,             // 必须，完成loading
             },
 
-            userInfoShow: false,                /* 用户详细信息是否显示 */
-            userInfoData: null,
-
             // 新增表单
             addDialog2: false,
             commonForm: {
                 domList: [],
                 option: {
-                    labelWidth: '120px',        /* 非必须，label宽度，默认100px */
+                    labelWidth: '140px',        /* 非必须，label宽度，默认100px */
                     formatDom: true,         /* 非必须，是否格式化dom数据，默认false, 注意：从后端请求来的数据一般都需要格式化 */
                     isAllBtn: true,
                 },
@@ -564,7 +606,20 @@ export default {
             },
 
             // 详情
-            detailShow: true,
+            detailShow: false,
+            detailInfoData: null,
+            tabActiveName: '1',
+            tabActiveName2: '1',
+            tabList: null,
+            detail_commonForm: {
+                domList: [],
+                option: {
+                    showType: 'seeForm',
+                    labelWidth: '120px',        /* 非必须，label宽度，默认100px */
+                    formatDom: true,         /* 非必须，是否格式化dom数据，默认false, 注意：从后端请求来的数据一般都需要格式化 */
+                },
+                sure: this.detail_sure,
+            },
         };
     },
     mounted() {
@@ -744,7 +799,11 @@ export default {
         },
 
         // 新增提交
-        addSubmit(send) {
+        addSubmit(data) {
+            let send = {
+                "funcCode": 'PRE',
+                "list": [data]
+            }
             base.log('s', '新增预入职', send);
             this.addLoading = true;
             custom_api1(send, res => {
@@ -1168,11 +1227,72 @@ export default {
         // 表格单元格被点击
         tableCellClick(key,row,text) {
             if (key === 'userName') {
-                console.log(row);
-                this.userInfoData = row;
-                this.userInfoShow = true;
+                this.detailInfoData = row;
+                this.detail_getTab();
+                this.detailShow = true;
             }
         },
+
+        // 详情--查询tab栏数据
+        detail_getTab() {
+            entry_api14(null, res => {
+                let d = res.data;
+                base.log('r', 'tab栏', d);
+                if (d.success) {
+                    this.tabList = d.result;
+                    if (d.result.length > 0) {
+                        this.tabActiveName = String(d.result[0].tableId);
+                        this.tabActiveName2 = String(d.result[0].tableId);
+                        this.detail_getForm(d.result[0].tableId);
+                    }
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 详情--tab被点击
+        detail_tabClick(v) {
+            if (v.name !== this.tabActiveName2) {
+                this.tabActiveName2 = v.name;
+                // 请求内容
+                this.detail_getForm(v.name);
+            }
+        },
+
+        // 详情--请求tab栏中的form配置
+        detail_getForm(tableId) {
+            let send = {
+                businessId: this.detailInfoData.employmentId,
+                tableId: Number(tableId)
+            };
+            base.log('s', '根据表Id获取自定义表', send);
+            custom_api3(send, res => {
+                let d = res.data;
+                base.log('r', '根据表Id获取自定义表', d);
+                if (d.success) {
+                    this.detail_commonForm.domList = d.result.customGroupVOList;
+                }else{
+                    base.error(d);
+                }
+            });
+        },
+
+        // 详情--确定
+        detail_sure(groupIndex,data) {
+            console.log('-------------');
+            console.log(groupIndex);
+            console.log(data);
+        },
+
+        // 详情--按钮
+        detail_entrySure() {
+            this.entry(null,null,[this.detailInfoData]);
+        },
+        detail_sendEntry() {
+            this.sendEntryNote(null,null,[this.detailInfoData]);
+        },
+        
     }
 }
 </script>

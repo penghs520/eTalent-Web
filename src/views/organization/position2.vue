@@ -130,8 +130,7 @@
                     class="qinjeeDialogMini"
                     :append-to-body="true"
                     :close-on-click-modal="false"
-                    center
-                >
+                    center>
                     <span slot="title">确认删除</span>
                     <div class="qinjeeDialogMiniCont">
                         <div>

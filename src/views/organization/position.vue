@@ -65,8 +65,28 @@
         }
     }
 }
+.el-icon-warning {
+    color: #ffd532ff;
+}
+.group_list {
+    margin-top: 10px;
+    padding-left: 35px;
+}
 .el-select {
     width: 100%;
+}
+.sortComponent {
+    width: 100%;
+}
+.sortList {
+    margin: 8px 0;
+    cursor: pointer;
+    width: 100%;
+    font-size: 14px;
+    line-height: 24px;
+}
+.sortList:hover {
+    background-color: #ffefe8ff;
 }
 </style>
 <template>
@@ -78,10 +98,79 @@
                      <tree :treeData="positionTree" ></tree>
                 </div>               
                 <div class="common_content">
-                    <!-- 职位族表格-->
-                    <commonTable :table="positionTable" v-show ="positionNode.positionGroupId !== '' "></commonTable> 
-                    <!-- 职位表格 -->
-                    <commonTable :table="positionGroupTable" v-show ="positionNode.positionGroupId === '' "></commonTable> 
+                <!-- 职位族表格-->
+                 <commonTable :table="positionTable" v-show ="positionNode.positionGroupId !== '' "></commonTable>
+                    <!-- 新增职位族弹窗 -->
+                     <el-dialog
+                         :visible.sync="positionGroupDialog"
+                         class="qinjeeDialogMini"
+                         :append-to-body="true"
+                         :close-on-click-modal="false"
+                         center>
+                       <span slot="title">新增职位族</span>
+                       <div class="qinjeeDialogSmallCont">
+                           <el-form :model="GroupForm" label-width="100px">
+                            <el-form-item label="职位族名称">
+                                <el-input v-model="GroupForm.Groupname" size="mini"></el-input>
+                            </el-form-item>
+                           </el-form>
+                       </div>
+                       <span slot="footer" class="dialog-footer">
+                        <el-button size="small" @click="positionGroupDialog = false">取 消</el-button>
+                        <el-button size="small" type="primary" @click="addGroup">确 定</el-button>
+                       </span>
+                     </el-dialog>
+                    <!-- 编辑职位族弹窗 -->
+                     <el-dialog
+                       :visible.sync="editGroupDialog"
+                       class="qinjeeDialogMini"
+                       :append-to-body="true"
+                       :close-on-click-modal="false"
+                       center
+                        >
+                       <span slot="title">编辑职位族</span>
+                       <div class="qinjeeDialogSmallCont">
+                        <el-form :model="editGroupForm" label-width="100px">
+                            <el-form-item label="职位族名称">
+                                <el-input v-model="editGroupForm.GroupName" size="mini"></el-input>
+                            </el-form-item>
+                        </el-form>
+                       </div>
+                       <span slot="footer" class="dialog-footer">
+                        <el-button size="small" @click="editGroupDialog = false">取 消</el-button>
+                        <el-button size="small" type="primary" @click="editGroupReq">确 定</el-button>
+                       </span>
+                     </el-dialog>
+                    <!-- 删除职位族弹窗 -->
+                     <el-dialog
+                       :visible.sync="groupDelDialog"
+                       class="qinjeeDialogMini"
+                       :append-to-body="true"
+                       :close-on-click-modal="false"
+                       center
+                        >
+                       <span slot="title">确认删除</span>
+                       <div class="qinjeeDialogMiniCont">
+                        <div>
+                            <div>
+                                <i class="el-icon-warning warning icon"></i>
+                                <span>是否确认删除以下职位族?</span>
+                            </div>
+                            <div class="group_list">
+                                <div
+                                    v-for="(item,index) in GroupDelList"
+                                    :key="index"
+                                >{{item.positionGroupName}}</div>
+                            </div>
+                        </div>
+                       </div>
+                       <span slot="footer" class="dialog-footer">
+                        <el-button size="small" @click="groupDelDialog = false">取 消</el-button>
+                        <el-button size="small" type="primary" @click="delGroupRequst">确 定</el-button>
+                       </span>
+                     </el-dialog> 
+                <!-- 职位表格 -->
+                 <commonTable :table="positionGroupTable" v-show ="positionNode.positionGroupId === '' "></commonTable> 
                     <!-- 新增职位弹窗 -->
                     <el-dialog
                         :visible.sync="positionDialog"
@@ -89,15 +178,15 @@
                         :append-to-body="true"
                         :close-on-click-modal="false"
                         center>
-                        <span slot="title">新增信息</span>
-                        <div class="qinjeeDialogSmallCont">                              
+                        <span slot="title">新增职位</span>
+                        <div class="qinjeeDialogSmallCont">
                             <el-form
                                 :model="addPositionForm"
                                 label-width="100px"
                                 ref="addPositionForm"
-                                :rules="rules">
-
-                                <el-form-item v-show="addPositionForm.addRadio === 2" label="所属职位族" prop="positionGroupId">
+                                :rules="rules"
+                            >
+                                <el-form-item label="所属职位族" prop="positionGroupId">
                                     <el-select
                                         v-model="addPositionForm.positionGroupId"
                                         placeholder="请选择"
@@ -111,15 +200,13 @@
                                         </div>
                                     </el-select>
                                 </el-form-item>
-
-                                <el-form-item v-show="addPositionForm.addRadio === 2" label="职位名称" prop="positionName">
+                                <el-form-item label="职位名称" prop="positionName">
                                     <el-input
                                         v-model="addPositionForm.positionName"
                                         size="mini"
                                         placeholder="请输入"
                                     ></el-input>
                                 </el-form-item>
-
                             </el-form>
                         </div>
                         <span slot="footer" class="dialog-footer">
@@ -138,7 +225,7 @@
                         :append-to-body="true"
                         :close-on-click-modal="false"
                         center>
-                        <span slot="title">编辑</span>
+                        <span slot="title">编辑职位</span>
                         <div class="qinjeeDialogSmallCont">
                             <el-form
                                 :model="editPositionForm"
@@ -178,7 +265,68 @@
                         </span>
                     </el-dialog>
                     <!-- 删除职位弹窗 -->
-                </div>  
+                    <el-dialog
+                        :visible.sync="delPositionDialog"
+                        class="qinjeeDialogMini"
+                        :append-to-body="true"
+                        :close-on-click-modal="false"
+                        center>
+                        <span slot="title">确认删除</span>
+                        <div class="qinjeeDialogMiniCont">
+                            <div>
+                                <div>
+                                    <i class="el-icon-warning warning icon"></i>
+                                    <span>是否确认删除以下职位?</span>
+                                </div>
+                                <div class="group_list">
+                                    <div
+                                        v-for="(item,index) in delPositionList"
+                                        :key="index"
+                                    >{{item.positionName}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button size="small" @click="delPositionDialog = false">取 消</el-button>
+                            <el-button size="small" type="primary" @click="delPositionReq">确 定</el-button>
+                        </span>
+                    </el-dialog>
+                 </div>  
+                  <!-- 排序弹窗 -->
+                <el-dialog
+                     :visible.sync="sortDialog"
+                     v-if="sortDialog"
+                     class="qinjeeDialogMini"
+                     :append-to-body="true"
+                     :close-on-click-modal="false"
+                     center>
+                     <span slot="title">{{sortTitle}}</span>
+                     <div class="qinjeeDialogMiniCont">
+                         <draggable
+                             class="sortComponent"
+                             v-model="sortData"
+                             group="people"
+                             @start="drag=true"
+                             @end="drag=false"
+                         >
+                             <div
+                                 class="sortList"
+                                 v-for="element in sortData"
+                                 :key="element.id"
+                             >{{element.name}}</div>
+                         </draggable>
+                     </div>
+                     <span slot="footer" class="dialog-footer">
+                         <el-button size="small" @click="sortDialog = false">取 消</el-button>
+                         <el-button
+                             size="small"
+                             type="primary"
+                             @click="sortSure"
+                             :disabled="sortData.length === 0"
+                             :loading="sortLoading"
+                         >确 定</el-button>
+                     </span>
+                </el-dialog>
            </div>
         </div>
     </div>
@@ -217,16 +365,15 @@ export default {
             //职位族
             positionGroupTable: {
                 head: [
-                    /* 必须，表格头配置 */
                     {
-                        name: "职位族" /* 必须，表格头所显示的文字 */,
+                        name: "职位族" ,
                         key:
-                            "positionGroupName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
-                        isShow: true /* 必须，表格是否默认显示该列 */
+                            "positionGroupName" ,
+                        isShow: true 
                     }
                 ],
-                data: [] /* 必须，表格要渲染的数据，数组格式 */,
-                total: 0 /* 必须，数据的总条数，用于翻页 */,
+                data: [] ,
+                total: 0 ,
                 bar: [
                     /* 非必须，表格上面的操作栏配置 */
                     {
@@ -242,29 +389,35 @@ export default {
                         method: this.delPositionGroup
                     },
                     {
-                        type: "buttons" /* 下拉按钮 */,
-                        text: "更多操作",
+                        type: "button" /* 必须，DOM类型：按钮 */,
+                        text: "排序" /* 必须，按钮名称 */,
                         btnType: "plain",
-                        defaultIconHide: false,
-                        list: [
-                            {
-                                text: "排序" /* 必须，按钮名称 */,
-                                method: this.positionGroupSort
-                            },
-                            { text: "导入", method: this.btn2 },
-                            { text: "导出", method: this.exportGroupTable }
-                        ]
-                    }
+                        method: this.positionGroupSort
+                    },
                 ],
-                showSelect: true /* 非必须，是否显示select勾选框 */,
+                showSelect: true ,
                 selectChange: this.GroupselectChange,
-                loading: false /* 非必须，加载动画 */,
-                pageResize: false /* 非必须，页码重置 */,
+                loading: false ,
                 loading: false,
-                webPage: true,
+                // webPage: true,
+                activeColumn: "职位族",            
+                cellClick: this.groupCellClick,
+                pageHide:true,  
           
             },
-            //职位
+            positionGroupDialog: false,
+            GroupForm: {
+                Groupname: ""
+            },
+            GroupDelList: [],
+            groupDelDialog: false,
+            editGroupDialog: false,
+            editGroupForm: {
+                GroupName: "",
+                positionGroupId:"",
+            },
+            editGroupList: [],
+            //职位表格
             positionTree: {
                 data: [],
                 // nodeKey: "positionGroupId",
@@ -320,16 +473,11 @@ export default {
                         method: this.delPosition
                     },
                     {
-                        type: "buttons",
-                        text: "更多操作",
+                        type: "button",
+                        text: "排序",
                         btnType: "plain",
-                        defaultIconHide: false,
-                        list: [
-                            { text: "排序", method: this.positionSort },
-                            { text: "导入", method: this.btn2 },
-                            { text: "导出", method: this.exportPositionTable }
-                        ]
-                    }
+                        method: this.positionSort
+                    },
                 ],
                 showSelect: true,
                 selectChange: this.postSelectChange,
@@ -368,61 +516,85 @@ export default {
                 ],
             },
             positionGroupList:[],
-            //新增职位,职位族
+            //新增职位
             positionDialog: false,
             addPositionForm: {
                 positionGroupId: "",
-                positionName: "",
+                positionName: ""
             },
+            positionSelectList: [],
+            rules: {
+                positionGroupId: [
+                    {
+                        required: true,
+                        message: "请选择",
+                        trigger: "blur"
+                    }
+                ],
+                positionName: [
+                    {
+                        required: true,
+                        message: "请输入",
+                        trigger: "blur"
+                    }
+                ]
+            },
+            //删除职位
+            delPositionList: [],
+            delPositionDialog: false,
+            // 排序
+            sortDialog: false,
+            sortTitle: "",
+            sortData: [],
+            sortLoading: false,
         };
     },
     created(){
          this.getPositionTreeReq();
     },
     methods:{
-        //职位删除
+        //职位删除--请求接口
+        delPositionReq() {
+            let delList = this.delPositionList.map(item => item.positionId);
+            console.log(delList);
 
-        //职位新增--单选框切换
-        radioChange(val){
-         if( val === 1){
-                this.rules.positionGroupId[0].required = false    
-                this.rules.positionName[0].required = false    
-                this.rules.addGroupName[0].required = true
-         }else{
-              this.rules.positionGroupId[0].required = true
-              this.rules.positionName[0].required = true    
-              this.rules.addGroupName[0].required = false  
-         }      
+            let send = delList;
+            base.log("s", "删除职位", send);
+            position_api4(send, res => {
+                base.log("r", "删除职位", res.data);
+                if (res.data.success) {
+                    this.$message.success("删除成功");
+                    this.delPositionDialog = false;
+                    this.positionTableReq();
+                    this.getPositionTreeReq();
+                } else {
+                    base.error(res.data);
+                }
+            });
         },
-        //职位新增--表格按钮
-        addPosition(){
+        //职位删除 -- 删除按钮
+        delPosition() {
+            if (this.delPositionList.length === 0) {
+                this.$message.warning("请选择职位");
+                return;
+            }
+            this.delPositionDialog = true;
+        },
+        //职位删除-- 多选节点点击
+        postSelectChange(node) {
+            this.delPositionList = node;
+            this.editPositionList = node;
+            this.exportPositionList = node;
+            console.log(node);
+        },
+
+        //职位 -- 新增按钮
+        addPosition() {
             this.positionDialog = true;
-            this.addPositionForm.positionGroupId = this.positionNode.positionGroupId  
         },
         //职位--新增请求接口
         addPositiionReq(formName) {
-            if(this.addPositionForm.addRadio === 1){
-                this.$refs[formName].validate(valid => {
-                 if (valid) {   
-                let send = {
-                    positionGroupName: this.addPositionForm.addGroupName
-                };
-                  positionGroup_api2(send, res => {
-                    base.log("s", "新增职位族", send);
-                    base.log("r", "新增所有职位族", res.data);
-                    if (res.data.success) {
-                        this.positionTableReq();
-                        this.getPositionTreeReq();
-                        this.$message.success("添加职位族成功");
-                        this.positionDialog = false;
-                    } else {
-                        base.error(res.data);
-                    }
-                    });
-                }
-             });
-            }else{                 
-                this.$refs[formName].validate(valid => {
+            this.$refs[formName].validate(valid => {
                 if (valid) {
                     let send = {
                         positionGroupId: this.addPositionForm.positionGroupId,
@@ -434,7 +606,7 @@ export default {
                         if (res.data.success) {
                             this.positionTableReq();
                             this.getPositionTreeReq();
-                            this.$message.success("添加职位成功");
+                            this.$message.success("添加成功");
                             this.positionDialog = false;
                         } else {
                             base.error(res.data);
@@ -443,10 +615,8 @@ export default {
                 } else {
                     return false;
                 }
-             });
-            }           
+            });
         },
-
         //职位编辑--请求接口
         editPositionReq(formName) {
             this.$refs[formName].validate(valid => {
@@ -483,7 +653,6 @@ export default {
                 this.editPositionForm.positionId = row.positionId;
             }
         },
-
         //职位--表格页码改变
         postPageChange(page) {
             this.postCurrentPage = page;
@@ -517,6 +686,99 @@ export default {
             });
         },
 
+
+        //职位族--编辑按钮
+        groupCellClick(key,row) {
+            if(key === "positionGroupName"){
+                this.editGroupDialog = true;
+                this.editGroupForm.GroupName = row.positionGroupName;
+                this.editGroupForm.positionGroupId = row.positionGroupId;
+            }
+            
+        },
+        //职位族--编辑请求接口
+        editGroupReq() {
+            if (this.editGroupForm.GroupName.trim().length === 0) {
+                this.$message.warning("请输入内容");
+            }
+            let send = {
+                positionGroupId: this.editGroupForm.positionGroupId,
+                positionGroupName: this.editGroupForm.GroupName
+            };
+            base.log("s", "编辑职位族", send);
+            positionGroup_api5(send, res => {
+                base.log("r", "编辑职位族", res.data);
+                if (res.data.success) {
+                    this.$message.success("编辑成功");
+                    this.editGroupDialog = false;
+                    this.getAllPositionGroup();
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
+        //职位族--新增,弹出框表单验证
+        addGroup() {
+            if (this.GroupForm.Groupname.length == 0) {
+                this.$message.warning("请输入职位族名称");
+                return;
+            }
+            this.positionGroupDialog = false;
+            this.addGroupRequst();
+        },
+         //职位族--新增,弹出弹框
+        addPositionGroup() {
+            this.positionGroupDialog = true;
+            this.GroupForm.Groupname = "";
+        },
+        //职位族--新增,请求接口
+        addGroupRequst() {
+            let send = {
+                positionGroupName: this.GroupForm.Groupname.toString()
+            };
+            positionGroup_api2(send, res => {
+                base.log("s", "新增职位族", send);
+                base.log("r", "新增所有职位族", res.data);
+                if (res.data.success) {
+                    this.getAllPositionGroup();
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
+        //职位族--删除,多选框选择
+        GroupselectChange(node) {
+            this.GroupDelList = node;
+            this.editGroupList = node;
+            this.exportGroupList = node;
+            console.log(node);
+        },
+        //职位族--删除,点击删除按钮
+        delPositionGroup() {
+            if (this.GroupDelList.length == 0) {
+                this.$message.warning("请选择职位族");
+                return;
+            }
+            this.groupDelDialog = true;
+        },
+        //职位族--删除,请求接口
+        delGroupRequst() {
+            this.GroupDelList = this.GroupDelList.map(
+                item => item.positionGroupId
+            );
+            let send = this.GroupDelList;
+            positionGroup_api3(send, res => {
+                base.log("s", "删除职位族", send);
+                base.log("r", "删除职位族", res.data);
+                if (res.data.success) {
+                    this.$message.success("删除成功");
+                    this.groupDelDialog = false;
+                    this.getAllPositionGroup();
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
         //职位族--表格获取所有职位族
         getAllPositionGroup() {
             let send = {
@@ -530,6 +792,84 @@ export default {
                     this.positionGroupTable.data = res.data.result;
                 } else {
                     base.error(res.data);
+                }
+            });
+        },
+
+         // 职位族--排序
+        positionGroupSort() {
+            this.sortTitle = "职位族排序";
+            let data = JSON.parse(JSON.stringify(this.positionGroupTable.data));
+            this.sortData = data.map(item => {
+                return {
+                    id: item.positionGroupId,
+                    name: item.positionGroupName
+                };
+            });
+            this.sortDialog = true;
+        },
+        // 职位--排序
+        positionSort() {
+            this.sortTitle = "职位排序";
+            let data = JSON.parse(JSON.stringify(this.positionTable.data));
+            this.sortData = data.map(item => {
+                return { id: item.positionId, name: item.positionName };
+            });
+            this.sortDialog = true;
+        },
+        // 排序--确定
+        sortSure() {
+            this.sortLoading = true;
+            let list = this.sortData.map(item => item.id);
+            switch (this.sortTitle) {
+                case "职位族排序":
+                    this.positionGroupSortSubmit(list);
+                    break;
+
+                case "职位排序":
+                    this.positionSortSubmit(list);
+                    break;
+
+                default:
+                    break;
+            }
+        },
+        // 职位族排序提交
+        positionGroupSortSubmit(list) {
+            let send = {
+                positionGroupIds: list
+            };
+            base.log("s", "职位族排序", send);
+            positionGroup_api6(send, res => {
+                this.sortLoading = false;
+                let d = res.data;
+                base.log("r", "职位族排序", d);
+                if (d.success) {
+                    this.sortDialog = false;
+                    base.success(d);
+                    this.positionGroupTable.loading = true;
+                    this.getAllPositionGroup();
+                } else {
+                    base.error(d);
+                }
+            });
+        },
+        // 职位排序提交
+        positionSortSubmit(list) {
+            let send = {
+                positionGroupIds: list
+            };
+            base.log("s", "职位排序", send);
+            position_api5(send, res => {
+                this.sortLoading = false;
+                let d = res.data;
+                base.log("r", "职位排序", d);
+                if (d.success) {
+                    this.sortDialog = false;
+                    base.success(d);
+                    this.positionTableReq();
+                } else {
+                    base.error(d);
                 }
             });
         },

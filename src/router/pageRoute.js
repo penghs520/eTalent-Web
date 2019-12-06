@@ -21,6 +21,12 @@ let pageRoute = {
         '附件管理': 'staff_archives_file',
         '黑名单管理': 'staff_archives_blacklist',
 
+        // 劳动合同
+        '未签合同': 'staff_notContract',
+        '已签合同': 'staff_hasContract',
+        '续签反馈': 'staff_contractBack',
+        '合同概况': 'staff_contractInfo',
+
         // 参数设置
         '工号规则':     'staff_jobNumber',
         '合同参数':     'staff_contract_params',

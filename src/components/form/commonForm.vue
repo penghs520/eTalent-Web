@@ -2,6 +2,9 @@
 #commonForm{
     background-color: #fff;
 }
+.group{
+    padding: 0 24px;
+}
 .notFirstGroup{
     border-top: 1px solid #ECECEC;
 }
@@ -123,7 +126,7 @@
                     <ul>
                         <li v-for="(item,index) in group.list" :key="index">
                             <span class="label" :style="{width: option.labelWidth}">{{item.label}}：</span>
-                            <span class="value">{{item.default}}</span>
+                            <span class="value" v-text="item.default && item.default !== 'null' ? item.default : ''" ></span>
                         </li>
                     </ul>
                 </div>
@@ -240,7 +243,7 @@
                             <!-- 岗位树 -->
                             <!-- postTree -->
                             <el-select v-else-if="item.type === 'postTree'" v-model="form[item.key]" style="width:100%" clearable="" :placeholder="item.placeholder" :disabled="Boolean(item.isReadOnly)" >
-                                <el-option v-for="(post,postIndex) in item.postTreeList" :key="postIndex" :label="post.label" :value="post.value" ></el-option>
+                                <el-option v-for="(post,postIndex) in postTreeList" :key="postIndex" :label="post.post_name" :value="post.post_id" ></el-option>
                             </el-select>
 
                         </el-form-item>
@@ -264,7 +267,7 @@
 <script>
 import base from '../../assets/js/base';
 import tree from '../tree/tree';
-import {staff_api1,staff_api2,entry_api8} from '../../request/api'
+import {staff_api1,staff_api2,staff_api3} from '../../request/api'
 
 export default {
     name: 'commonForm',             /* 公共表单 */
@@ -329,6 +332,7 @@ export default {
             handler: function(v) {
                 if (this.option.formatDom) {
                     this.domList = this.domListFormatter(v);
+                    this.init();
                 }else{
                     this.domList = v;
                 };
@@ -487,6 +491,7 @@ export default {
                     this.defaultValue(item);
                 });
             });
+                    console.log(this.form)
         },
 
         // 处理特殊dom
@@ -510,8 +515,9 @@ export default {
         },
 
         // 请求机构树
-        orgTree_getCompany: function() {
+        orgTree_getCompany() {
             staff_api1(null, res => {
+                base.log('s', 'commonForm--机构树', res)
                 let d = res.data;
                 if (d.success) {
                     this.orgTree_getDepartment(d.result);
@@ -544,7 +550,7 @@ export default {
 
         // 添加默认值
         defaultValue(dom) {
-            if (dom.default) {
+            if (dom.default && dom.default !== 'null') {
                 this.$set(this.form, dom.key, dom.default);
             }
         },
@@ -705,7 +711,6 @@ export default {
 
         // 机构树--节点被点击
         org_treeNodeClick(node, domOption, domRef) {
-            console.log(node)
             let dataKey = domOption.key;
             let showKey = domRef;
             this.$set(this.form, dataKey, node.org_id);
@@ -721,12 +726,13 @@ export default {
         // 请求岗位
         post_getPostList(orgId=null) {
             let send = {"orgId": orgId};
-            base.log('s', '获取入职岗位', send);
-            entry_api8(send, res => {
+            base.log('s', '获取入职岗位a', send);
+            staff_api3(send, res => {
                 let d = res.data;
-                base.log('r', '获取入职岗位', d);
+                base.log('r', '获取入职岗位a', d);
                 if (d.success) {
                     this.postTreeList = JSON.parse(d.result);
+                    console.log(this.postTreeList)
                 }else{
                     base.error(d);
                 }

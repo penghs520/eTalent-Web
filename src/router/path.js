@@ -15,8 +15,15 @@ const organization_userInfo  = () => import(/* webpackChunkName: "group-organiza
     const staff_archives_info           = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_info.vue');
     const staff_archives_ledger         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_ledger.vue');
     const staff_archives_import         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_import.vue');
-    const staff_archives_file         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_file.vue');
-    const staff_archives_blacklist         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_blacklist.vue');
+    const staff_archives_file           = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_file.vue');
+    const staff_archives_blacklist      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_blacklist.vue');
+
+    // 劳动合同
+    const staff_notContract      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/notContract.vue');
+    const staff_hasContract      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/hasContract.vue');
+    const staff_contractBack      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/contractBack.vue');
+    const staff_contractInfo      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/contractInfo.vue');
+
 
     // 参数设置
     const staff_jobNumber               = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/jobNumber.vue');
@@ -50,6 +57,12 @@ let path = {
         staff_archives_import,
         staff_archives_file,
         staff_archives_blacklist,
+
+        // 劳动合同
+        staff_notContract,
+        staff_hasContract,
+        staff_contractBack,
+        staff_contractInfo,
 
         //参数设置
         staff_jobNumber,

@@ -6,7 +6,12 @@ import request from './http';
     const sys_api1 = (data, callback) => {request('form', `api/masterdata/sysDict/searchSysDictListByDictType`, data, callback)};
 
 // 自定义字段接口
-    const custom_api1 = (data, callback) => {request('form', `api/masterdata/staffarc/SaveFieldAndValue`, data, callback)};
+    // 新增保存
+    const custom_api1 = (data, callback) => {request('post', `api/masterdata/staffarc/SaveFieldAndValue`, data, callback)};
+    // 根据表id查询form参数配置--新增
+    const custom_api2 = (data, callback) => {request('get', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
+    // 根据表id与人员id查询form参数配置--编辑、显示
+    const custom_api3 = (data, callback) => {request('get', `api/masterdata/staffarc/selectValue`, data, callback)};
 
 
 // 登录
@@ -19,11 +24,11 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
 // 员工管理
     // 公用接口
         // 根据档案显示对应权限下的单位
-        const staff_api1     = (data, callback) => {request('form', `api/masterdata/staffarc/getCompany`, data, callback)};
+        const staff_api1     = (data, callback) => {request('get', `api/masterdata/staffarc/getCompany`, data, callback)};
         // 根据档案id显示对应权限下的子集部门
-        const staff_api2     = (data, callback) => {request('form', `api/masterdata/staffarc/getOrgIdByCompanyId`, data, callback)};
+        const staff_api2     = (data, callback) => {request('get', `api/masterdata/staffarc/getOrgIdByCompanyId`, data, callback)};
         // 显示部门下的岗位
-        const staff_api3     = (data, callback) => {request('form', `api/masterdata/staffarc/getPostByOrgId`, data, callback)};
+        const staff_api3     = (data, callback) => {request('get', `api/masterdata/staffarc/getPostByOrgId`, data, callback)};
 
 
     // 入职管理
@@ -34,12 +39,13 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     const entry_api5     = (data, callback) => {request('post', `api/masterdata/staffpre/deletePreEmployment`, data, callback)};
     const entry_api6     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentChange`, data, callback)};
     const entry_api7     = (data, callback) => {request('post', `api/masterdata/staffarc/importPreFile`, data, callback)};      // 导入
-    const entry_api8     = (data, callback) => {request('form', `api/masterdata/staffarc/getPostByOrgId`, data, callback)};
+    const entry_api8     = (data, callback) => {request('get', `api/masterdata/staffarc/getPostByOrgId`, data, callback)};
     const entry_api9     = (data, callback) => {request('post', `api/masterdata/staffarc/sendMessage`, data, callback)};
     const entry_api10     = (data, callback) => {request('post', `api/masterdata/staffarc/exportPreFile`, data, callback, 'blob')};
     const entry_api11     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentField`, data, callback)};
     const entry_api12     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmployment`, data, callback)};
     const entry_api13     = (data, callback) => {request('post', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableCodePre`, data, callback)};
+    const entry_api14     = (data, callback) => {request('form', `api/masterdata/staffarc/selectCustomTableForPre`, data, callback)};
 
     // 参数设置
         //合同参数
@@ -182,7 +188,7 @@ export {
     sys_api1,
 
     // 自定义字段
-    custom_api1,
+    custom_api1, custom_api2, custom_api3,
     
     // 登录
     login_api1, login_api2,login_api3,login_api4,login_api5,
@@ -192,7 +198,7 @@ export {
         staff_api1, staff_api2, staff_api3,
         // 入职管理
         entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6, entry_api7, entry_api8, entry_api9, entry_api10,
-        entry_api11, entry_api12, entry_api13,
+        entry_api11, entry_api12, entry_api13, entry_api14,
 
         // 档案管理
             // 信息维护

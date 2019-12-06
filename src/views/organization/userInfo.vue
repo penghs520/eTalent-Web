@@ -15,10 +15,9 @@
         height: 100%;
         border: 10px solid #f0f0f0;
         border-bottom: none;
-        padding: 24px;
+        padding-top: 24px;
         box-sizing: border-box;
         overflow: auto;
-        text-align: left;
         background-color: #fff;
     }
 }
@@ -207,6 +206,7 @@ export default {
             });
         },
 
+        
         //树形--节点点击
         nodeClick(node) {
             console.log(node);

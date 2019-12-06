@@ -108,7 +108,7 @@
                 </el-table-column>
             </template>
             <el-table-column v-for="(item,index) in head" :key="index" :prop="item.key" :label="item.name" :width="item.width" :formatter="columnFormatter" v-show="item.isShow" >
-            </el-table-column>
+</el-table-column>
             <el-table-column width="14"></el-table-column>
         </el-table>
 
@@ -156,8 +156,7 @@ export default {
         };
     },
     created() {
-        
-        
+            
         // 变量初始化
         this.barModelInit(this.table.bar);
         Object.assign(this.page, this.table.page);

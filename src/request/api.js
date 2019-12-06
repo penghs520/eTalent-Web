@@ -129,12 +129,6 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const position_api5    = (data, callback) => {request('get', `api/masterdata/position/sortPositionGroup`, data, callback)};
         const position_api6    = (data, callback) => {request('get', `api/masterdata/position/downloadExcel`, data, callback, 'blob')};
         
-        // 职级设置
-        const positionLevel_api1    = (data, callback) => {request('get', `api/masterdata/positionLevel/getPositionLevelList`, data, callback)};
-
-        //职等设置
-        const positionGrade_api1    = (data, callback) => {request('get', `api/masterdata/positionGrade/getPositionGradeList`, data, callback)};
-
     
     
     // 组织机构
@@ -238,11 +232,6 @@ export {
             //职位设置
             position_api1,position_api2,position_api3,position_api4, position_api5,position_api6,
             
-            //职级设置
-            positionLevel_api1,
-
-            //职等设置
-            positionGrade_api1,
         
         // 组织机构
             //机构维护

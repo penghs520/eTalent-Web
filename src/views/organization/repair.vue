@@ -58,6 +58,7 @@
 .check_wrap2 {
     padding-left: 8px;
     margin: 0px 30px;
+    overflow:hidden;
 }
 .check_box {
     height: 32px;
@@ -172,7 +173,7 @@
                                 size="small"
                             >
                                 <el-form-item label="机构编码" prop="orgCode">
-                                    <el-input v-model="addOrgForm.orgCode" disabled></el-input>
+                                    <el-input v-model="addOrgForm.orgCode"></el-input>
                                 </el-form-item>
                                 <el-form-item label="机构名称" prop="orgName">
                                     <el-input v-model="addOrgForm.orgName" placeholder="请输入"></el-input>
@@ -733,12 +734,6 @@ export default {
                         text: "新增",
                         btnType: "primary",
                         method: this.addOrg
-                    },
-                    {
-                        type: "button",
-                        text: "编辑",
-                        btnType: "plain",
-                        method: this.editOrg
                     },
                     {
                         type: "button",
@@ -1315,22 +1310,15 @@ export default {
                 }
             });
         },
-
         //编辑机构--点击机构名称编辑
         cellClick(key, row, value) {
-            this.getOrgType();
-            this.editOrgForm = { ...row };
-            this.editOrgDialog = true;
-        },
-        //编辑机构--弹出框
-        editOrg() {
-            if (this.editOrglist.length != 1) {
-                this.$message.warning("请选择一个机构");
-                return;
+            if(key === "orgName"){
+                this.getOrgType();
+                this.getTreeReq()
+                this.editOrgForm = { ...row };
+                this.editOrgDialog = true;
             }
-            this.getOrgType(); //获取所有数据类型
-            this.editOrgForm = { ...this.editOrglist[0] };
-            this.editOrgDialog = true;
+            
         },
         //编辑机构--请求接口
         editOrgReq(formName) {

@@ -73,6 +73,7 @@
 .check_wrap2 {
     padding-left: 8px;
     margin: 0px 30px;
+    overflow:hidden;
 }
 .check_box {
     height: 32px;
@@ -1103,6 +1104,7 @@ export default {
                 base.log("r", "岗位排序", res.data);
                 if (res.data.success) {
                     this.getPostTableReq();
+                    this.getPostTreeReq()
                     this.$message.success("排序成功");
                     this.sortPostDialog = false;
                 } else {
@@ -1135,7 +1137,7 @@ export default {
             });
         },
 
-        //岗位导出--请求接口(未完成)
+        //岗位导出--请求接口
         exportPostTable(searchData, radioData, checkboxData) {
             if (!this.orgNode) {
                 this.$message.warning("请点击左侧机构树");
@@ -1220,6 +1222,7 @@ export default {
                         if (res.data.success) {
                             this.$message.success("复制成功");
                             this.getPostTableReq();
+                            this.getPostTreeReq()
                             this.copyPostDialog = false;
                         } else {
                             base.error(res.data);
@@ -1263,6 +1266,7 @@ export default {
                 if (res.data.success) {
                     this.$message.success("解封成功");
                     this.getPostTableReq();
+                    this.getPostTreeReq()
                     this.EnableDialog = false;
                 } else {
                     base.error(res.data);
@@ -1279,6 +1283,7 @@ export default {
                 if (res.data.success) {
                     this.$message.success("封存成功");
                     this.getPostTableReq();
+                    this.getPostTreeReq()
                     this.notEnableDialog = false;
                 } else {
                     base.error(res.data);
@@ -1340,6 +1345,7 @@ export default {
                 if (res.data.success) {
                     this.delPostDialog = false;
                     this.getPostTableReq();
+                    this.getPostTreeReq()
                 } else {
                     base.error(res.data);
                 }
@@ -1356,6 +1362,7 @@ export default {
                         if (res.data.success) {
                             base.log("r", "编辑岗位", res.data);
                             this.editPostDialog = false;
+                            this.getPostTableReq();                    this.getPostTreeReq()
                         } else {
                             base.error(res.data);
                         }
@@ -1410,7 +1417,6 @@ export default {
                 base.log("r", "获取所有职位", res.data);
                 if (res.data.success) {
                     this.positionList = res.data.result.list;
-                    console.log(this.positionList);
                 } else {
                     base.error(res.data);
                 }

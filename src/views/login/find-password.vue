@@ -1,5 +1,15 @@
+<style lang="scss">
+#find_password {
+    .el-tabs__header {
+        border-bottom: 1px solid #dbdbdb;
+    }
+    .el-tabs__item:not(.is-active){
+        color: #BFBFBF !important;
+    }
+}
+</style>
 <style lang='scss' scoped>
-.find_password {
+#find_password {
     display: flex;
     width: 1008px;
     height: 600px; 
@@ -11,7 +21,7 @@
         height: 600px;
         padding: 80px 88px 0px;
         text-align: left;
-        background: rgba(241, 242, 242, 1);
+        background: #fff;
         border-radius: 0px 12px 12px 0px;       
         h1 {
             margin-bottom: 20px;
@@ -49,16 +59,7 @@
         .we_chat {
             .footer_line {
                 text-align: center;
-                background: url("../../assets/img/login/admin_line.png")
-                    no-repeat center center;
-                i {
-                    display: inline-block;
-                    width: 16px;
-                    height: 14px;
-                    margin-right: 5px;
-                    background: url("../../assets/img/login/admin_weixin.png")
-                        center;
-                }
+                background: url("../../assets/img/login/admin_line.png") no-repeat center center;
                 span {
                     font-size: 14px;
                     cursor: pointer;
@@ -85,7 +86,7 @@
 }
 </style>
 <template>
-    <div class="find_password">
+    <div id="find_password">
         <div class="swiper-wrap">
             <swiper></swiper>
         </div>
@@ -160,7 +161,6 @@
             <!-- 登陆图标 -->
             <div class="we_chat">
                 <div class="footer_line">
-                    <i></i>
                     <span @click="$router.push('/')">返回登陆</span>
                 </div>
             </div>

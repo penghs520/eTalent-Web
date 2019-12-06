@@ -77,13 +77,6 @@
 <template>
     <div id="organization_position">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <!-- <el-tab-pane label="职位体系" name="systematic">
-                <el-radio-group v-model="positionRadio" class="position_radio">
-                    <el-radio :label="1">按职级</el-radio>
-                    <el-radio :label="2">按职位</el-radio>
-                </el-radio-group>
-            </el-tab-pane> -->
-
             <!-- 职位族设置 -->
             <el-tab-pane label="职位族设置" name="positionGroup">
                 <div class="group_table">
@@ -352,8 +345,6 @@ import {
     positionGroup_api5,
     positionGroup_api6,
     positionGroup_api7,
-    positionLevel_api1,
-    positionGrade_api1,
     position_api1,
     position_api2,
     position_api3,
@@ -371,142 +362,6 @@ export default {
     data() {
         return {
             activeName: "positionGroup",
-            // 职级
-            positionLevelTable: {
-                head: [
-                    /* 必须，表格头配置 */
-                    {
-                        name: "职级名称" /* 必须，表格头所显示的文字 */,
-                        key:
-                            "userName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
-                        isShow: true /* 必须，表格是否默认显示该列 */,
-                        width: "200px" /* 非必须，该列的默认宽度 */
-                    },
-                    { name: "职级说明", key: "employeeNumber", isShow: true }
-                ],
-                data: [] /* 必须，表格要渲染的数据，数组格式 */,
-                total: 0 /* 必须，数据的总条数，用于翻页 */,
-                bar: [
-                    /* 非必须，表格上面的操作栏配置 */
-                    {
-                        type: "button" /* 必须，DOM类型：按钮 */,
-                        text: "新增" /* 必须，按钮名称 */,
-                        btnType:
-                            "primary" /* 非必须，element-ui提供的按钮样式，新增 plain */,
-                        method: this
-                            .addPositionLevel /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: "button" /* 必须，DOM类型：按钮 */,
-                        text: "删除" /* 必须，按钮名称 */,
-                        btnType:
-                            "plain" /* 非必须，element-ui提供的按钮样式，新增 plain */,
-                        method: this
-                            .delPositionLevel /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: "buttons" /* 下拉按钮 */,
-                        text: "更多操作",
-                        btnType: "primary",
-                        defaultIconHide: false /* 非必须，默认图标是否不显示，默认显示，true-不显示，false-显示 */,
-                        list: [
-                            /* 必须，更多按钮的数据组成的数组 */
-                            {
-                                text: "排序" /* 必须，按钮名称 */,
-                                method: this.btn1
-                            },
-                            { text: "导入", method: this.btn2 },
-                            { text: "导出", method: this.btn3 }
-                        ]
-                    }
-                ],
-                showSelect: true /* 非必须，是否显示select勾选框 */,
-                selectChange: this
-                    .levelSelectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
-                loading: false /* 非必须，加载动画 */,
-                pageResize: false /* 非必须，页码重置 */,
-                page: {
-                    /* 非必须，页码配置 */
-                    pageSizes: [10, 20, 30] /* 非必须，页码可选的每页数量 */,
-                    pageSize: 10 /* 非必须，默认每页显示的数量 */
-                },
-                pageResize: false,
-                pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
-                pageSizeChange: this
-                    .levelPageSizeChange /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */,
-                pageChange: this
-                    .levelPageChange /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
-            },
-
-            //职等
-            positionGradeTable: {
-                head: [
-                    /* 必须，表格头配置 */
-                    {
-                        name: "职等名称" /* 必须，表格头所显示的文字 */,
-                        key:
-                            "userName" /* 必须，该列要显示的数据所对应的变量的字符串格式 */,
-                        isShow: true /* 必须，表格是否默认显示该列 */,
-                        width: "200px" /* 非必须，该列的默认宽度 */
-                    },
-                    { name: "职等说明", key: "employeeNumber", isShow: true }
-                ],
-                data: [] /* 必须，表格要渲染的数据，数组格式 */,
-                total: 0 /* 必须，数据的总条数，用于翻页 */,
-                bar: [
-                    /* 非必须，表格上面的操作栏配置 */
-                    {
-                        type: "button" /* 必须，DOM类型：按钮 */,
-                        text: "新增" /* 必须，按钮名称 */,
-                        btnType:
-                            "primary" /* 非必须，element-ui提供的按钮样式，新增 plain */,
-                        method: this
-                            .addPositionGrade /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: "button" /* 必须，DOM类型：按钮 */,
-                        text: "删除" /* 必须，按钮名称 */,
-                        btnType:
-                            "plain" /* 非必须，element-ui提供的按钮样式，新增 plain */,
-                        method: this
-                            .delPositionGrade /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
-                    },
-                    {
-                        type: "buttons" /* 下拉按钮 */,
-                        text: "更多操作",
-                        btnType: "primary",
-                        defaultIconHide: false /* 非必须，默认图标是否不显示，默认显示，true-不显示，false-显示 */,
-                        list: [
-                            /* 必须，更多按钮的数据组成的数组 */
-                            {
-                                text: "排序" /* 必须，按钮名称 */,
-                                method: this.btn1
-                            },
-                            { text: "导入", method: this.btn2 },
-                            { text: "导出", method: this.btn3 }
-                        ]
-                    }
-                ],
-                showSelect: true /* 非必须，是否显示select勾选框 */,
-                selectChange: this
-                    .GradeSelectChange /* 非必须，selcet选中改变时的回调，接收1个参数 */,
-                loading: false /* 非必须，加载动画 */,
-                pageResize: false /* 非必须，页码重置 */,
-                page: {
-                    /* 非必须，页码配置 */
-                    pageSizes: [10, 20, 30] /* 非必须，页码可选的每页数量 */,
-                    pageSize: 10 /* 非必须，默认每页显示的数量 */
-                },
-                pageResize: false,
-                pageHide: false /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */,
-                pageSizeChange: this
-                    .GradePageSizeChange /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */,
-                pageChange: this
-                    .GradePageChange /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
-            },
-
-            //职位体系
-            positionRadio: "",
 
             // 职位族
             positionGroupTable: {
@@ -1074,9 +929,6 @@ export default {
         },
         //职位族--删除,请求接口
         delGroupRequst() {
-            // let send = {
-            //     positionGroupIds: this.GroupDelList
-            // };
             this.GroupDelList = this.GroupDelList.map(
                 item => item.positionGroupId
             );
@@ -1111,44 +963,6 @@ export default {
             });
         },
 
-        //职等--获取职等列表
-        getPositionGradeReq() {
-            let send = {
-                currentPage: 1,
-                pageSize: 10
-            };
-            positionGrade_api1(send, res => {
-                base.log("s", "获取职等数据", send);
-                base.log("r", "获取职等数据", res);
-                if (res.data.success) {
-                } else {
-                }
-            });
-        },
-        //职等--多选框被点击
-        GradeSelectChange() {},
-        //职等--表格页容量改变
-        GradePageSizeChange() {},
-        //职等--表格页码改变
-        GradePageChange() {},
-
-        //职级--获取职级列表
-        getPositionLevelReq() {
-            let send = {
-                currentPage: 1,
-                pageSize: 10
-            };
-            positionLevel_api1(send, res => {
-                base.log("s", "获取职级列表", send);
-                base.log("r", "获取职级列表", res.data);
-                if (res.data.success) {
-                    this.positionLevelTable.data = res.data.list;
-                } else {
-                    base.error(res.data);
-                }
-            });
-        },
-
         //tab栏切换
         handleClick(tab, event) {
             if (tab.name === "positionGroup") {
@@ -1157,11 +971,8 @@ export default {
                 this.getAllPositionGroup();
             } else if (tab.name === "position") {
                 this.getPositionTreeReq();
-            } else if (tab.name === "position_level") {
-                this.getPositionLevelReq();
-            } else if (tab.name === "position_grade") {
-                this.getPositionGradeReq();
             }
+             
         }
     }
 };

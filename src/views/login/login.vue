@@ -1,5 +1,15 @@
+<style lang="scss">
+#login_wrap {
+    .el-tabs__header {
+        border-bottom: 1px solid #dbdbdb;        
+    }
+    .el-tabs__item:not(.is-active){
+        color: #BFBFBF !important;
+    }
+}
+</style>
 <style lang="scss" scoped>
-.wrap {
+#login_wrap {
     display: flex;
     width: 1008px;
     height: 600px;
@@ -11,8 +21,8 @@
         box-sizing: border-box;
         height: 600px;
         padding: 80px 88px 0px;
-        background: rgba(241, 242, 242, 1);
-        border-radius: 0px 12px 12px 0px;  
+        background: #fff;
+        border-radius: 0px 12px 12px 0px;
         text-align: left;
         .code {
             position: absolute;
@@ -101,9 +111,10 @@
     .wechat_login {
         flex: 1;
         position: relative;
-        padding: 80px 88px 0px;
+        padding: 80px 88px 0px;       
+        background: #fff;
         text-align: left;
-        background: rgba(241, 242, 242, 1);
+        border-radius: 0px 12px 12px 0px;
         .code {
             position: absolute;
             top: 27px;
@@ -159,8 +170,9 @@
     }
 }
 </style>
+
 <template>
-    <div class="wrap">
+    <div id="login_wrap">
         <!-- 左边轮播图组件 -->
         <div>
             <swiper></swiper>
@@ -441,7 +453,10 @@ export default {
             login_api4(send, res => {
                 if (res.data.success) {
                     this.$message.success("登陆成功");
-                    localStorage.setItem("userInfo", JSON.stringify(res.data.result));
+                    localStorage.setItem(
+                        "userInfo",
+                        JSON.stringify(res.data.result)
+                    );
                     this.$router.push("/qinjee/organization_repair");
                 } else {
                     base.error(res.data);
@@ -522,8 +537,8 @@ export default {
             // 存储菜单
             localStorage.setItem("topMenu", JSON.stringify(topMenu));
             localStorage.setItem("sideMenu", JSON.stringify(sideMenu));
-            localStorage.setItem("topMenuIndex", '');
-            localStorage.setItem("leftMenuActive", '');
+            localStorage.setItem("topMenuIndex", "");
+            localStorage.setItem("leftMenuActive", "");
         }
     }
 };

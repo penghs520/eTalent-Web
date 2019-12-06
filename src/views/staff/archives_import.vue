@@ -46,7 +46,7 @@
                 <el-tab-pane label="附件信息导入" name="fileImport" class="common"> 
                 </el-tab-pane>
 
-                <el-tab-pane label="照片导入" name="photoIMport" class="common"> 
+                <el-tab-pane label="照片导入" name="photoImport" class="common"> 
                 </el-tab-pane>
 
             </el-tabs>
@@ -66,7 +66,7 @@ export default {
     methods:{
         //tab栏点击
         handleClick(){
-
+            
         }
     }
 

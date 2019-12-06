@@ -11,7 +11,7 @@
         height: 600px;
         padding: 80px 88px 0px;
         text-align: left;
-        background: rgba(241, 242, 242, 1);
+        background: #fff;
         border-radius: 0px 12px 12px 0px;  
         h1 {
             font-size: 28px;
@@ -60,14 +60,6 @@
                 text-align: center;
                 background: url("../../assets/img/login/admin_line.png")
                     no-repeat center center;
-                i {
-                    display: inline-block;
-                    width: 16px;
-                    height: 14px;
-                    margin-right: 5px;
-                    background: url("../../assets/img/login/admin_weixin.png")
-                        center;
-                }
                 span {
                     font-size: 14px;
                     cursor: pointer;
@@ -162,7 +154,6 @@
             <!-- 返回登陆 -->
             <div class="we_chat">
                 <div class="footer_line">
-                    <i></i>
                     <span @click="$router.push('/')">返回登陆</span>
                 </div>
             </div>

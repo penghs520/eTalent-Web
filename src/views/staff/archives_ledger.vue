@@ -132,15 +132,18 @@ export default {
                 head: [                                 /* 必须，表格头配置 */
                     {name: '姓名', key: 'userName', isShow: true},
                     {name: '工号', key: 'employeeNumber', isShow: true},
-                    {name: '单位', key: 'employeeNumber', isShow: true},
+                    {name: '单位', key: 'businessUnitName', isShow: true},
                     {name: '部门', key: 'orgName', isShow: true},
-                    {name: '人员分类', key: 'attritionType', isShow: true},
+                    {name: '人员分类', key: 'idType', isShow: true},
                     {name: '岗位', key: 'postName', isShow: true},
                     {name: '入职日期', key: 'hireDate', isShow: true},
                     {name: '试用期到期日', key: 'probationDueDate', isShow: true},
                     {name: '直接上级', key: 'supervisorUserName', isShow: true},
                     {name: '联系电话', key: 'phone', isShow: true},
-                    {name: '任职类型', key: 'idType', isShow: true},
+                    {name: '任职类型', key: 'attritionType', isShow: true},
+                    // {name: '第一学历', key: 'idType', isShow: false},
+                    // {name: '紧急联系人姓名', key: 'idType', isShow: false},
+                    // {name: '紧急联系人电话', key: 'idType', isShow: false},
                 ],
                 data: [],                               /* 必须，表格要渲染的数据，数组格式 */
                 total: 0,                               /* 必须，数据的总条数，用于翻页 */
@@ -151,7 +154,7 @@ export default {
                         key: 'type1',
                         defaultVal: '',
                         label:"人员分类：",
-                        method:this.selectClassify,
+                        method:this.selectArchiveType,
                         list:[
                             {value:"全选"},
                             {value:"正式"},
@@ -224,14 +227,15 @@ export default {
                 selectChange: this.selectChange,        /* 非必须，selcet选中改变时的回调，接收1个参数 */
                 activeColumn:"",                        /* 非必须，给列加高亮，值是该列表格头显示的名称，多列的话要写成数组格式 */
                 cellClick: this.cellClick,              /* 非必须，表格单元格被点击的回调，接收3个参数：该列的key、行数据、该单元格显示的内容 */
-                pageResize: false,                    /* 非必须，页码重置 */
+                pageResize: false,                      /* 非必须，页码重置 */
                 pageHide: false,                        /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */
                 pageSizeChange: this.pageSizeChange,    /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */
                 pageChange: this.pageChange,            /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
+                formatter: this.timeFormatter, 
             },
-            classify:"",
+            archiveType:"",
             orgList:[],
-            workStatus:"",
+            workType:"",
         }
     },
     mounted(){
@@ -250,15 +254,29 @@ export default {
         }
     },
     methods:{
+        //表格--时间格式化
+        timeFormatter(key,val){
+            if (key === 'hireDate' || key === 'probationDueDate') {
+                if (val) {
+                    let newVal = val.split('T')[0];
+                    return newVal;
+                }
+            }else{
+                return val;
+            }
+        },
         //查询台账请求
         getLegerReq(){
             let ids = this.orgList.map(item =>item.orgId)        
             let send = {
-                archiveType: this.classify,
-                orgId:28,
+                // archiveType: this.archiveType,
+                archiveType: "REGULAR_EMPLOYEE",
                 // orgId:ids,
-                stangdingBookId:this.ledgerNode.standingBookId,
-                type:this.workStatus,
+                orgId:28,                
+                // stangdingBookId:this.ledgerNode.standingBookId,
+                stangdingBookId:21,
+                // type:this.workType,
+                type:"兼职",
             }
             base.log("s","查询台账",send)
             archives_ledger_api4(send,res=>{
@@ -286,12 +304,12 @@ export default {
         },
         //下拉框 -- 工作状态 
         selectStatus(val){
-            this.workStatus = val
+            this.workType = val
             console.log(val);
         }, 
         //下拉框 -- 人员分类
-        selectClassify(val){
-            this.classify = val
+        selectArchiveType(val){
+            this.archiveType = val
             console.log(val);            
         },
         //台账树--节点点击

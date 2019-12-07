@@ -1,16 +1,17 @@
-<style scoped>
+<style scoped lang="scss">
 #commonTable{
     background-color: #fff;
 }
 .operateBar{
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     padding-left: 24px;
     padding-right: 24px;
     margin-bottom: 16px;
 }
 .operateBar>li{
-    margin-right: 20px;
+    margin:10px 20px 0px 0px;
 }
 .operateBar>li:last-child{
     margin-right: 0;
@@ -18,6 +19,18 @@
 .table{
     margin-bottom: 20px;
     /* width: 100%; */
+}
+.select_wrap{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;   
+    .select_title{
+        font-size: 14px;
+        width: 70px;
+    }
+    .el-select{
+        flex: 1;
+    }
 }
 </style>
 <style>
@@ -43,17 +56,23 @@
                 <el-input v-if="item.type === 'input' && item.isShow !== false"   v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @keydown.enter="inputEnter(item)" ></el-input>
                 
                 <!-- 下拉框 -->
-                <span v-if="item.type === 'select' && item.isShow !== false">{{item.label}}</span>
-                <el-select v-if="item.type === 'select' && item.isShow !== false"   v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @change="selectValueChange($event,item.method)">
-                    <el-option v-for="li in item.list" :key="li.value" :label="li.label" :value="li.value"></el-option>
-                </el-select>
+                <div v-if="item.type === 'select' && item.isShow !== false" class="select_wrap">
+                    <span v-if="item.type === 'select' && item.isShow !== false" :class="{ 'select_title' : item.label}">{{item.label}}</span>
+                    <el-select v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @change="selectValueChange($event,item.method)">
+                        <el-option v-for="li in item.list" :key="li.value" :label="li.label" :value="li.value"></el-option>
+                    </el-select>
+                </div>
+                
 
                 <!-- 下拉选择框树 -->
-                <el-select v-if="item.type === 'selectTree' && item.isShow !== false" :ref="`selectTree_${index}`"  v-model="barData[item.showKey]" :placeholder="item.placeholder" size="small" clearable="" popper-class="base_treeSelect" style="width:100%">
-                    <el-option  :label="barData[item.showKey]" :value="barData[item.showKey]">
-                         <tree :treeData="item.treeData" @nodeClick="selectTreeNodeClick($event,item,`selectTree_${index}`)" @selectChange="selectTreeCheckedChange($event,item)" ></tree>
-                    </el-option>
-                </el-select>
+                <div v-if="item.type === 'selectTree' && item.isShow !== false" class="select_wrap">
+                    <span v-if="item.type === 'selectTree' && item.isShow !== false" :class="{ 'select_title' : item.label}">{{item.label}}</span>
+                    <el-select  :ref="`selectTree_${index}`"  v-model="barData[item.showKey]" :placeholder="item.placeholder" size="small" clearable="" popper-class="base_treeSelect" style="width:100%">
+                        <el-option  :label="barData[item.showKey]" :value="barData[item.showKey]">
+                            <tree :treeData="item.treeData" @nodeClick="selectTreeNodeClick($event,item,`selectTree_${index}`)" @selectChange="selectTreeCheckedChange($event,item)" ></tree>
+                     </el-option>
+                    </el-select>
+                 </div>
 
                 <!-- 按钮 -->
                 <template v-if="item.type === 'button' && item.isShow !== false">

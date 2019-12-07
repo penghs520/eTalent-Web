@@ -712,10 +712,6 @@ export default {
                 selectChange: this.postSelectChange,
                 loading: false,
                 pageResize: false,
-                page: {
-                    pageSizes: [4, 8, 12],
-                    pageSize: 4
-                },
                 pageHide: false,
                 pageSizeChange: this.postPageSizeChange,
                 pageChange: this.postPageChange,

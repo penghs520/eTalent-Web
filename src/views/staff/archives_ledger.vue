@@ -106,8 +106,7 @@ export default {
     name:"archives_ledger",
     components:{
         tree,
-        commonTable,
-        
+        commonTable,        
     },
     data(){
         return {
@@ -167,6 +166,7 @@ export default {
                     {
                         type: 'selectTree',                 /* 单选下拉框树形 */
                         placeholder: '请筛选机构',
+                        label:"部门选择：",
                         key: 'typeTree',                         // 必须,树形下拉框选择值绑定的变量
                         showKey: 'typeTreeName',                 // 必须,树形下拉框选择值显示的值绑定的变量                        
                         nodeValueKey: 'orgId',                  // 必须,树形下拉框选中的节点对象中要取的值的key
@@ -189,6 +189,7 @@ export default {
                         placeholder: '请选择',
                         key: 'type2',
                         defaultVal: '',
+                        label:"兼职状态：",
                         method:this.selectStatus,
                         list:[
                             {value:"全选"},
@@ -206,6 +207,7 @@ export default {
                         type: 'select',                 /* 单选下拉框 */
                         placeholder: '请选择',
                         key: 'type3',
+                        label:"显示方案：",
                         defaultVal: '默认显示方案',
                         isShow :false,
                         list:[

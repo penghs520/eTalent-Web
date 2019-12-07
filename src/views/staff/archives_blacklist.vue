@@ -52,8 +52,8 @@ export default {
                 bar: [
                     {
                         type: 'button',                 /* 必须，DOM类型：按钮 */
-                        text: '上传',                   /* 必须，按钮名称 */
-                        btnType: 'plain',                 /* 非必须，element-ui提供的按钮样式，新增 plain */
+                        text: '新增',                   /* 必须，按钮名称 */
+                        btnType: 'plain',                /* 非必须，element-ui提供的按钮样式，新增 plain */
                         method: this.upload             /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
                     },
                     {

@@ -17,13 +17,32 @@
 <template>
     <div id="archives_file">
         <div class="content">
-           <commonTable :table="tableData"></commonTable>
+           <commonTable v-show="!uploadShow" :table="tableData"></commonTable>
+           <commonUpload v-show="uploadShow" :data="uploadData" :active="active">
+                  <template v-slot:remind>
+                      <div style="marginTop:-2px">
+                          <span style="marginRight:10px">上传的附件单个最大为5M（根据系统设置）</span>
+                     </div>                           
+                 </template>
+                  <template v-slot:explain>
+                      <div>
+                         <p>1.一次最多导入 100个附件。</p>
+                         <p>2.附件的的命名规则须按 “工号#附件名称”或"身份证号#附件名称"，如”QJ090814#身份证“。</p>
+                         <p>3.系统根据导入文件的命名中包含的关键字智能匹配证件类型，如“QJ090814#身份证"导入后会自动将文件存放在附件列表中的身份证目录下。如果文件名中不含有附件类型中的关键字，则导入后存放在其他目录下。</p>
+                      </div>  
+                 </template>
+                 <template v-slot:btn>
+                     <el-button type="primary" @click="backHome" size="mini">返回</el-button>
+                     <el-button type="primary" size="mini">导入校验</el-button>
+                 </template>
+           </commonUpload>
         </div>
     </div>
 </template>
 
 <script>
 import  commonTable  from "../../components/table/commonTable";
+import  commonUpload from "../../components/archivesUpload/archivesUpload"
 import base from "../../assets/js/base"
 import { archives_file_api1 } from '../../request/api'
 
@@ -31,6 +50,7 @@ export default {
     name: "archives_file",
     components:{
         commonTable,
+        commonUpload,
     },
     data() {
         return {
@@ -71,7 +91,7 @@ export default {
                         type: 'button',                 /* 必须，DOM类型：按钮 */
                         text: '上传',                   /* 必须，按钮名称 */
                         btnType: 'plain',             /* 非必须，element-ui提供的按钮样式，新增 plain */
-                        method: this.upload        /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                        method: this.uploadClick        /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
                     },
                     {
                         type: 'button',                 /* 必须，DOM类型：按钮 */
@@ -107,12 +127,26 @@ export default {
                 pageSizeChange: this.pageSizeChange,    /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */
                 pageChange: this.pageChange,            /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
             },
+            active:0,
+            uploadData:{
+                uploadUrl:"",
+            },
+            uploadShow:false,
         };
     },
     created(){
         this.getOrgTreeReq()
     },
     methods:{
+        //上传附件--返回按钮
+        backHome(){
+            this.uploadShow = false
+        },
+        //上传附件--按钮
+        uploadClick(){
+            this.uploadShow = true
+        },
+        //获取机构树
          getOrgTreeReq() {
             let send = {
                 isEnable: 0

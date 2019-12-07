@@ -172,14 +172,14 @@
                                 class="demo-ruleForm"
                                 size="small"
                             >
-                                <el-form-item label="机构编码" prop="orgCode">
-                                    <el-input v-model="addOrgForm.orgCode"></el-input>
+                                <el-form-item label="机构编码" prop="orgCode" >
+                                    <el-input v-model="addOrgForm.orgCode" ></el-input>
                                 </el-form-item>
-                                <el-form-item label="机构名称" prop="orgName">
-                                    <el-input v-model="addOrgForm.orgName" placeholder="请输入"></el-input>
+                                <el-form-item label="机构名称" prop="orgName" >
+                                    <el-input v-model="addOrgForm.orgName" placeholder="请输入" ></el-input>
                                 </el-form-item>
-                                <el-form-item label="机构类型" prop="orgType">
-                                    <el-select v-model="addOrgForm.orgType" placeholder="请选择">
+                                <el-form-item label="机构类型" prop="orgType" >
+                                    <el-select v-model="addOrgForm.orgType" placeholder="请选择" >
                                         <div v-for="item in orgTypeList" :key="item.id">
                                             <el-option
                                                 :label="item.dictValue"
@@ -188,7 +188,7 @@
                                         </div>
                                     </el-select>
                                 </el-form-item>
-                                <el-form-item label="上级机构" prop="orgParentId">
+                                <el-form-item label="上级机构" prop="orgParentId" >
                                     <el-select
                                         v-model="addOrgForm.orgParentName"
                                         placeholder="请选择"
@@ -798,9 +798,6 @@ export default {
                 orgParentId: [
                     { required: true, message: "请输入", trigger: "blur" }
                 ],
-                orgManagerId: [
-                    { required: true, message: "请输入", trigger: "blur" }
-                ],
                 newOrgName: [
                     { required: true, message: "请输入", trigger: "blur" }
                 ],
@@ -949,6 +946,8 @@ export default {
     },
     mounted() {
         this.getTreeReq();
+        console.log(this.$refs);
+        
     },
     methods: {
         //机构导入---导出txt
@@ -1317,6 +1316,9 @@ export default {
                 this.getTreeReq()
                 this.editOrgForm = { ...row };
                 this.editOrgDialog = true;
+                setTimeout(() => {
+                   this.$refs.editOrgForm.clearValidate()
+            }, 0);
             }
             
         },
@@ -1401,17 +1403,17 @@ export default {
         addOrg() {
             if (this.orgParent.length === 0) {
                 this.$message.warning("请选择机构");
-                // let maxCodeList = this.treeData.data.map(item => item.orgCode);
-                // let maxCode = Math.max.apply(this, maxCodeList);
-                // this.addOrgForm.orgCode = maxCode + 1;
-                // this.rules.orgParentId = [] //构建集团时取消上级机构校验
                 return;
             }
-            // this.rules.orgParentId = [{ required: true, message: "请输入", trigger: "blur" }]
+            
+            
             this.addOrgForm.orgName = "";
             this.addOrgForm.orgManagerId = "";
             this.getOrgType(); //获取所有机构类型
             this.addOrgDialog = true;
+            setTimeout(() => {
+                   this.$refs.addOrgForm.clearValidate()
+            }, 0);         
             this.addOrgForm.orgCode = Number(this.maxCodeAdd);
             this.addOrgForm.orgParentId = this.orgParent.orgId;
             this.addOrgForm.orgParentName = this.orgParent.orgName;

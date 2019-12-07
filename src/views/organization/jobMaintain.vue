@@ -750,6 +750,9 @@ export default {
                 ],
                 targetOrgName: [
                     { required: true, message: "请选择", trigger: "blur" }
+                ],
+                orgId: [
+                    { required: true, message: "请选择", trigger: "blur" }
                 ]
             },
             orgParenList: [],
@@ -1390,6 +1393,9 @@ export default {
             this.editPostForm.positionId = this.editPostList[0].positionId;
             this.editPostForm.postId = this.editPostList[0].postId;
             this.editPostDialog = true;
+            setTimeout(() => {
+                   this.$refs.editPostForm.clearValidate()
+            }, 0); 
         },
 
         //岗位新增--表格按钮
@@ -1408,6 +1414,9 @@ export default {
             this.addPostForm.postCode = this.maxCodeAdd;
             this.dialogType = true;
             this.addPostDialog = true;
+             setTimeout(() => {
+                   this.$refs.addPostForm.clearValidate()
+            }, 0); 
         },
         //岗位新增 --获取所有职位请求
         getAllPositionReq() {

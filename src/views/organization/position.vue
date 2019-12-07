@@ -99,7 +99,7 @@
                 </div>               
                 <div class="common_content">
                 <!-- 职位族表格-->
-                 <commonTable :table="positionTable" v-show ="positionNode.positionGroupId !== '' "></commonTable>
+                 <commonTable :table="positionTable" v-show ="positionNode.positionGroupId !== '' && positionNode !== ''"></commonTable>
                     <!-- 新增职位族弹窗 -->
                      <el-dialog
                          :visible.sync="positionGroupDialog"
@@ -170,7 +170,7 @@
                        </span>
                      </el-dialog> 
                 <!-- 职位表格 -->
-                 <commonTable :table="positionGroupTable" v-show ="positionNode.positionGroupId === '' "></commonTable> 
+                 <commonTable :table="positionGroupTable" v-show ="positionNode.positionGroupId === '' ||  positionNode === ''"></commonTable> 
                     <!-- 新增职位弹窗 -->
                     <el-dialog
                         :visible.sync="positionDialog"
@@ -798,6 +798,10 @@ export default {
 
          // 职位族--排序
         positionGroupSort() {
+            if(this.positionGroupTable.data.length < 2){
+                this.$message.warning("职位族数量少于2,不可排序")
+                return
+            }
             this.sortTitle = "职位族排序";
             let data = JSON.parse(JSON.stringify(this.positionGroupTable.data));
             this.sortData = data.map(item => {
@@ -810,6 +814,10 @@ export default {
         },
         // 职位--排序
         positionSort() {
+            if(this.positionTable.data.length < 2){
+                this.$message.warning("职位数量少于2,不可排序")
+                return
+            }
             this.sortTitle = "职位排序";
             let data = JSON.parse(JSON.stringify(this.positionTable.data));
             this.sortData = data.map(item => {

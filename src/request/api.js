@@ -68,6 +68,10 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         //附件管理
         const archives_file_api1       = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
+    // 劳动合同
+        // 未签合同
+        const notContract_api1       = (data, callback) => {request('get', `api/masterdata/staffcon/selectNoLaborContractU`, data, callback)};
+
 // 系统管理
     // 权限管理
         // 角色授权
@@ -209,6 +213,10 @@ export {
 
             // 附件管理
             archives_file_api1,
+        
+        // 劳动合同
+            // 未签合同
+            notContract_api1,
 
         // 参数设置
             // 合同参数

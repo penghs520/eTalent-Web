@@ -23,7 +23,7 @@ export default {
                                 type: String,                       /* 必须，DOM类型，可能值：input-输入框、textarea-文本框、select-单选下拉框、selectMore-多选下拉框、
                                                                     checkbox-多选框、radio-单选框、time-时间选择框、date-日期选择框、dateTime-日期时间选择框、
                                                                     orgTree-机构树下拉框、postTree岗位树下拉框 */
-                                fieldName: String,                  /* 必须，表单的label */
+                                label: String,                      /* 必须，表单的label */
                                 key: String,                        /* 必须，该DOM绑定的字段 */
                                 default: String/Array,              /* 非必须，默认值，值类型要与type相应 */
                                 placeholder: String,                /* 非必须，输入框中的提示信息 */
@@ -45,7 +45,9 @@ export default {
                                 timeFormat: String,                 /* 非必须，格式化规则，可能的值： yyyy-MM-dd/等，只对时间、日期选择框生效 */
                                 isReadOnly: Boolean,                /* 非必须，是否只读 */
                                 isMust: Boolean,                    /* 非必须，是否必填，默认false */
+                                isShow: Boolean,                    /* 非必须，是否显示，默认true, true-显示、false-不显示，会用v-if渲染 */
                                 rule: Array,                        /* 非必须，特殊校验规则，暂时支持的值有：email、phone、自定义校验对象 */
+                                isFullRow: Boolean,                 /* 非必须，是否充满整行,该属性只能给最后一个表单条目用，否则样式会错乱 */
                             }
                         ]
                     },
@@ -58,6 +60,7 @@ export default {
                     isAllBtn: Boolean,          /* 非必须, 是否显示控制所有表单的按钮,默认值:false,一般用于弹窗,该值为true时,不显示分组按钮 */
                 },
                 sure: Function,                 /* 非必须，表单格式下，"确定"按钮的回调,接收2个参数：组序号、该组数据, option.isAllBtn为true时无效 */
+                cancel: Function,               /* 非必须，表单格式下，"取消"按钮的回到，接收一个参数：组序号 */
                 allCancel: Function,            /* 非必须, 表单格式下,控制所有分组的"取消"按钮的回调,无参数,option.isAllBtn为false时无效 */
                 allSure: Function,              /* 非必须, 表单格式下,控制所有分组的"确定"按钮的回调,接收1个参数,所有表单的值,option.isAllBtn为false时无效 */
             }

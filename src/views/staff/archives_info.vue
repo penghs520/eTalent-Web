@@ -20,6 +20,8 @@
         <div class="wrap">
             <!-- 表格操作 -->
             <commonTable :table="archivesTable" ref="commonTable"></commonTable>
+            <!-- 删除弹窗-->
+
         </div>
     </div>
 </template>
@@ -27,12 +29,14 @@
 <script>
 import base from "../../assets/js/base";
 import commonTable from "../../components/table/commonTable";
-import { archives_api1, archives_api2 } from "../../request/api";
+import { archives_api1,
+         archives_api2
+    } from "../../request/api";
 
 export default {
     name: "archives_info" /* 档案管理-信息维护 */,
     components: {
-        commonTable
+        commonTable,
     },
     data() {
         return {
@@ -146,52 +150,8 @@ export default {
         this.getInfoReq();
     },
     methods: {
-        //机构树--下拉树形节点被点击
-        selectTreeNodeClick(node) {
-            console.log(node);
-            this.archivesTable.selectTreeValue = node.orgName;
-            this.orgNode =node
-            
-        },
-        //机构树--下拉树选择值改变的回调
-        selectValueChange(val) {
-            console.log(val);
-        },
-
-        //机构树 -- 获取树形请求
-        getOrgTree() {
-            let send = {
-                isEnable: 1
-            };
-            archives_api2(send, res => {
-                base.log("s", "查询树", send);
-                let d = res.data;
-                base.log("r", "查询树", d);
-                if (d.success) {                  
-                    this.archivesTable.bar[4].treeData.data = d.result.list;
-                } else {
-                    base.error(d);
-                }
-            });
-        },
-        //获取档案表 -- 请求接口
-        getInfoReq() {
-            let send = {
-                currentPage: 1,
-                orgId: 28,
-                pageSize: 10
-            };
-            base.log("s", "获取档案信息", send);
-            archives_api1(send, res => {
-                base.log("r", "获取档案信息", res.data);
-                if (res.data.success) {
-                    this.archivesTable.data = res.data.result.list;
-                    this.archivesTable.total = res.data.result.total;
-                } else {
-                    base.error(res.data);
-                }
-            });
-        },
+       
+        
 
         // 档案表--新增按钮
         add() {
@@ -222,9 +182,53 @@ export default {
 
         // 档案表--改变页容量
         pageSizeChange(size) {},
-
         // 档案表--翻页
-        pageChange(index) {}
+        pageChange(index) {},
+        //获取档案表 -- 请求接口
+        getInfoReq() {
+            let send = {
+                currentPage: 1,
+                orgId: 28,
+                pageSize: 10
+            };
+            base.log("s", "获取档案信息", send);
+            archives_api1(send, res => {
+                base.log("r", "获取档案信息", res.data);
+                if (res.data.success) {
+                    this.archivesTable.data = res.data.result.list;
+                    this.archivesTable.total = res.data.result.total;
+                } else {
+                    base.error(res.data);
+                }
+            });
+        },
+
+         //机构树--下拉树形节点被点击
+        selectTreeNodeClick(node) {
+            console.log(node);
+            this.archivesTable.selectTreeValue = node.orgName;
+            this.orgNode =node            
+        },
+        //机构树--下拉树选择值改变的回调
+        selectValueChange(val) {
+            console.log(val);
+        },
+        //机构树 -- 获取树形请求
+        getOrgTree() {
+            let send = {
+                isEnable: 1
+            };
+            archives_api2(send, res => {
+                base.log("s", "查询树", send);
+                let d = res.data;
+                base.log("r", "查询树", d);
+                if (d.success) {                  
+                    this.archivesTable.bar[4].treeData.data = d.result.list;
+                } else {
+                    base.error(d);
+                }
+            });
+        },
     }
 };
 </script>

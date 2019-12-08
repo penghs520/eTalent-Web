@@ -65,7 +65,7 @@
                         <el-col :span="4">
                             <div class="grid-content bg-purple">
                                 <div class="contract_title">前缀固定字符</div>
-                                <el-input size="mini" v-model="Prefix" placeholder="请输入"></el-input>
+                                <el-input size="mini" v-model.trim="Prefix" placeholder="请输入"></el-input>
                             </div>
                         </el-col>
                         <el-col :span="4">
@@ -89,7 +89,7 @@
                         <el-col :span="4">
                             <div class="grid-content bg-purple">
                                 <div class="contract_title">中间固定字符</div>
-                                <el-input size="mini" v-model="Infix" placeholder="请输入"></el-input>
+                                <el-input size="mini" v-model.trim="Infix" placeholder="请输入"></el-input>
                             </div>
                         </el-col>
                         <el-col :span="4">
@@ -113,7 +113,7 @@
                         <el-col :span="4">
                             <div class="grid-content bg-purple">
                                 <div class="contract_title">后缀固定字符</div>
-                                <el-input size="mini" v-model="Suffix" placeholder="请输入"></el-input>
+                                <el-input size="mini" v-model.trim="Suffix" placeholder="请输入"></el-input>
                             </div>
                         </el-col>
                     </el-row>

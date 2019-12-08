@@ -1,6 +1,16 @@
 <template>
     <div>
-        <commonUpload :data="uploadData"  :active="uploadActive"></commonUpload>
+        <commonUpload :data="uploadData"  :active="uploadActive">
+            <template v-slot:remind>
+              <!--温馨提示 -->
+            </template>
+            <template v-slot:explain>
+              <!--导入说明 -->
+            </template>
+            <template v-slot:btn>
+              <!-- 底部按钮 -->
+            </template>
+        </commonUpload>
     </div>
 </template>
 

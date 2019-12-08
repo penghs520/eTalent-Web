@@ -1,14 +1,8 @@
 <style lang="scss">
-#archives_import{
-    .el-tabs{
-        box-sizing: border-box;
-        height: 100%;       
-        overflow: hidden;
-    }
+#archives_import{    
     .el-tabs__header {      
         padding: 0 24px;
-        border-bottom: 1px solid rgba(241, 242, 242, 1);
-      
+        border-bottom: 1px solid rgba(241, 242, 242, 1);     
     }
     .el-tabs__content {
         height: calc(100% - 64px);
@@ -35,9 +29,11 @@
         .common{
             display: flex;
             height: 100%;
+            box-sizing: border-box;
             justify-content: center;
+            background-color: #fff;            
             .wrap{
-                margin-top: 24px;
+                margin-top: 20px;
                 max-width: 1040px;
                 width: 80%;
             }
@@ -69,7 +65,7 @@
                                  </div>  
                             </template>
                             <template v-slot:btn>
-                                <el-button type="primary" size="mini">导入校验</el-button>
+                                <el-button type="primary" size="mini" @click="uploadBaseCheck" :disabled="uploadBase.fileList.length === 0">导入校验</el-button>
                             </template>
                         </commonUpload>
                     </div>                   
@@ -83,7 +79,13 @@
                                      <span>子集导入可以实现对子集信息的新增与更新处理，建议先导出子集信息作为模板，编辑后再导入。</span>
                                      <div  style="marginTop:10px">
                                          <span style="marginRight:10px">请选择要导入的子集：</span>
-                                         <el-select v-model="value" placeholder="请选择" size="mini" style="marginRight:10px"></el-select>
+                                         <el-select v-model="value" placeholder="关联人员子集" size="mini" style="marginRight:10px">
+                                               <el-option
+                                                  v-for="item in childrenSet"
+                                                  :key="item.value"
+                                                  :value="item.value">
+                                                </el-option>
+                                         </el-select>
                                          <el-button type="primary" size="mini">下载模板</el-button>
                                     </div>                                    
                                 </div>                           
@@ -127,6 +129,8 @@
 
 <script>
 import commonUpload from "../../components/archivesUpload/archivesUpload"
+import XLSX from 'xlsx';
+import  base  from "../../assets/js/base"
 
 export default {
     name: "archives_import",
@@ -136,30 +140,50 @@ export default {
     data() {
         return {
             activeName:"baseInfo",
+            //基本信息导入
             uploadBase:{
                 uploadUrl:"",
-                tableShow:false,
+                // tableShow:false,
+                fileList:[],
+                multiple:true,
+                maxNum:20,
             },
+            activeBase:0,
+            // 附件信息导入
             uploadFile:{
                 uploadUrl:"",
             },
+            activeFile:0,
+            value:"",
+            childrenSet:[
+                {value:"关联人员子集"},
+                {value:"教育经历"},
+                {value:"工作经历"},
+                {value:"家庭成员"},
+                {value:"奖惩信息"},
+                {value:"人事变动"},
+            ],
+            // 照片导入
             uploadPhoto:{
                 uploadUrl:"",
             },
-            activeBase:0,
-            activeFile:0,
-            activePhoto:0,
-            value:"",
+            activePhoto:0,                       
         };
     },
     created(){
 
     },
     methods:{
+        //基本信息校验--解析本地excel文件
+        uploadBaseCheck(){
+            base.getExcelTable(this.uploadBase.fileList[0].raw,(res)=>{
+                console.log(res);               
+            })           
+        },
         //基本信息--模板下载
         downloadTemp(){
             this.activeBase = 1
-            this.uploadBase.tableShow = true
+            // this.uploadBase.tableShow = true
         },
         //tab栏点击
         handleClick(){

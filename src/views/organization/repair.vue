@@ -173,10 +173,10 @@
                                 size="small"
                             >
                                 <el-form-item label="机构编码" prop="orgCode" >
-                                    <el-input v-model="addOrgForm.orgCode" ></el-input>
+                                    <el-input v-model.trim="addOrgForm.orgCode" ></el-input>
                                 </el-form-item>
                                 <el-form-item label="机构名称" prop="orgName" >
-                                    <el-input v-model="addOrgForm.orgName" placeholder="请输入" ></el-input>
+                                    <el-input v-model.trim="addOrgForm.orgName" placeholder="请输入" ></el-input>
                                 </el-form-item>
                                 <el-form-item label="机构类型" prop="orgType" >
                                     <el-select v-model="addOrgForm.orgType" placeholder="请选择" >
@@ -291,10 +291,10 @@
                                 size="small"
                             >
                                 <el-form-item label="机构编码" prop="orgCode">
-                                    <el-input v-model="editOrgForm.orgCode"></el-input>
+                                    <el-input v-model.trim="editOrgForm.orgCode"></el-input>
                                 </el-form-item>
                                 <el-form-item label="机构名称" prop="orgName">
-                                    <el-input v-model="editOrgForm.orgName" placeholder="请输入"></el-input>
+                                    <el-input v-model.trim="editOrgForm.orgName" placeholder="请输入"></el-input>
                                 </el-form-item>
                                 <el-form-item label="机构类型" prop="orgType">
                                     <el-select v-model="editOrgForm.orgType" placeholder="请选择">
@@ -459,7 +459,7 @@
                                 size="mini"
                             >
                                 <el-form-item label="新机构名称" prop="newOrgName">
-                                    <el-input v-model="mergeForm.newOrgName" placeholder="请输入"></el-input>
+                                    <el-input v-model.trim="mergeForm.newOrgName" placeholder="请输入"></el-input>
                                 </el-form-item>
                                 <!-- 合并机构选择框 -->
                                 <el-form-item label="待合并机构">
@@ -721,9 +721,9 @@ export default {
                     { name: "封存", key: "isEnable", isShow: true },
                     { name: "机构编码", key: "orgCode", isShow: true },
                     { name: "机构类型", key: "orgType", isShow: true },
-                    { name: "上级机构", key: "orgParentName", isShow: true },
-                    { name: "部门负责人", key: "orgManagerName", isShow: true },
-                    { name: "机构全称", key: "orgFullName", isShow: true }
+                    { name: "上级机构", key: "orgParentName", isShow: true,width:"200px" },
+                    { name: "部门负责人", key: "orgManagerName", isShow: true,width:"100px" },
+                    { name: "机构全称", key: "orgFullName", isShow: true,width:"200px"  }
                 ],
                 data: [] /* 必须，表格要渲染的数据，数组格式 */,
                 total: 0 /* 必须，数据的总条数，用于翻页 */,

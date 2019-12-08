@@ -1,5 +1,6 @@
 // 基础js方法
 import { Message } from 'element-ui';
+import XLSX from 'xlsx';
 let base = {
     /**
      * http请求log输出方法
@@ -89,6 +90,44 @@ let base = {
             })
         }
     },
+
+
+     /**
+     * 将本地单个excel文件转为数组,返回该数组(待更新)
+     * @param {file} file 上传的文件
+     * @param {Function}  解析数据成功后的回调,返回解析成功的数据 
+     */
+    getExcelTable(file,callBack){
+         let fileReader = new FileReader()
+
+        fileReader.onload = function(ev) {
+            try {
+                var data = ev.target.result
+                var workbook = XLSX.read(data, { // 以二进制流方式读取得到整份excel表格对象
+                        type: 'binary'
+                    })
+                var persons = []; // 存储获取到的数据
+            } catch (e) {
+                console.log('文件类型不正确');
+                return;
+            }
+            // 表格的表格范围，可用于判断表头数量是否正确
+            var fromTo = '';
+            // 遍历每张表读取
+            for (var sheet in workbook.Sheets) {
+                if (workbook.Sheets.hasOwnProperty(sheet)) {
+                    fromTo = workbook.Sheets[sheet]['!ref'];
+                    // console.log(fromTo);//打印表格范围
+                    persons = persons.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));                   
+                    /*使用XLSX.utils.sheet_to_json方法解析表格对象返回相应的JSON数据 */ 
+
+                    // break; // 如果只取第一张表，就取消注释这行
+                }
+            }
+            callBack(persons)
+        }; 
+         fileReader.readAsBinaryString(file);              
+    }
 };
 
 export default base;

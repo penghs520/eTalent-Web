@@ -26,7 +26,7 @@
     align-items: center;   
     .select_title{
         font-size: 14px;
-        width: 70px;
+        // width: 70px;
     }
     .el-select{
         flex: 1;
@@ -127,7 +127,7 @@
                 </el-table-column>
             </template>
             <el-table-column v-for="(item,index) in head" :key="index" :prop="item.key" :label="item.name" :width="item.width" :formatter="columnFormatter" v-show="item.isShow" >
-</el-table-column>
+            </el-table-column>
             <el-table-column width="14"></el-table-column>
         </el-table>
 

@@ -13,10 +13,6 @@
     .el-tabs__content {
         height: calc(100% - 64px);
         overflow: auto;
-        height: 100%;
-        #pane-orgPic {
-            height: 100%;
-        }
     }
 }   
 </style>
@@ -35,17 +31,16 @@
             display: flex;
             box-sizing: border-box;
             height: 100%;
-            overflow: hidden;
+            overflow: auto;
             .sider{
                 width: 215px;
-                height: 100%;
                 border-right: 1px solid #f0f0f0;
                 padding: 16px 16px 0px 20px;
                 font-size: 16px;
             }
             .common_content{
                 flex: 1;
-                height: 100%;
+                box-sizing: border-box;
                 padding-top: 16px;
                 overflow: auto;
              
@@ -57,12 +52,16 @@
             display: flex;
             align-items: center;
         }
-    }
+    }  
 }
+ .group_list {
+    margin-top: 10px;
+    padding-left: 35px;
+    }
 
 </style>
 
-</<template>
+<template>
     <div id="archives_ledger">
         <div class="content">
             <el-tabs v-model="activeName" @tab-click="handleClick">
@@ -76,14 +75,65 @@
                         <commonTable :table="ledgerTable" ref="commonTable" ></commonTable>                       
                     </div>                   
                 </el-tab-pane>
-                 <!-- 台账设置 -->
+                   <!-- 台账设置 -->
                 <el-tab-pane label="台账设置" name="setting" class="common">
+                    <!-- 台账设置侧边 -->
                     <div class="sider">
-                        <el-button type="plain" size="small" :style="{ marginBottom :'16px'} ">新增</el-button>
-                        <el-button type="plain" size="small">编辑</el-button>
-                        <el-button type="plain" size="small">删除</el-button>
+                        <el-button type="plain" size="small" :style="{ marginBottom :'16px'} " @click="addLedger">新增</el-button>
+                        <el-button type="plain" size="small" @click="editLedger">编辑</el-button>
+                        <el-button type="plain" size="small" @click="delLedger">删除</el-button>
                         <tree :treeData="treeData"></tree>
+                        <!--新增编辑台账弹窗-->
+                        <el-dialog
+                                :visible.sync="addDialogShow"
+                                class="qinjeeDialogMini"
+                                :append-to-body="true"
+                                :close-on-click-modal="false"
+                                center
+                                 >
+                                <span slot="title">{{dialogTitle}}</span>
+                                <div class="qinjeeDialogMiniCont">
+                                    <el-form :model="addLegerForm" :rules="rules" ref="addLegerForm" label-width="100px" class="demo-ruleForm">
+                                        <el-form-item label="台账名称" prop="name">
+                                            <el-input v-model.trim="addLegerForm.name" size="mini" placeholder="请输入名称"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="是否共享">
+                                            <el-switch v-model="addLegerForm.isShare"></el-switch>
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                                <span slot="footer" class="dialog-footer">
+                                 <el-button size="small" @click="addDialogShow = false">取 消</el-button>
+                                 <el-button size="small" type="primary" @click="addLedgerReq('addLegerForm')">确 定</el-button>
+                                </span>
+                        </el-dialog> 
+                        <!-- 删除台账弹窗 -->
+                        <el-dialog
+                            :visible.sync="delDialogShow"
+                            class="qinjeeDialogMini"
+                            :append-to-body="true"
+                            :close-on-click-modal="false"
+                            center
+                             >
+                            <span slot="title">确认删除</span>
+                            <div class="qinjeeDialogMiniCont">
+                             <div>
+                                <div>                                    
+                                    <i class="el-icon-warning warning icon"></i>
+                                    <span>是否确认删除以下台账?</span>                                   
+                                </div>
+                                 <div class="group_list">
+                                     {{ledgerNode.standingBookName}}
+                                 </div>
+                                </div>
+                             </div>
+                            <span slot="footer" class="dialog-footer">
+                              <el-button size="small" @click="delDialogShow = false">取 消</el-button>
+                              <el-button size="small" type="primary" @click="delLedgerReq">确 定</el-button>
+                            </span>
+                       </el-dialog> 
                     </div>
+                    <!-- 台账设置表格 -->
                     <div class="common_content">
                     </div>   
                 </el-tab-pane>
@@ -110,7 +160,7 @@ export default {
     },
     data(){
         return {
-            activeName:"common",
+            activeName:"setting",
             switchValue:true, 
             treeData: {
                 data: [],
@@ -136,7 +186,7 @@ export default {
                     {name: '人员分类', key: 'idType', isShow: true},
                     {name: '岗位', key: 'postName', isShow: true},
                     {name: '入职日期', key: 'hireDate', isShow: true},
-                    {name: '试用期到期日', key: 'probationDueDate', isShow: true},
+                    {name: '试用期到期日', key: 'probationDueDate', isShow: true , width:"120px"},
                     {name: '直接上级', key: 'supervisorUserName', isShow: true},
                     {name: '联系电话', key: 'phone', isShow: true},
                     {name: '任职类型', key: 'attritionType', isShow: true},
@@ -238,6 +288,20 @@ export default {
             archiveType:"",
             orgList:[],
             workType:"",
+            //新增编辑台账
+            addDialogShow:false,
+            dialogTitle:"", 
+            addLegerForm:{
+                name:"",
+                isShare:false,
+            },
+            rules:{
+                name: [
+                    { required: true, message: '请输入名称', trigger: 'blur' },
+                ],
+            },           
+            //删除台账
+            delDialogShow:false,
         }
     },
     mounted(){
@@ -256,7 +320,60 @@ export default {
         }
     },
     methods:{
-        //表格--时间格式化
+
+        //台账设置--删除按钮
+        delLedger(){
+            if(!this.ledgerNode){
+                this.$message.warning("请选择需要删除的台账")
+                return
+            }
+            this.delDialogShow = true;
+        },
+        //台账设置--删除台账请求
+        delLedgerReq(){
+             console.log("发送删除台账请求");
+             
+        },
+    
+        //台账设置--新增/编辑台账请求
+        addLedgerReq(formName){
+               this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    if(this.dialogTitle === "新增台账"){
+                        console.log("发送新增请求");                       
+                    }else{
+                        console.log("发送编辑请求");
+                    }                  
+                } else {                
+                  return false;
+                }
+        });           
+        },
+        //台账设置--编辑
+        editLedger(){
+            if(!this.ledgerNode){
+                this.$message.warning("请选择需要编辑的台账")
+                return
+            }
+            this.addDialogShow = true;
+            this.dialogTitle = "编辑台账"
+              setTimeout(() => {
+                 this.$refs.addLegerForm.clearValidate()
+             }, 0);
+        },
+        //台账设置--新增按钮
+        addLedger(){
+             this.addDialogShow = true;
+             this.dialogTitle = "新增台账";
+             this.addLegerForm.name = "";
+             this.addLegerForm.isShare = false;
+
+             setTimeout(() => {
+                 this.$refs.addLegerForm.clearValidate()
+             }, 0);
+        },
+
+        //台账表格--时间格式化
         timeFormatter(key,val){
             if (key === 'hireDate' || key === 'probationDueDate') {
                 if (val) {
@@ -320,7 +437,7 @@ export default {
             console.log(node);
             
         },
-        //获取机构树
+        //台账树--获取机构树
         getOrgTreeReq() {
             let send = {
                 isEnable: 0
@@ -344,7 +461,7 @@ export default {
                 this.getNotShareLeger() 
             }           
         },
-        //获取含共享台账
+        //获取含共享台账--请求接口
         getShareLeger(){
              archives_ledger_api3(null,res=>{
                  base.log("r","共享台账",res.data)
@@ -355,7 +472,7 @@ export default {
                 }
             })
          },
-        //获取不含共享台账
+        //获取不含共享台账--请求接口
         getNotShareLeger(){
             archives_ledger_api2(null,res=>{
                  base.log("r","不共享台账",res.data)
@@ -368,14 +485,13 @@ export default {
         },
         //tabs栏切换
         handleClick(tab){
-            if(tab.name === "setting"){
-                console.log("台账设置");
-                
+            if(tab.name === "setting"){              
                 this.treeData.switchOpen = false
+                this.ledgerNode = ""
                 this.getNotShareLeger()
-            }else{    
-                console.log("常用台账");           
+            }else{              
                 this.treeData.switchOpen = true
+                this.ledgerNode = ""
             }
         }
     }

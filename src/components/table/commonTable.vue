@@ -26,7 +26,7 @@
     align-items: center;   
     .select_title{
         font-size: 14px;
-        width: 70px;
+        // width: 70px;
     }
     .el-select{
         flex: 1;

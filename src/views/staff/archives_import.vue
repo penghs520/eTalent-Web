@@ -83,7 +83,13 @@
                                      <span>子集导入可以实现对子集信息的新增与更新处理，建议先导出子集信息作为模板，编辑后再导入。</span>
                                      <div  style="marginTop:10px">
                                          <span style="marginRight:10px">请选择要导入的子集：</span>
-                                         <el-select v-model="value" placeholder="请选择" size="mini" style="marginRight:10px"></el-select>
+                                         <el-select v-model="value" placeholder="关联人员子集" size="mini" style="marginRight:10px">
+                                               <el-option
+                                                  v-for="item in childrenSet"
+                                                  :key="item.value"
+                                                  :value="item.value">
+                                                </el-option>
+                                         </el-select>
                                          <el-button type="primary" size="mini">下载模板</el-button>
                                     </div>                                    
                                 </div>                           
@@ -150,6 +156,14 @@ export default {
             activeFile:0,
             activePhoto:0,
             value:"",
+            childrenSet:[
+                {value:"关联人员子集"},
+                {value:"教育经历"},
+                {value:"工作经历"},
+                {value:"家庭成员"},
+                {value:"奖惩信息"},
+                {value:"人事变动"},
+            ]
         };
     },
     created(){

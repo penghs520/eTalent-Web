@@ -111,7 +111,7 @@
                        <div class="qinjeeDialogSmallCont">
                            <el-form :model="groupForm" label-width="100px" ref="groupForm" :rules="rules">
                              <el-form-item label="职位族名称"  prop="groupname">
-                                <el-input v-model="groupForm.groupname" size="mini"></el-input>
+                                <el-input v-model.trim="groupForm.groupname" size="mini"></el-input>
                              </el-form-item>
                            </el-form>
                        </div>
@@ -132,7 +132,7 @@
                        <div class="qinjeeDialogSmallCont">
                         <el-form :model="editGroupForm" label-width="100px" ref="editGroupForm" :rules="rules">
                             <el-form-item label="职位族名称"  prop="groupname">
-                                <el-input v-model="editGroupForm.groupname" size="mini"></el-input>
+                                <el-input v-model.trim="editGroupForm.groupname" size="mini"></el-input>
                             </el-form-item>
                         </el-form>
                        </div>
@@ -202,7 +202,7 @@
                                 </el-form-item>
                                 <el-form-item label="职位名称" prop="positionName">
                                     <el-input
-                                        v-model="addPositionForm.positionName"
+                                        v-model.trim="addPositionForm.positionName"
                                         size="mini"
                                         placeholder="请输入"
                                     ></el-input>
@@ -248,7 +248,7 @@
                                 </el-form-item>
                                 <el-form-item label="职位名称" prop="positionName">
                                     <el-input
-                                        v-model="editPositionForm.positionName"
+                                        v-model.trim="editPositionForm.positionName"
                                         size="mini"
                                         placeholder="请输入"
                                     ></el-input>
@@ -293,7 +293,7 @@
                     </el-dialog>
                  </div>  
                   <!-- 排序弹窗 -->
-                <el-dialog
+                  <el-dialog
                      :visible.sync="sortDialog"
                      v-if="sortDialog"
                      class="qinjeeDialogMini"
@@ -398,8 +398,7 @@ export default {
                 showSelect: true ,
                 selectChange: this.GroupselectChange,
                 loading: false ,
-                loading: false,
-                // webPage: true,
+                webPage: true,
                 activeColumn: "职位族",            
                 cellClick: this.groupCellClick,
                 pageHide:true,  
@@ -484,19 +483,12 @@ export default {
                 loading: false,
                 pageResize: false,
                 loading: false,
-                page: {
-                    pageSizes: [10, 20, 30],
-                    pageSize: 10
-                },
-                pageHide: false,
-                pageSizeChange: this.postPageSizeChange,
-                pageChange: this.postPageChange,
+                pageHide: true,
+                webPage:true,
                 activeColumn: "职位名称",             /* 非必须，给列加高亮，值是该列表格头显示的名称，多列的话要写成数组格式 */
                 cellClick: this.cellClick,  
             },
             positionNode: "",
-            postCurrentPage: 1,
-            postPageSize: 10,
             //编辑职位
             editPositionDialog: false,
             editPositionForm: {
@@ -644,23 +636,9 @@ export default {
                 this.editPositionForm.positionId = row.positionId;
             }
         },
-        //职位--表格页码改变
-        postPageChange(page) {
-            this.postCurrentPage = page;
-            this.positionTableReq();
-        },
-        //职位--表格页容量改变
-        postPageSizeChange(pageSize) {
-            this.postCurrentPage = 1;
-            this.pageResize = true;
-            this.postPageSize = pageSize;
-            this.positionTableReq();
-        },
         //职位-- 获取表格请求
         positionTableReq() {
             let send = {
-                currentPage: 0,
-                pageSize: 0,
                 positionGroupId: this.positionNode.positionGroupId
             };
             base.log("s", "获取职位表格", send);

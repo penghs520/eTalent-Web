@@ -1,14 +1,8 @@
 <style lang="scss">
-#archives_import{
-    .el-tabs{
-        box-sizing: border-box;
-        height: 100%;       
-        overflow: hidden;
-    }
+#archives_import{    
     .el-tabs__header {      
         padding: 0 24px;
-        border-bottom: 1px solid rgba(241, 242, 242, 1);
-      
+        border-bottom: 1px solid rgba(241, 242, 242, 1);     
     }
     .el-tabs__content {
         height: calc(100% - 64px);
@@ -35,9 +29,11 @@
         .common{
             display: flex;
             height: 100%;
+            box-sizing: border-box;
             justify-content: center;
+            background-color: #fff;            
             .wrap{
-                margin-top: 24px;
+                margin-top: 20px;
                 max-width: 1040px;
                 width: 80%;
             }
@@ -69,7 +65,7 @@
                                  </div>  
                             </template>
                             <template v-slot:btn>
-                                <el-button type="primary" size="mini">导入校验</el-button>
+                                <el-button type="primary" size="mini" @click="uploadBaseCheck" :disabled="uploadBase.fileList.length === 0">导入校验</el-button>
                             </template>
                         </commonUpload>
                     </div>                   
@@ -133,6 +129,8 @@
 
 <script>
 import commonUpload from "../../components/archivesUpload/archivesUpload"
+import XLSX from 'xlsx';
+import  base  from "../../assets/js/base"
 
 export default {
     name: "archives_import",
@@ -142,19 +140,20 @@ export default {
     data() {
         return {
             activeName:"baseInfo",
+            //基本信息导入
             uploadBase:{
                 uploadUrl:"",
-                tableShow:false,
+                // tableShow:false,
+                fileList:[],
+                multiple:true,
+                maxNum:20,
             },
+            activeBase:0,
+            // 附件信息导入
             uploadFile:{
                 uploadUrl:"",
             },
-            uploadPhoto:{
-                uploadUrl:"",
-            },
-            activeBase:0,
             activeFile:0,
-            activePhoto:0,
             value:"",
             childrenSet:[
                 {value:"关联人员子集"},
@@ -163,17 +162,28 @@ export default {
                 {value:"家庭成员"},
                 {value:"奖惩信息"},
                 {value:"人事变动"},
-            ]
+            ],
+            // 照片导入
+            uploadPhoto:{
+                uploadUrl:"",
+            },
+            activePhoto:0,                       
         };
     },
     created(){
 
     },
     methods:{
+        //基本信息校验--解析本地excel文件
+        uploadBaseCheck(){
+            base.getExcelTable(this.uploadBase.fileList[0].raw,(res)=>{
+                console.log(res);               
+            })           
+        },
         //基本信息--模板下载
         downloadTemp(){
             this.activeBase = 1
-            this.uploadBase.tableShow = true
+            // this.uploadBase.tableShow = true
         },
         //tab栏点击
         handleClick(){

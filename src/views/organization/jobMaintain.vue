@@ -163,10 +163,10 @@
                                 size="small"
                             >
                                 <el-form-item label="岗位编码" prop="postCode">
-                                    <el-input v-model="addPostForm.postCode" disabled></el-input>
+                                    <el-input v-model.trim="addPostForm.postCode" disabled></el-input>
                                 </el-form-item>
                                 <el-form-item label="岗位名称" prop="postName">
-                                    <el-input v-model="addPostForm.postName" placeholder="请输入"></el-input>
+                                    <el-input v-model.trim="addPostForm.postName" placeholder="请输入"></el-input>
                                 </el-form-item>
                                 <el-form-item label="所属部门" prop="orgName">
                                     <el-select
@@ -242,10 +242,10 @@
                                 size="small"
                             >
                                 <el-form-item label="岗位编码" prop="postCode">
-                                    <el-input v-model="editPostForm.postCode"></el-input>
+                                    <el-input v-model.trim="editPostForm.postCode"></el-input>
                                 </el-form-item>
                                 <el-form-item label="岗位名称" prop="postName">
-                                    <el-input v-model="editPostForm.postName" placeholder="请输入"></el-input>
+                                    <el-input v-model.trim="editPostForm.postName" placeholder="请输入"></el-input>
                                 </el-form-item>
                                 <el-form-item label="所属部门" prop="orgId">
                                     <el-select
@@ -654,7 +654,7 @@ export default {
                     { name: "封存", key: "isEnable", isShow: true },
                     { name: "岗位编码", key: "postCode", isShow: true },
                     { name: "岗位名称", key: "postName", isShow: true },
-                    { name: "所属部门", key: "orgName", isShow: true },
+                    { name: "所属部门", key: "orgName", isShow: true,width:"200px"},
                     { name: "职位名称", key: "positionName", isShow: true },
                     { name: "上级岗位", key: "parentPostName", isShow: true }
                 ],

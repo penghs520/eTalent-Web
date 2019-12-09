@@ -95,7 +95,7 @@ let base = {
      /**
      * 将本地单个excel文件转为数组,返回该数组(待更新)
      * @param {file} file 上传的文件
-     * @param {Function}  解析数据成功后的回调,返回解析成功的数据 
+     * @param {Function}  解析数据成功后的回调,传入解析成功的数据 
      */
     getExcelTable(file,callBack){
          let fileReader = new FileReader()

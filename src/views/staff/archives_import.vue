@@ -34,8 +34,8 @@
             background-color: #fff;            
             .wrap{
                 margin-top: 20px;
-                max-width: 1040px;
-                width: 80%;
+                // max-width: 1040px;
+                // width: 80%;
             }
         }
     }

@@ -56,14 +56,15 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     
     // 档案管理
         //信息维护
-        const archives_api1     = (data, callback) => {request('form', `api/masterdata/staffarc/selectArchivebatch`, data, callback)};
+        const archives_api1     = (data, callback) => {request('get', `api/masterdata/staffarc/selectArchivebatch`, data, callback)};
         const archives_api2     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
         //员工台账
         const archives_ledger_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
         const archives_ledger_api2     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBook`, data, callback)};
         const archives_ledger_api3     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
-        const archives_ledger_api4     = (data, callback) => {request('form', `api/masterdata/staffsta/selectStaff`, data, callback)};
+        const archives_ledger_api4     = (data, callback) => {request('get', `api/masterdata/staffsta/selectStaff`, data, callback)};
+        const archives_ledger_api5     = (data, callback) => {request('get', `api/masterdata/staffsta/deleteStandingBook`, data, callback)};
 
         //附件管理
         const archives_file_api1       = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
@@ -136,7 +137,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const position_api2    = (data, callback) => {request('form', `api/masterdata/position/addPosition`, data, callback)};
         const position_api3    = (data, callback) => {request('form', `api/masterdata/position/editPosition`, data, callback)};
         const position_api4    = (data, callback) => {request('post', `api/masterdata/position/deletePosition`, data, callback)};
-        const position_api5    = (data, callback) => {request('get', `api/masterdata/position/sortPositionGroup`, data, callback)};
+        const position_api5    = (data, callback) => {request('post', `api/masterdata/position/sortPosition`, data, callback)};
         const position_api6    = (data, callback) => {request('get', `api/masterdata/position/downloadExcel`, data, callback, 'blob')};
         
     
@@ -209,7 +210,7 @@ export {
             archives_api1,archives_api2,
         
             // 员工台账
-            archives_ledger_api1,archives_ledger_api2,archives_ledger_api3,archives_ledger_api4,
+            archives_ledger_api1,archives_ledger_api2,archives_ledger_api3,archives_ledger_api4,archives_ledger_api5,
 
             // 附件管理
             archives_file_api1,

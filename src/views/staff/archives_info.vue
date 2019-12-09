@@ -138,6 +138,7 @@ export default {
                 pageResize: false,
                 pageSizeChange: this.pageSizeChange,
                 pageChange: this.pageChange,
+                formatter: this.timeFormatter,
             },
             currentPage: 1,
             pageSize: 10,
@@ -151,8 +152,6 @@ export default {
     },
     methods: {
        
-        
-
         // 档案表--新增按钮
         add() {
             this.$message.warning("点击新增");
@@ -184,7 +183,18 @@ export default {
         pageSizeChange(size) {},
         // 档案表--翻页
         pageChange(index) {},
-        //获取档案表 -- 请求接口
+        //档案表 -- 格式化
+        timeFormatter(key,val){
+            if(key === "firstWorkDate" || key === "probationDueDate"){
+                if(val){
+                    let newVal = val.split('T')[0]
+                    return newVal
+                }
+            }else{
+                return val
+            }
+        },
+        //档案表 -- 获取表格请求接口
         getInfoReq() {
             let send = {
                 currentPage: 1,
@@ -202,7 +212,6 @@ export default {
                 }
             });
         },
-
          //机构树--下拉树形节点被点击
         selectTreeNodeClick(node) {
             console.log(node);

@@ -45,6 +45,11 @@
                 overflow: auto;
              
             }
+            .switch_title{
+                font-size: 14px;
+                margin-right: 10px;
+                margin-bottom: 20px;
+            }
         }
         .form_cont,
         .dropdown{
@@ -69,6 +74,13 @@
                 <el-tab-pane label="常用台账" name="common" class="common">
                     <!-- 左侧树形 -->
                     <div class="sider">
+                        <span class="switch_title">含共享台账：</span>
+                        <el-switch
+                            v-model="switchValue"
+                            active-color="#19ADE6"
+                            inactive-color="#ccc"
+                            @change="switchChange">                           
+                        </el-switch>
                        <tree :treeData="treeData"></tree>
                     </div>
                     <div class="common_content">
@@ -150,7 +162,8 @@ import commonTable from "../../components/table/commonTable";
 import { archives_ledger_api1,
          archives_ledger_api2,
          archives_ledger_api3,
-         archives_ledger_api4, 
+         archives_ledger_api4,
+         archives_ledger_api5, 
          } from '../../request/api'
 export default {
     name:"archives_ledger",
@@ -161,7 +174,7 @@ export default {
     data(){
         return {
             activeName:"setting",
-            switchValue:true, 
+            switchValue:false,
             treeData: {
                 data: [],
                 // nodeKey: "",
@@ -171,9 +184,6 @@ export default {
                 },
                 icons:[],
                 nodeClick: this.ledgerNodeClick,
-                switchOpen: true,
-                switchTitle:"含共享台账：",
-                switchChange: this.switchChange,
             },
             ledgerNode:"",
             //台账表格
@@ -331,7 +341,20 @@ export default {
         },
         //台账设置--删除台账请求
         delLedgerReq(){
-             console.log("发送删除台账请求");
+            let send = {
+                standingBookId:this.ledgerNode.standingBookId
+            }
+            base.log("s","删除台账请求",send)
+             archives_ledger_api5(send,res=>{
+                 base.log("r","删除台账请求",res.data)
+                 if(res.data.success){
+                     this.$message.success("删除台账成功")
+                     this.getNotShareLeger()
+                     this.delDialogShow = false;
+                 }else{
+                     base.error(res.data)
+                 }
+             })
              
         },
     
@@ -376,6 +399,8 @@ export default {
         //台账表格--时间格式化
         timeFormatter(key,val){
             if (key === 'hireDate' || key === 'probationDueDate') {
+                console.log("格式化化");
+                
                 if (val) {
                     let newVal = val.split('T')[0];
                     return newVal;
@@ -486,12 +511,13 @@ export default {
         //tabs栏切换
         handleClick(tab){
             if(tab.name === "setting"){              
-                this.treeData.switchOpen = false
                 this.ledgerNode = ""
+                console.log(this.switchValue);               
                 this.getNotShareLeger()
             }else{              
-                this.treeData.switchOpen = true
                 this.ledgerNode = ""
+                this.getNotShareLeger()
+                this.switchValue ? this.getShareLeger() : this.getNotShareLeger()
             }
         }
     }

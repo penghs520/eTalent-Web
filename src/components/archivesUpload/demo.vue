@@ -19,7 +19,9 @@ import commonUpload from './archivesUpload';
 
 export default {
     name: 'archivesUpload',                         // 上传模板
-    components: {commonUpload},
+    components: {
+        commonUpload
+        },
     data() {
         return {
             uploadActive: Number,                   // 必须，步骤条的进度，初始化应该是0，然后是1、2、3

@@ -17,23 +17,14 @@
 .el-upload__tip .text {
     color: #777b7c;
 }
+.commonUpload2{
+    width: 80%;
+    max-width: 1040px;
+}
 .table {
     margin-top: 20px;
     height: 260px;
     overflow: auto;
-}
-.text_success,
-.el-icon-success {
-    color: #2fc42f;
-}
-.report {
-    color: #1fafe7;
-    cursor: pointer;
-}
-.checkFailshow,
-.el-icon-error {
-    color: #f03838;
-    font-weight: 700;
 }
 .footer {
     display: flex;
@@ -76,7 +67,7 @@
 </style>
 
 <template>
-    <div id="commonUpload">
+    <div id="commonUpload2">
         <!-- 导入 -->
         <div class="content">
             <div class="com">
@@ -138,7 +129,7 @@ import file from "../../request/filePath";
 import commonTable from "../table/commonTable";
 
 export default {
-    name: "commonUpload", // 导入
+    name: "commonUpload2", // 导入
     props: {
         active: Number,
         data: Object

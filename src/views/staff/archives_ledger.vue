@@ -163,7 +163,8 @@ import { archives_ledger_api1,
          archives_ledger_api2,
          archives_ledger_api3,
          archives_ledger_api4,
-         archives_ledger_api5, 
+         archives_ledger_api5,
+         archives_ledger_api6,
          } from '../../request/api'
 export default {
     name:"archives_ledger",
@@ -304,6 +305,7 @@ export default {
             addLegerForm:{
                 name:"",
                 isShare:false,
+                standingBookId:"",
             },
             rules:{
                 name: [
@@ -354,23 +356,48 @@ export default {
                  }else{
                      base.error(res.data)
                  }
-             })
-             
-        },
-    
-        //台账设置--新增/编辑台账请求
+             })             
+        }, 
+        //台账设置--新增/编辑弹窗确定按钮
         addLedgerReq(formName){
                this.$refs[formName].validate((valid) => {
                 if (valid) {
                     if(this.dialogTitle === "新增台账"){
-                        console.log("发送新增请求");                       
+                        let send ={
+                            standingBookVo: {
+                                  isShare: this.addLegerForm.isShare ? 1 : 0,
+                                  standingBookName: this.addLegerForm.name,
+                            }
+                         }
+                        base.log("s","新增编辑台账",send)
+                         archives_ledger_api6(send,res =>{
+                         base.log("s","新增编辑台账",res.data)
+                           if(res.data.success){
+                               this.addDialogShow = false
+                           }else{
+                               base.error(res.data)
+                           }
+                       })                     
                     }else{
-                        console.log("发送编辑请求");
+                        let send = {
+                            isShare: this.addLegerForm.isShare,
+                            standingBookName: this.addLegerForm.name,
+                            standingBookId: this.addLegerForm.standingBookId,
+                        }
+                        base.log("s","新增编辑台账",send)
+                         archives_ledger_api6(send,res =>{
+                         base.log("s","新增编辑台账",res.data)
+                           if(res.data.success){
+                               this.addDialogShow = false
+                           }else{
+                               base.error(res.data)
+                           }
+                       })  
                     }                  
                 } else {                
                   return false;
                 }
-        });           
+          });           
         },
         //台账设置--编辑
         editLedger(){
@@ -378,6 +405,9 @@ export default {
                 this.$message.warning("请选择需要编辑的台账")
                 return
             }
+            this.addLegerForm.standingBookId = this.ledgerNode.standingBookId
+            this.addLegerForm.name = this.ledgerNode.standingBookName
+            this.addLegerForm.isShare = this.ledgerNode.isShare
             this.addDialogShow = true;
             this.dialogTitle = "编辑台账"
               setTimeout(() => {
@@ -390,7 +420,6 @@ export default {
              this.dialogTitle = "新增台账";
              this.addLegerForm.name = "";
              this.addLegerForm.isShare = false;
-
              setTimeout(() => {
                  this.$refs.addLegerForm.clearValidate()
              }, 0);

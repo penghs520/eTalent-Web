@@ -15,7 +15,14 @@ module.exports = {
                 pathRewrite: {
                     '^/api': '/api'
                 }
-            }
+            },
+            // '/api': {
+            //     target: '192.168.1.119:8080/',
+            //     changeOrigin: true,
+            //     pathRewrite: {
+            //         '^/api/masterdata': ''
+            //     }
+            // },
         },
     }
 }

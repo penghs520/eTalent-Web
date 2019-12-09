@@ -414,6 +414,7 @@ import commonTable from '../../components/table/commonTable';
 import commonUpload from '../../components/upload/upload';
 import commonForm from '../../components/form/commonForm';
 import tree from '../../components/tree/tree';
+import file from '../../request/filePath';
 import {
     sys_api1, 
     custom_api1,
@@ -433,7 +434,8 @@ import {
     entry_api9, 
     entry_api10,
     entry_api13,
-    entry_api14
+    entry_api14,
+    entry_api15
 } from "../../request/api";
 
 export default {
@@ -580,7 +582,7 @@ export default {
             uploadShow: false,
             uploadData: {
                 title: '导入机构',                  // 非必须，弹窗标题
-                download: this.upload_download,                 // 非必须，下载模板方法
+                templateName: '预入职',                 // 非必须，下载模板方法
                 fileFormatDescription: '仅支持扩展名：.xls .xles，大小不能超过5M',      // 非必须，文件格式说明
                 uploadDescription: '这句话的内容还需要和产品沟通',                      // 非必须，导入说明
                 uploadUrl: '',                  // 必须，上传地址
@@ -590,6 +592,8 @@ export default {
                 cancelLoading: false,             // 必须，取消loading
                 checkLoading: false,              // 必须，校验loading
                 finishLoading: false,             // 必须，完成loading
+                fileList: [],
+                cancelbtn: "取消",
             },
 
             // 新增表单
@@ -1170,16 +1174,28 @@ export default {
             this.uploadShow = true;
         },
 
-        // 导入--下载模板
-        upload_download() {},
-
         // 导入--取消
         upload_cancel() {
             this.uploadShow = false;
         },
 
         // 导入--校验
-        upload_check() {},
+        upload_check() {
+            console.log('较远');
+            console.log(this.uploadData.fileList);
+            let file = this.uploadData.fileList[0].raw;
+            let formData = new FormData();
+            // formData.append('funcCode', 'PRE');
+            formData.append('file',file);
+            let send = {
+                funcCode: 'PRE',
+                file: formData
+            }
+            entry_api15(formData, res => {
+                console.log(res);
+            })
+            
+        },
 
         // 导入--完成
         upload_finish() {},

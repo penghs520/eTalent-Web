@@ -197,7 +197,7 @@ export default {
         //档案表 -- 获取表格请求接口
         getInfoReq() {
             let send = {
-                currentPage: 1,
+                currentPage: 3,
                 orgId: 28,
                 pageSize: 10
             };
@@ -205,9 +205,9 @@ export default {
             archives_api1(send, res => {
                 base.log("r", "获取档案信息", res.data);
                 if (res.data.success) {
-                    this.archivesTable.data = res.data.result.list;
+                    this.archivesTable.data = res.data.result.pageResult.list;
                     this.archivesTable.head = res.data.result.heads;
-                    this.archivesTable.total = res.data.result.total;
+                    this.archivesTable.total = res.data.result.pageResult.total;
                 } else {
                     base.error(res.data);
                 }

@@ -31,6 +31,7 @@ export default {
                 total: 0,                               /* 必须，数据的总条数，用于翻页 */
                 bar: [                                  /* 非必须，表格上面的操作栏配置 */
                     {
+                        label: '',                      /* 非必须，label */
                         type: 'input',                  /* 输入框 */
                         placeholder: '请输入',          /* 非必须，输入框提示语 */
                         key: 'name',                    /* 必须，输入框绑定的变量字符串 */
@@ -40,6 +41,16 @@ export default {
                     },
                     {
                         type: 'select',                 /* 单选下拉框 */
+                        placeholder: '请选择',
+                        key: 'type',
+                        defaultVal: '',
+                        list: [
+                            {label: '类型1', value: 1},
+                            {label: '类型2', value: 2},
+                        ],
+                    },
+                    {
+                        type: 'selects',                 /* 多选下拉框 */
                         placeholder: '请选择',
                         key: 'type',
                         defaultVal: '',

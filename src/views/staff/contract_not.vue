@@ -39,7 +39,7 @@
 </style>
 
 <template>
-    <div id="notContract" class="commonRightCont">
+    <div id="contract_not" class="commonRightCont">
         <!-- 主页 -->
         <commonTable v-show="showType === 'main'" :table="table" ref="commonTable" ></commonTable>
 
@@ -99,21 +99,13 @@ import commonUpload from '../../components/archivesUpload/archivesUpload';
 import file from '../../request/filePath';
 
 export default {
-    name: 'notContract',            /* 未签合同 */
+    name: 'contract_not',            /* 未签合同 */
     components: {commonTable, commonTitle, commonForm, commonUpload},
     data() {
         return {
             showType: 'main',
             table: {
-                head: [
-                    {
-                        name: '姓名',
-                        key: 'userName',
-                        isShow: true,
-                        width: '200px'
-                    },
-                    {name: '工号', key: 'employeeNumber', isShow: true}
-                ],
+                head: [],
                 data: [],
                 total: 0,
                 bar: [
@@ -157,8 +149,7 @@ export default {
                 loading: false,
                 pageResize: false,
                 pageSizeChange: this.pageSizeChange,
-                pageChange: this.pageChange,
-                formatter: Function,
+                pageChange: this.pageChange
             },
             currentPage: 1,
             pageSize: 10,
@@ -230,7 +221,10 @@ export default {
                 let d = res.data;
                 base.log('r', '获取表格', d);
                 if (d.success) {
-                    // 
+                    this.table.data = d.result.list;
+                    this.table.total = d.result.total;
+                    console.log(this.table.data)
+                    console.log(this.table.total)
                 }else{
                     base.error(d);
                 }

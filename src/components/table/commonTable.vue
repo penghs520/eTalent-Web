@@ -24,7 +24,7 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;   
-    .select_title{
+    .label{
         font-size: 14px;
         // width: 70px;
     }
@@ -53,12 +53,23 @@
             <li v-for="(item,index) in table.bar" :key="index" >
                 
                 <!-- 输入框 -->
-                <el-input v-if="item.type === 'input' && item.isShow !== false"   v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @keydown.enter="inputEnter(item)" ></el-input>
+                <div v-if="item.type === 'input' && item.isShow !== false" class="select_wrap">
+                    <span class="label" v-show="item.label" v-text="item.label"></span>
+                    <el-input v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @keydown.enter="inputEnter(item)" ></el-input>
+                </div>
                 
-                <!-- 下拉框 -->
+                <!-- 单选下拉框 -->
                 <div v-if="item.type === 'select' && item.isShow !== false" class="select_wrap">
-                    <span v-if="item.type === 'select' && item.isShow !== false" :class="{ 'select_title' : item.label}">{{item.label}}</span>
+                    <span class="label" v-show="item.label" v-text="item.label"></span>
                     <el-select v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @change="selectValueChange($event,item.method)">
+                        <el-option v-for="li in item.list" :key="li.value" :label="li.label" :value="li.value"></el-option>
+                    </el-select>
+                </div>
+
+                <!-- 多选下拉框 -->
+                <div v-if="item.type === 'selects' && item.isShow !== false" class="select_wrap">
+                    <span class="label" v-show="item.label" v-text="item.label"></span>
+                    <el-select v-model="barData[item.key]" multiple="" :placeholder="item.placeholder" size="small" clearable="" @change="selectValueChange($event,item.method)">
                         <el-option v-for="li in item.list" :key="li.value" :label="li.label" :value="li.value"></el-option>
                     </el-select>
                 </div>
@@ -66,8 +77,8 @@
 
                 <!-- 下拉选择框树 -->
                 <div v-if="item.type === 'selectTree' && item.isShow !== false" class="select_wrap">
-                    <span v-if="item.type === 'selectTree' && item.isShow !== false" :class="{ 'select_title' : item.label}">{{item.label}}</span>
-                    <el-select  :ref="`selectTree_${index}`"  v-model="barData[item.showKey]" :placeholder="item.placeholder" size="small" clearable="" popper-class="base_treeSelect" style="width:100%">
+                    <span class="label" v-show="item.label" v-text="item.label"></span>
+                    <el-select  :ref="`selectTree_${index}`"  v-model="barData[item.showKey]" :placeholder="item.placeholder" size="small" popper-class="base_treeSelect" style="width:100%">
                         <el-option  :label="barData[item.showKey]" :value="barData[item.showKey]">
                             <tree :treeData="item.treeData" @nodeClick="selectTreeNodeClick($event,item,`selectTree_${index}`)" @selectChange="selectTreeCheckedChange($event,item)" ></tree>
                      </el-option>

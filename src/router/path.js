@@ -19,10 +19,10 @@ const organization_userInfo  = () => import(/* webpackChunkName: "group-organiza
     const staff_archives_blacklist      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/archives_blacklist.vue');
 
     // 劳动合同
-    const staff_notContract      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/notContract.vue');
-    const staff_hasContract      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/hasContract.vue');
-    const staff_contractBack      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/contractBack.vue');
-    const staff_contractInfo      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/contractInfo.vue');
+    const staff_notContract      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/contract_not.vue');
+    const staff_hasContract      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/contract_has.vue');
+    const staff_contractBack      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/contract_back.vue');
+    const staff_contractInfo      = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/contract_info.vue');
 
 
     // 参数设置

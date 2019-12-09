@@ -15,27 +15,27 @@
     flex-wrap: wrap;
 }
 .biserial .showBox ul li,
-.biserial .el-form .el-form-item{
+.biserial .el-form .elFormItemBox{
     width: 48%;
     text-align: left;
 }
 .biserial .showBox ul li:nth-child(odd),
-.biserial .el-form .el-form-item:nth-child(odd){
+.biserial .el-form .elFormItemBox:nth-child(odd){
     margin-right: 2%;
 }
 .biserial .showBox ul li:nth-child(even),
-.biserial .el-form .el-form-item:nth-child(even){
+.biserial .el-form .elFormItemBox:nth-child(even){
     margin-left: 2%;
 }
 .biserial .showBox ul li.isFullRow,
-.biserial .el-form .el-form-item.isFullRow{
+.biserial .el-form .elFormItemBox.isFullRow{
     width: 100%;
     text-align: left;
     margin-left: 0;
     margin-right: 0;
 }
 
-.el-form .el-form-item{
+.el-form .elFormItemBox{
     text-align: left;
 }
 .formBox{
@@ -141,7 +141,8 @@
                 <!-- 表单内容 -->
                 <div class="formBox" v-if="option.showType === 'form' || option.showType === 'seeForm'" v-show="option.showType === 'form' || showForm[groupIndex]" >
                     <el-form :model="form" size="small" status-icon :rules="rules" :ref="`form_${groupIndex}`" :label-width="option.labelWidth" >
-                        <el-form-item v-for="(item,index) in group.list" :key="index"  v-if="item.isShow !== false" :class="{isFullRow: item.isFullRow}" :label="`${item.label}：`" :prop="item.key">
+                 <div v-for="(item,index) in group.list" :key="index" class="elFormItemBox">
+                    <el-form-item   v-if="item.isShow !== false" :class="{isFullRow: item.isFullRow}" :label="`${item.label}：`" :prop="item.key">
                             <!-- 输入框 -->
                             <template v-if="item.type === 'input'">
                                 <!-- 数字输入框 -->
@@ -254,6 +255,8 @@
                             </el-select>
 
                         </el-form-item>
+                        </div>
+                        
                     </el-form>
                     <el-row class="btnRow" v-if="!option.isAllBtn">
                         <el-button @click="cancel(groupIndex)" size="small" >取消</el-button>

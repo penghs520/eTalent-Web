@@ -28,7 +28,6 @@ export default {
                 cancel: Function,                   // 必须，取消操作
                 check: Function,                    // 必须，校验操作
                 upload:Function,                    // 必须, 上传操作                
-                // finish: Function,                // 必须，完成操作
                 cancelLoading: Boolean,             // 必须，取消loading
                 checkLoading: Boolean,              // 必须，校验loading
                 finishLoading: Boolean,             // 必须，完成loading

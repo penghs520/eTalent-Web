@@ -66,9 +66,14 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const archives_ledger_api3     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
         const archives_ledger_api4     = (data, callback) => {request('get', `api/masterdata/staffsta/selectStaff`, data, callback)};
         const archives_ledger_api5     = (data, callback) => {request('get', `api/masterdata/staffsta/deleteStandingBook`, data, callback)};
+        const archives_ledger_api6     = (data, callback) => {request('post', `api/masterdata/staffsta/updateStandingBook`, data, callback)};
 
         //附件管理
         const archives_file_api1       = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
+
+        //黑名单管理
+        const archives_blacklist_api1  = (data, callback) => {request('get', `api/masterdata/staffsta/selectBalckList`, data, callback)};
+        const archives_blacklist_api2  = (data, callback) => {request('post', `api/masterdata/staffsta/deleteBalckList`, data, callback)};
 
     // 劳动合同
         // 未签合同
@@ -215,10 +220,13 @@ export {
             archives_api1,archives_api2,
         
             // 员工台账
-            archives_ledger_api1,archives_ledger_api2,archives_ledger_api3,archives_ledger_api4,archives_ledger_api5,
+            archives_ledger_api1,archives_ledger_api2,archives_ledger_api3,archives_ledger_api4,archives_ledger_api5,archives_ledger_api6,
 
             // 附件管理
             archives_file_api1,
+
+            // 黑名单管理
+            archives_blacklist_api1,archives_blacklist_api2,
         
         // 劳动合同
             // 未签合同

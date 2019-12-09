@@ -94,8 +94,6 @@
                 :auto-upload="false"
                 :limit="data.maxNum ? data.maxNum : 1"
                 :on-change="fileChange"
-                :on-success="uploadSuccess"
-                :on-error="uploadError"
                 :action="data.uploadUrl">
                 <i class="el-icon-upload uploadIcon"></i>
                 <div>
@@ -164,8 +162,6 @@ export default {
                 this.data.download();
             }
         },
-
-
         // 文件状态改变
         fileChange(file, fileList) {
             this.data.fileList = fileList;

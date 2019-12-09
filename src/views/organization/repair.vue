@@ -706,8 +706,7 @@ export default {
                     }
                 ],
                 showDefaultIcon: false /* 非必须，是否显示默认图标 */,
-                nodeClick: this
-                    .nodeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
+                nodeClick: this.nodeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
             },
             activeName: "orgForm",
             orgTable: {
@@ -852,8 +851,7 @@ export default {
                 },
                 showDefaultIcon: true /* 非必须，是否显示默认图标 */,
                 defaultIconExpandNode: true,
-                nodeClick: this
-                    .selectTreeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
+                nodeClick: this.selectTreeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */
             },
             enrolDialog: false,
             enrolForm: {
@@ -1016,7 +1014,7 @@ export default {
         uploadCheckReq() {
             let send = this.uploadData.fileList[0].raw;
             let fd = new FormData();
-            fd.append("multfile", send);
+            fd.append("multfile", send);           
             base.log("s", "机构导入校验", fd);
             orgRepair_api15(fd, res => {
                 base.log("r", "机构导入校验", res);

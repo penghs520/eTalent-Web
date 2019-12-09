@@ -134,10 +134,9 @@
                 <el-button
                     size="small"
                     @click="cancel"
-                    v-show="active <= 2"
+                    v-show="active <= 3"
                     :loading="cancelLoading"
                 >{{data.cancelbtn}}</el-button>
-                <!-- <el-button size="small" @click="uploadShow = false" v-show="active > 2">关 闭</el-button> -->
                 <el-button
                     size="small"
                     type="primary"
@@ -153,13 +152,7 @@
                     v-show="active !== 0"
                     :loading="uploadLoading"
                 >{{data.btnText}}</el-button>
-                <!-- <el-button
-                    size="small"
-                    type="primary"
-                    @click="finish"
-                    v-show="active === 2"
-                    :loading="finishLoading"
-                >完 成</el-button>-->
+
             </span>
         </el-dialog>
     </div>
@@ -200,7 +193,6 @@ export default {
         //查看校验报告
         readReport() {
             console.log("点击校验");
-
             if (this.data.readReport) {
                 this.data.readReport();
             }
@@ -268,7 +260,7 @@ export default {
                 this.data.check();
             }
         },
-
+        
         // 完成
         finish() {
             if (this.data.finish) {

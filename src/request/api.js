@@ -70,6 +70,10 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         //附件管理
         const archives_file_api1       = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
+        //黑名单管理
+        const archives_blacklist_api1  = (data, callback) => {request('get', `api/masterdata/staffsta/selectBalckList`, data, callback)};
+        const archives_blacklist_api2  = (data, callback) => {request('post', `api/masterdata/staffsta/deleteBalckList`, data, callback)};
+
     // 劳动合同
         // 未签合同
         const notContract_api1       = (data, callback) => {request('get', `api/masterdata/staffcon/selectNoLaborContractU`, data, callback)};
@@ -215,6 +219,9 @@ export {
 
             // 附件管理
             archives_file_api1,
+
+            // 黑名单管理
+            archives_blacklist_api1,archives_blacklist_api2,
         
         // 劳动合同
             // 未签合同

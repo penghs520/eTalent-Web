@@ -88,44 +88,50 @@ export default {
                      },
                     },
                     {
-                        type: 'button',                 /* 必须，DOM类型：按钮 */
-                        text: '上传',                   /* 必须，按钮名称 */
-                        btnType: 'plain',             /* 非必须，element-ui提供的按钮样式，新增 plain */
-                        method: this.uploadClick        /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                        type: 'button',                 
+                        text: '查询',                   
+                        btnType: 'primary',            
+                        method: this.searchFile       
                     },
                     {
-                        type: 'button',                 /* 必须，DOM类型：按钮 */
-                        text: '下载',                   /* 必须，按钮名称 */
-                        btnType: 'plain',             /* 非必须，element-ui提供的按钮样式，新增 plain */
-                        method: this.download        /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                        type: 'button',               
+                        text: '上传',                  
+                        btnType: 'plain',            
+                        method: this.uploadClick      
                     },
                     {
-                        type: 'button',                 /* 必须，DOM类型：按钮 */
-                        text: '删除',                   /* 必须，按钮名称 */
-                        btnType: 'plain',             /* 非必须，element-ui提供的按钮样式，新增 plain */
-                        method: this.del        /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                        type: 'button',                
+                        text: '下载',                  
+                        btnType: 'plain',            
+                        method: this.download       
                     },
                     {
-                        type: 'button',                 /* 必须，DOM类型：按钮 */
-                        text: '打印',                   /* 必须，按钮名称 */
-                        btnType: 'plain',             /* 非必须，element-ui提供的按钮样式，新增 plain */
-                        method: this.print        /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                        type: 'button',          
+                        text: '删除',                
+                        btnType: 'plain',             
+                        method: this.del      
                     },
                     {
-                        type: 'button',                 /* 必须，DOM类型：按钮 */
-                        text: '高拍仪',                   /* 必须，按钮名称 */
-                        btnType: 'plain',             /* 非必须，element-ui提供的按钮样式，新增 plain */
-                        method: this.search        /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
+                        type: 'button',              
+                        text: '打印',                 
+                        btnType: 'plain',            
+                        method: this.print       
+                    },
+                    {
+                        type: 'button',               
+                        text: '高拍仪',                   
+                        btnType: 'plain',          
+                        method: this.search      
                     },
                 ],
-                showSelect: true,                       /* 非必须，是否显示select勾选框 */
-                selectChange: this.selectChange,        /* 非必须，selcet选中改变时的回调，接收1个参数 */
-                activeColumn:"",                        /* 非必须，给列加高亮，值是该列表格头显示的名称，多列的话要写成数组格式 */
-                cellClick: this.cellClick,              /* 非必须，表格单元格被点击的回调，接收3个参数：该列的key、行数据、该单元格显示的内容 */
-                pageResize: false,                      /* 非必须，页码重置 */
-                pageHide: true,                         /* 非必须，是否不显示页码，默认显示页码，true-不显示页码，false-显示页码 */
-                pageSizeChange: this.pageSizeChange,    /* 非必须，每页数量改变时的回调，接收5个参数：每页数量，搜索栏数据，单选框数据，多选框数据 */
-                pageChange: this.pageChange,            /* 非必须，页码改变时的回调，接收5个参数：当前页码，搜索栏数据，单选框数据，多选框数据 */
+                showSelect: true,                       
+                selectChange: this.selectChange,        
+                activeColumn:"",                        
+                cellClick: this.cellClick,              
+                pageResize: false,                    
+                pageHide: true,                        
+                pageSizeChange: this.pageSizeChange,  
+                pageChange: this.pageChange,            
             },
             active:0,
             uploadData:{

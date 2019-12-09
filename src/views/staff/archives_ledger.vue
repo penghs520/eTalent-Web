@@ -271,6 +271,7 @@ export default {
                         label:"显示方案：",
                         defaultVal: '默认显示方案',
                         isShow :false,
+                        method:this.selectValueChange,
                         list:[
                             {value:"默认显示方案"},
                             {value:"人员档案展示方案"},
@@ -428,8 +429,6 @@ export default {
         //台账表格--时间格式化
         timeFormatter(key,val){
             if (key === 'hireDate' || key === 'probationDueDate') {
-                console.log("格式化化");
-                
                 if (val) {
                     let newVal = val.split('T')[0];
                     return newVal;
@@ -447,7 +446,7 @@ export default {
                 // orgId:ids,
                 orgId:28,                
                 // stangdingBookId:this.ledgerNode.standingBookId,
-                stangdingBookId:21,
+                stangdingBookId:19,
                 // type:this.workType,
                 type:"兼职",
             }
@@ -469,18 +468,22 @@ export default {
                 return
             }
             this.getLegerReq()            
-        },        
-        //下拉框 -- 机构 
+        }, 
+        //表格下拉框 --表格显示方案切换
+        selectValueChange(val){
+            console.log(val);            
+        },       
+        //表格下拉框 -- 机构树 
         checkTreeClick(val,list){
             this.orgList =  list.checkedNodes
             console.log("机构",list.checkedNodes);            
         },
-        //下拉框 -- 工作状态 
+        //表格下拉框 -- 工作状态 
         selectStatus(val){
             this.workType = val
             console.log(val);
         }, 
-        //下拉框 -- 人员分类
+        //表格下拉框 -- 人员分类
         selectArchiveType(val){
             this.archiveType = val
             console.log(val);            

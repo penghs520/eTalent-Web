@@ -135,7 +135,6 @@
 <script>
 import base from "../../assets/js/base";
 import { params_api2 } from "../../request/api";
-
 export default {
     name: "contract_params",
     data() {

@@ -113,6 +113,7 @@
             :data="data" 
             class="table" 
             :show-header="!table.hideHeader"
+            v-if="head.length > 0"
             stripe
             ref="tableDom"
             header-row-class-name="tableHeader"
@@ -144,7 +145,7 @@
 
         <!-- 页码 -->
         <el-pagination
-            v-if="!table.pageHide"
+            v-if="!table.pageHide && head.length > 0"
             @size-change="pageSizeChange"
             @current-change="pageCurrentChange"
             :current-page.sync="currentPage"

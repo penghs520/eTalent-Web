@@ -221,10 +221,9 @@ export default {
                 let d = res.data;
                 base.log('r', '获取表格', d);
                 if (d.success) {
-                    this.table.data = d.result.list;
-                    this.table.total = d.result.total;
-                    console.log(this.table.data)
-                    console.log(this.table.total)
+                    this.table.data = d.result.pageResult.list;
+                    this.table.total = d.result.pageResult.total;
+                    this.table.head = d.result.heads;
                 }else{
                     base.error(d);
                 }

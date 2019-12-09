@@ -31,6 +31,7 @@ export default {
                 total: 0,                               /* 必须，数据的总条数，用于翻页 */
                 bar: [                                  /* 非必须，表格上面的操作栏配置 */
                     {
+                        label: '',                      /* 非必须，label */
                         type: 'input',                  /* 输入框 */
                         placeholder: '请输入',          /* 非必须，输入框提示语 */
                         key: 'name',                    /* 必须，输入框绑定的变量字符串 */
@@ -40,6 +41,16 @@ export default {
                     },
                     {
                         type: 'select',                 /* 单选下拉框 */
+                        placeholder: '请选择',
+                        key: 'type',
+                        defaultVal: '',
+                        list: [
+                            {label: '类型1', value: 1},
+                            {label: '类型2', value: 2},
+                        ],
+                    },
+                    {
+                        type: 'selects',                 /* 多选下拉框 */
                         placeholder: '请选择',
                         key: 'type',
                         defaultVal: '',
@@ -128,6 +139,120 @@ export default {
             },
             currentPage: 1,                             /* 页面要用到的页码变量 */
             pageSize: 10,                               /* 页面要用到的页码变量 */
+
+
+            table: {
+                head: [
+                    {
+                        name: '姓名',
+                        key: 'userName',
+                        isShow: true,
+                        width: '200px'
+                    },
+                    {name: '工号', key: 'employeeNumber', isShow: true}
+                ],
+                hideHeader: Boolean,
+                data: [],
+                total: 0,
+                bar: [
+                    {
+                        type: 'input',
+                        placeholder: '请输入',
+                        key: 'name',
+                        defaultVal: '',
+                        isShow: Boolean,
+                        enter: this.search
+                    },
+                    {
+                        type: 'select',
+                        placeholder: '请选择',
+                        key: 'type',
+                        defaultVal: '',
+                        list: [
+                            {label: '类型1', value: 1},
+                            {label: '类型2', value: 2},
+                        ],
+                    },
+                    {
+                        type: 'selectTree',
+                        placeholder: '请选择',
+                        key: 'typeTree',
+                        showKey: '',
+                        defaultVal: String/Number/Array,
+                        defaultShowVal: String,
+                        nodeValueKey: '',
+                        nodeShowKey: '',
+                        treeData: {
+                            data: [],
+                            props: {
+                                children: "childList",
+                                label: "orgName"
+                            },
+                            showDefaultIcon: true,
+                            nodeClick: this.selectTreeNodeClick,
+                            defaultIconExpandNode: true
+                        }
+                    },
+                    {
+                        type: 'button',
+                        text: '查询',
+                        btnType: 'primary',
+                        icon: 'el-icon-search',
+                        method: this.search
+                    },
+                    {
+                        type: 'buttons',
+                        text: '更多',
+                        btnType: 'primary',
+                        icon: '',
+                        defaultIconHide: false,
+                        list: [
+                            {
+                                text: '按钮1',
+                                method: this.btn1,
+                                icon: 'el-icon-search'
+                            },
+                            {text: '按钮2', method: this.btn2}
+                        ],                       
+                    }
+                ],
+                showSelect: true,
+                selected: {
+                    key: '',
+                    value: ''
+                },
+                selectChange: this.selectChange,
+                showRadio: true,
+                perColumn: [
+                    {
+                        name: '角色',
+                        width: '200px',
+                        list: [
+                            {
+                                type: 'primary',
+                                icon: '',
+                                text: '角色',
+                                method: this.columnBtn
+                            }
+                        ]
+                    }
+                ],
+                activeColumn: Array/String,
+                cellClick: Function,
+                loading: Boolean,
+                page: {
+                    pageSizes: [1,2,3],
+                    pageSize: 2
+                },
+                webPage: Boolean,
+                pageResize: Boolean,
+                pageHide: false,
+                pageSizeChange: this.pageSizeChange,
+                pageChange: this.pageChange,
+                formatter: Function,
+            },
+            currentPage: 1,
+            pageSize: 10,
         };
     },
     created() {},

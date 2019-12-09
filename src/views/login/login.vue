@@ -452,7 +452,6 @@ export default {
             };
             login_api4(send, res => {
                 if (res.data.success) {
-                    this.$message.success("登陆成功");
                     localStorage.setItem(
                         "userInfo",
                         JSON.stringify(res.data.result)
@@ -490,7 +489,6 @@ export default {
                 if (d.success) {
                     // 处理数据
                     this.menuFormat(d.result);
-                    this.$message.success("登陆成功");
                     this.$router.push("/qinjee/organization_repair");
                 } else {
                     base.error(d);

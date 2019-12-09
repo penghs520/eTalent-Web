@@ -24,7 +24,7 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;   
-    .select_title{
+    .label{
         font-size: 14px;
         // width: 70px;
     }
@@ -53,12 +53,23 @@
             <li v-for="(item,index) in table.bar" :key="index" >
                 
                 <!-- 输入框 -->
-                <el-input v-if="item.type === 'input' && item.isShow !== false"   v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @keydown.enter="inputEnter(item)" ></el-input>
+                <div v-if="item.type === 'input' && item.isShow !== false" class="select_wrap">
+                    <span class="label" v-show="item.label" v-text="item.label"></span>
+                    <el-input v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @keydown.enter="inputEnter(item)" ></el-input>
+                </div>
                 
-                <!-- 下拉框 -->
+                <!-- 单选下拉框 -->
                 <div v-if="item.type === 'select' && item.isShow !== false" class="select_wrap">
-                    <span v-if="item.type === 'select' && item.isShow !== false" :class="{ 'select_title' : item.label}">{{item.label}}</span>
+                    <span class="label" v-show="item.label" v-text="item.label"></span>
                     <el-select v-model="barData[item.key]" :placeholder="item.placeholder" size="small" clearable="" @change="selectValueChange($event,item.method)">
+                        <el-option v-for="li in item.list" :key="li.value" :label="li.label" :value="li.value"></el-option>
+                    </el-select>
+                </div>
+
+                <!-- 多选下拉框 -->
+                <div v-if="item.type === 'selects' && item.isShow !== false" class="select_wrap">
+                    <span class="label" v-show="item.label" v-text="item.label"></span>
+                    <el-select v-model="barData[item.key]" multiple="" :placeholder="item.placeholder" size="small" clearable="" @change="selectValueChange($event,item.method)">
                         <el-option v-for="li in item.list" :key="li.value" :label="li.label" :value="li.value"></el-option>
                     </el-select>
                 </div>
@@ -66,8 +77,8 @@
 
                 <!-- 下拉选择框树 -->
                 <div v-if="item.type === 'selectTree' && item.isShow !== false" class="select_wrap">
-                    <span v-if="item.type === 'selectTree' && item.isShow !== false" :class="{ 'select_title' : item.label}">{{item.label}}</span>
-                    <el-select  :ref="`selectTree_${index}`"  v-model="barData[item.showKey]" :placeholder="item.placeholder" size="small" clearable="" popper-class="base_treeSelect" style="width:100%">
+                    <span class="label" v-show="item.label" v-text="item.label"></span>
+                    <el-select  :ref="`selectTree_${index}`"  v-model="barData[item.showKey]" :placeholder="item.placeholder" size="small" popper-class="base_treeSelect" style="width:100%">
                         <el-option  :label="barData[item.showKey]" :value="barData[item.showKey]">
                             <tree :treeData="item.treeData" @nodeClick="selectTreeNodeClick($event,item,`selectTree_${index}`)" @selectChange="selectTreeCheckedChange($event,item)" ></tree>
                      </el-option>
@@ -102,6 +113,7 @@
             :data="data" 
             class="table" 
             :show-header="!table.hideHeader"
+            v-if="head.length > 0"
             stripe
             ref="tableDom"
             header-row-class-name="tableHeader"
@@ -126,14 +138,14 @@
                     </template>
                 </el-table-column>
             </template>
-            <el-table-column v-for="(item,index) in head" :key="index" :prop="item.key" :label="item.name" :width="item.width" :formatter="columnFormatter" v-show="item.isShow" >
+            <el-table-column v-for="(item,index) in head" :key="index" :prop="item.key" :label="item.name" :width="item.width" :formatter="columnFormatter" v-show="Boolean(item.isShow)" >
             </el-table-column>
             <el-table-column width="14"></el-table-column>
         </el-table>
 
         <!-- 页码 -->
         <el-pagination
-            v-if="!table.pageHide"
+            v-if="!table.pageHide && head.length > 0"
             @size-change="pageSizeChange"
             @current-change="pageCurrentChange"
             :current-page.sync="currentPage"
@@ -175,7 +187,6 @@ export default {
         };
     },
     created() {
-            
         // 变量初始化
         this.barModelInit(this.table.bar);
         Object.assign(this.page, this.table.page);
@@ -183,7 +194,17 @@ export default {
     },
     computed: {
         head(){
-            return this.table.head;
+            if (Array.isArray(this.table.head)) {
+                if (this.table.head.length > 0) {
+                    if (this.table.head[0].hasOwnProperty('index')) {
+                        let r = this.headFormatter(this.table.head);
+                        return r;
+                    }
+                }
+                return this.table.head;
+            }
+            console.error('commonTable：head不是个数组');
+            return [];
         },
         total(){
             return this.table.total;
@@ -232,6 +253,13 @@ export default {
         };
     },
     methods: {
+        // 表格头格式化
+        headFormatter(list) {
+            let r = list.sort((a,b) => {
+                return a.index - b.index;
+            })
+            return r;
+        },
         // selectTree勾选改变
         selectTreeCheckedChange(checkedList,domOptions) {
             let showList  = checkedList.map(item => item[domOptions.nodeShowKey]);

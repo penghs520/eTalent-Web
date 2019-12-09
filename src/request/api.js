@@ -41,11 +41,12 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     const entry_api7     = (data, callback) => {request('post', `api/masterdata/staffarc/importPreFile`, data, callback)};      // 导入
     const entry_api8     = (data, callback) => {request('get', `api/masterdata/staffarc/getPostByOrgId`, data, callback)};
     const entry_api9     = (data, callback) => {request('post', `api/masterdata/staffarc/sendMessage`, data, callback)};
-    const entry_api10     = (data, callback) => {request('post', `api/masterdata/staffarc/exportPreFile`, data, callback, 'blob')};
+    const entry_api10     = (data, callback) => {request('post', `api/masterdata/port/exportPreFile`, data, callback, 'blob')};
     const entry_api11     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentField`, data, callback)};
     const entry_api12     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmployment`, data, callback)};
     const entry_api13     = (data, callback) => {request('post', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableCodePre`, data, callback)};
     const entry_api14     = (data, callback) => {request('form', `api/masterdata/staffarc/selectCustomTableForPre`, data, callback)};
+    const entry_api15     = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFile`, data, callback)};
 
     // 参数设置
         //合同参数
@@ -56,17 +57,31 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     
     // 档案管理
         //信息维护
-        const archives_api1     = (data, callback) => {request('form', `api/masterdata/staffarc/selectArchivebatch`, data, callback)};
+        const archives_api1     = (data, callback) => {request('get', `api/masterdata/staffarc/selectArchivebatch`, data, callback)};
         const archives_api2     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
         //员工台账
         const archives_ledger_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
         const archives_ledger_api2     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBook`, data, callback)};
         const archives_ledger_api3     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
-        const archives_ledger_api4     = (data, callback) => {request('form', `api/masterdata/staffsta/selectStaff`, data, callback)};
+        const archives_ledger_api4     = (data, callback) => {request('get', `api/masterdata/staffsta/selectStaff`, data, callback)};
+        const archives_ledger_api5     = (data, callback) => {request('get', `api/masterdata/staffsta/deleteStandingBook`, data, callback)};
+        const archives_ledger_api6     = (data, callback) => {request('post', `api/masterdata/staffsta/updateStandingBook`, data, callback)};
 
         //附件管理
         const archives_file_api1       = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
+
+        //黑名单管理
+        const archives_blacklist_api1  = (data, callback) => {request('get', `api/masterdata/staffsta/selectBalckList`, data, callback)};
+        const archives_blacklist_api2  = (data, callback) => {request('post', `api/masterdata/staffsta/deleteBalckList`, data, callback)};
+
+    // 劳动合同
+        // 未签合同
+        const notContract_api1       = (data, callback) => {request('get', `api/masterdata/staffcon/selectNoLaborContractU`, data, callback)};
+
+        // 已签合同
+        const contractHas_api1       = (data, callback) => {request('get', `api/masterdata/staffcon/selectNoLaborContractU`, data, callback)};
+
 
 // 系统管理
     // 权限管理
@@ -132,7 +147,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const position_api2    = (data, callback) => {request('form', `api/masterdata/position/addPosition`, data, callback)};
         const position_api3    = (data, callback) => {request('form', `api/masterdata/position/editPosition`, data, callback)};
         const position_api4    = (data, callback) => {request('post', `api/masterdata/position/deletePosition`, data, callback)};
-        const position_api5    = (data, callback) => {request('get', `api/masterdata/position/sortPositionGroup`, data, callback)};
+        const position_api5    = (data, callback) => {request('post', `api/masterdata/position/sortPosition`, data, callback)};
         const position_api6    = (data, callback) => {request('get', `api/masterdata/position/downloadExcel`, data, callback, 'blob')};
         
     
@@ -198,17 +213,27 @@ export {
         staff_api1, staff_api2, staff_api3,
         // 入职管理
         entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6, entry_api7, entry_api8, entry_api9, entry_api10,
-        entry_api11, entry_api12, entry_api13, entry_api14,
+        entry_api11, entry_api12, entry_api13, entry_api14, entry_api15,
 
         // 档案管理
             // 信息维护
             archives_api1,archives_api2,
         
             // 员工台账
-            archives_ledger_api1,archives_ledger_api2,archives_ledger_api3,archives_ledger_api4,
+            archives_ledger_api1,archives_ledger_api2,archives_ledger_api3,archives_ledger_api4,archives_ledger_api5,archives_ledger_api6,
 
             // 附件管理
             archives_file_api1,
+
+            // 黑名单管理
+            archives_blacklist_api1,archives_blacklist_api2,
+        
+        // 劳动合同
+            // 未签合同
+            notContract_api1,
+
+            // 已签合同
+            contractHas_api1,
 
         // 参数设置
             // 合同参数

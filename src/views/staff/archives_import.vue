@@ -34,8 +34,8 @@
             background-color: #fff;            
             .wrap{
                 margin-top: 20px;
-                max-width: 1040px;
-                width: 80%;
+                // max-width: 1040px;
+                // width: 80%;
             }
         }
     }
@@ -129,8 +129,8 @@
 
 <script>
 import commonUpload from "../../components/archivesUpload/archivesUpload"
-import XLSX from 'xlsx';
 import  base  from "../../assets/js/base"
+
 
 export default {
     name: "archives_import",

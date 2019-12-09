@@ -1,123 +1,4 @@
-body,p,h1,h2,h3,h4,h5,h6,ul,li{
-    margin: 0;
-    padding: 0;
-}
-ul,li{
-    list-style: none;
-}
-html,body,#app,.el-container{
-    height: 100%;
-}
-.el-container.section{
-    height: calc(100% - 64px);
-}
-.el-main{
-    padding: 0 !important;
-    background-color: #F0F0F0;
-}
-
-
-/* 登陆样式-----------开始 */
-.login_wrap .el-input__inner {
-    border: none !important;
-    background-color: rgba(241, 242, 242, 0) !important;
-}
-#login .el-tabs__item {
-    font-size: 16px !important;
-}
-
-/* 登陆样式-----------结束 */
-
-/* 弹窗样式-----------开始 */
-.qinjeeDialogBig>div{
-    width: 944px !important;
-}
-.qinjeeDialogSmall>div{
-    width: 560px !important;
-}
-.qinjeeDialogMini>div{
-    width: 480px !important;
-}
-.qinjeeDialogBig .el-dialog__header,
-.qinjeeDialogSmall .el-dialog__header,
-.qinjeeDialogMini .el-dialog__header{
-    text-align: left;
-    border-bottom: 1px solid #F1F2F2;
-    padding-top: 16px;
-    padding-bottom: 16px;
-}
-.qinjeeDialogBig .el-dialog__body,
-.qinjeeDialogSmall .el-dialog__body,
-.qinjeeDialogMini .el-dialog__body{
-    padding-top: 32px !important;
-    padding-bottom: 32px !important;
-}
-.qinjeeDialogBig .el-dialog__footer,
-.qinjeeDialogSmall .el-dialog__footer,
-.qinjeeDialogMini .el-dialog__footer{
-    border-top: 1px solid #F1F2F2;
-    padding-top: 16px;
-    padding-bottom: 16px;
-}
-.qinjeeDialogMini .qinjeeDialogMiniCont{
-    display: flex;
-    align-items: baseline;
-}
-.qinjeeDialogMini .icon{
-    font-size: 22px;
-    margin-right: 12px;
-    line-height: 22px;
-    position: relative;
-    top: 2px;
-}
-.qinjeeDialogMini .warning{
-    color: #FFD532;
-}
-.qinjeeDialogMini .danger{
-    color: #F03838;
-}
-.qinjeeDialogMini .success{
-    color: #24C124;
-}
-.qinjeeDialogMini .qinjeeDialogMiniCont span{
-    font-size: 16px;
-    line-height: 24px;
-} 
-
-/* 弹窗样式-----------结束 */
-
-/* 角色树-----------开始 */
-.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content span{
-    color: #FF8C58;
-}
-/* 角色树-----------结束 */
-
-/* element-ui tab样式修改-----------开始 */
-.el-tabs__header{
-    margin-bottom: 0 !important;
-}
-.el-tabs__item{
-    height: 64px !important;
-    line-height: 64px !important;
-    font-size: 16px !important;
-}
-.el-tabs__item:not(.is-active){
-    color: #676B6D !important;
-}
-.el-tabs__nav-wrap::after{
-    background-color: rgba(0, 0, 0, 0) !important;
-}
-/* element-ui tab样式修改-----------结束 */
-
-/* 右侧内容区样式 */
-.commonRightCont{
-    border: 10px solid #F0F0F0;
-    border-bottom: none;
-    box-sizing: border-box;
-    background-color: #fff;
-}
-/* 右侧内容区样式 */
-
+/* 公共样式-加上该类名即可实现公共样式 */
 /* 去掉数字输入框右边的小箭头-----------开始 */
 .removeNumberInput input::-webkit-outer-spin-button,
 .removeNumberInput input::-webkit-inner-spin-button {
@@ -128,34 +9,14 @@ html,body,#app,.el-container{
 }
 /* 去掉数字输入框右边的小箭头-----------结束 */
 
-/* elemebt-ui steps步骤条样式修改-----------开始 */
-.el-step__main{
-    height: 28px !important;
-}
-.el-step__title{
-    position: relative;
-    top: -31px;
-    left: 24px;
-    display: inline-block;
-    z-index: 1;
-    background: #fff;
-    padding: 0 11px 0 6px;
-    font-size: 14px !important;
-    color: rgb(192, 196, 204);
-}
-.el-step__description{
-    position: relative;
-    top: -31px;
-}
-/* elemebt-ui steps步骤条样式修改-----------结束 */
 
-/* 树形下拉框样式 */
-.base_treeSelect .el-select-dropdown__item{
-    height: auto;
-    max-height: 274px;
-    background-color: rgba(0, 0, 0, 0) !important;
-    padding: 4px;
-    overflow: hidden;
-    overflow-y: auto;
+/* 右侧内容区样式 */
+.commonRightCont{
+    width: 100%;
+    height: 100%;
+    border: 10px solid #F0F0F0;
+    border-bottom: none;
+    box-sizing: border-box;
+    background-color: #fff;
 }
-
+/* 右侧内容区样式 */

@@ -1,4 +1,16 @@
 // 下载文件的路径配置
+/**
+ * 使用方法
+import file from '../../request/filePath';
+ 
+ download(fileName) {
+    let url = file[fileName];
+    if (url) {
+        window.open(url, "_self");
+    }
+ }
+ download('工作经历);
+ */
 let path = {
     '工作经历':     'http://193.112.188.180/file/importTemplate/archive/%B9%A4%D7%F7%BE%AD%C0%FA%D7%D3%BC%AF.xls',
     '黑名单导入':   'http://193.112.188.180/file/importTemplate/archive/%BA%DA%C3%FB%B5%A5%B5%BC%C8%EB.xls',

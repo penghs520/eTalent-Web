@@ -15,20 +15,27 @@
     flex-wrap: wrap;
 }
 .biserial .showBox ul li,
-.biserial .el-form .el-form-item{
-    width: 46%;
+.biserial .el-form .elFormItemBox{
+    width: 48%;
     text-align: left;
 }
 .biserial .showBox ul li:nth-child(odd),
-.biserial .el-form .el-form-item:nth-child(odd){
+.biserial .el-form .elFormItemBox:nth-child(odd){
     margin-right: 2%;
 }
 .biserial .showBox ul li:nth-child(even),
-.biserial .el-form .el-form-item:nth-child(even){
+.biserial .el-form .elFormItemBox:nth-child(even){
     margin-left: 2%;
 }
+.biserial .showBox ul li.isFullRow,
+.biserial .el-form .elFormItemBox.isFullRow{
+    width: 100%;
+    text-align: left;
+    margin-left: 0;
+    margin-right: 0;
+}
 
-.el-form .el-form-item{
+.el-form .elFormItemBox{
     text-align: left;
 }
 .formBox{
@@ -111,8 +118,8 @@
                     editIng: showForm[groupIndex]
                 }" >
                 <!-- 组名 -->
-                <div class="groupTitle" >
-                    <div class="title" v-show="group.groupTitle" >
+                <div class="groupTitle" v-show="group.groupTitle" >
+                    <div class="title" >
                         <span class="groupTieleIcon"></span>
                         <span>{{group.groupTitle}}</span>
                     </div>
@@ -124,9 +131,9 @@
                 <!-- 展示内容 -->
                 <div class="showBox" v-if="option.showType === 'see' || option.showType === 'seeForm'" v-show="option.showType === 'see' || !showForm[groupIndex]" >
                     <ul>
-                        <li v-for="(item,index) in group.list" :key="index">
+                        <li v-for="(item,index) in group.list" :key="index" v-show="item.isShow !== false" :class="{isFullRow: item.isFullRow}">
                             <span class="label" :style="{width: option.labelWidth}">{{item.label}}：</span>
-                            <span class="value" v-text="item.default && item.default !== 'null' ? item.default : ''" ></span>
+                            <span class="value" v-text="seeData[item.key] && seeData[item.key] !== 'null' ? seeData[item.key] : ''" ></span>
                         </li>
                     </ul>
                 </div>
@@ -134,7 +141,8 @@
                 <!-- 表单内容 -->
                 <div class="formBox" v-if="option.showType === 'form' || option.showType === 'seeForm'" v-show="option.showType === 'form' || showForm[groupIndex]" >
                     <el-form :model="form" size="small" status-icon :rules="rules" :ref="`form_${groupIndex}`" :label-width="option.labelWidth" >
-                        <el-form-item v-for="(item,index) in group.list" :key="index" :label="`${item.label}：`" :prop="item.key">
+                 <div v-for="(item,index) in group.list" :key="index" class="elFormItemBox">
+                    <el-form-item   v-if="item.isShow !== false" :class="{isFullRow: item.isFullRow}" :label="`${item.label}：`" :prop="item.key">
                             <!-- 输入框 -->
                             <template v-if="item.type === 'input'">
                                 <!-- 数字输入框 -->
@@ -247,6 +255,8 @@
                             </el-select>
 
                         </el-form-item>
+                        </div>
+                        
                     </el-form>
                     <el-row class="btnRow" v-if="!option.isAllBtn">
                         <el-button @click="cancel(groupIndex)" size="small" >取消</el-button>
@@ -286,6 +296,7 @@ export default {
                 isAllBtn: false,            /* 是否显示控制所有表单的按钮 */
             },
 
+            seeData: {},
             form: {},
             rules: {
                 // name: [{required: true, message: '请输入姓名', trigger: 'change'}],
@@ -331,11 +342,13 @@ export default {
         'data.domList': {
             handler: function(v) {
                 if (this.option.formatDom) {
-                    this.domList = this.domListFormatter(v);
-                    this.init();
+                    // this.domList = this.domListFormatter(v);
+                    this.$set(this, 'domList', this.domListFormatter(v));
                 }else{
-                    this.domList = v;
+                    // this.domList = v;
+                    this.$set(this, 'domList', v)
                 };
+                this.init();
             },
             deep: true
         }
@@ -381,7 +394,9 @@ export default {
 
                             // default
                             if (item.hasOwnProperty('defaultValue')) {
-                                dom.default = item.defaultValue;
+                                if (item.defaultValue !== 'null') {
+                                    dom.default = item.defaultValue;
+                                }
                             }
 
                             // placeholder
@@ -491,7 +506,6 @@ export default {
                     this.defaultValue(item);
                 });
             });
-                    console.log(this.form)
         },
 
         // 处理特殊dom
@@ -500,7 +514,7 @@ export default {
             if (dom.type === 'orgTree') {
                 if (!this.orgTreeData.data) {
                     this.hasOrgTree = true;
-                    // 请求机构树
+                    // 请求机构树、赋值
                     this.orgTree_getCompany();
                     // this.$set(this.orgTreeShowData, `orgTree_${index}`, )
                 }
@@ -551,7 +565,18 @@ export default {
         // 添加默认值
         defaultValue(dom) {
             if (dom.default && dom.default !== 'null') {
+                // 表单默认值
                 this.$set(this.form, dom.key, dom.default);
+                // 显示默认值
+                if (dom.type === 'orgTree') {
+                    //(◔.̮◔)
+                    // this.orgTree_getCompany(dom.default); 
+                }else if (dom.type === 'postTree') {
+                    // (◔.̮◔)
+                    // this.orgTree_getCompany(null,dom.default);
+                }else{
+                    this.$set(this.seeData, dom.key, dom.default);
+                }
             }
         },
 
@@ -651,6 +676,7 @@ export default {
         // 取消
         cancel(index) {
             this.$set(this.showForm,index,false);
+            this.data.cancel(index);
         },
 
         // 确定
@@ -659,7 +685,7 @@ export default {
                 if (valid) {
                     if (this.data.sure) {
                         let data = this.getCurrentGroupData(groupIndex);
-                        this.data.sure(groupIndex,data) ;
+                        this.data.sure(groupIndex,data);
                         this.$set(this.loading, groupIndex, true);
                     }
                 }

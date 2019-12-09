@@ -1,0 +1,175 @@
+<style lang="scss" scoped >
+    
+</style>
+
+<template>
+    <div id="contract_has">
+        <!-- 主页 -->
+        <commonTable v-show="showType === 'main'" :table="table" ref="commonTable" ></commonTable>
+    </div>
+</template>
+
+<script>
+import base from '../../assets/js/base';
+import {contractHas_api1} from '../../request/api';
+import cr from '../../request/commonRequest';
+import commonTable from '../../components/table/commonTable';
+import commonTitle from '../../components/title';
+import commonForm from '../../components/form/commonForm';
+import commonUpload from '../../components/archivesUpload/archivesUpload';
+import file from '../../request/filePath';
+
+export default {
+    name: 'contract_has',            /* 已签合同 */
+    components: {commonTable, commonTitle, commonForm, commonUpload},
+    data() {
+        return {
+            showType: 'main',
+            table: {
+                head: [
+                    {
+                        name: '姓名',
+                        key: 'userName',
+                        isShow: true,
+                        width: '200px'
+                    },
+                    {name: '工号', key: 'employeeNumber', isShow: true}
+                ],
+                data: [],
+                total: 0,
+                bar: [
+                    {
+                        type: 'selectTree',
+                        placeholder: '请选择机构',
+                        key: 'org',
+                        showKey: 'orgName',
+                        nodeValueKey: 'org_id',
+                        nodeShowKey: 'org_name',
+                        treeData: {
+                            data: [],
+                            props: {
+                                children: "list",
+                                label: "org_name"
+                            },
+                            showCheckbox: true,
+                            showDefaultIcon: true,
+                            nodeClick: this.selectTreeNodeClick,
+                            defaultIconExpandNode: true
+                        }
+                    },
+                    {
+                        label: '合同标识：',
+                        key: 'sign',
+                        type: 'select',
+                        list: [
+                            {label: '有效', value: '有效'},
+                            {label: '无效', value: '无效'},
+                            {label: '全部', value: '全部'}
+                        ]
+                    },
+                    {
+                        label: '合同状态：',
+                        key: 'contractStatus',
+                        type: 'selects',
+                        list: [
+                            {label: '新签', value: '新签'},
+                            {label: '续签', value: '续签'},
+                            {label: '变更', value: '变更'},
+                            {label: '解除', value: '解除'},
+                            {label: '终止', value: '终止'}
+                        ]
+                    },
+                    {
+                        type: 'button',
+                        text: '查询',
+                        method: this.search
+                    },
+                    {
+                        type: 'button',
+                        text: '续签',
+                        method: this.renew
+                    },
+                    {
+                        type: 'button',
+                        text: '终止',
+                        method: this.stop
+                    },
+                    {
+                        type: 'button',
+                        text: '解除',
+                        method: this.relieve
+                    },
+                    {
+                        type: 'buttons',                 /* 下拉按钮 */
+                        text: '更多操作',
+                        list: [                         /* 必须，更多按钮的数据组成的数组 */
+                            {text: '变动', method: this.change},
+                            {text: '打印', method: this.print},
+                            {text: '导出', method: this.download},
+                            {text: '发送续签意向', method: this.sendRenew}
+                        ],                       
+                    }
+                    
+                ],
+                showSelect: true,
+                activeColumn: '姓名',
+                cellClick: Function,
+                loading: false,
+                pageResize: false,
+                pageSizeChange: this.pageSizeChange,
+                pageChange: this.pageChange,
+                formatter: Function,
+            },
+            currentPage: 1,
+            pageSize: 10,
+        };
+    },
+    created() {
+        cr.getOrg(this.getOrg);
+    },
+    mounted() {},
+    methods: {
+        // 获取机构树
+        getOrg(orgList) {
+            this.table.bar[0].treeData.data = orgList;
+        },
+
+        // 获取表格数据
+        getTable(searchData) {
+            let send = {
+                currentPage: this.currentPage,
+                pageSize: this.pageSize,
+                isEnable: false,
+                orgId: orgId
+            };
+            this.table.loading = true;
+            base.log('s', '获取表格', send);
+            contractHas_api1(send, res => {
+                this.table.loading = false;
+                let d = res.data;
+                base.log('r', '获取表格', d);
+                if (d.success) {
+                    // 
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+
+
+        // ===============
+        // 查询
+        search(searchData) {
+            this.getTable(searchData);
+        },
+        renew() {},
+        stop() {},
+        relieve() {},
+        change() {},
+        print() {},
+        download() {},
+        sendRenew() {},
+    }
+}
+</script>

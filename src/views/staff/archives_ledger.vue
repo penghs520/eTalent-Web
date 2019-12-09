@@ -45,6 +45,11 @@
                 overflow: auto;
              
             }
+            .switch_title{
+                font-size: 14px;
+                margin-right: 10px;
+                margin-bottom: 20px;
+            }
         }
         .form_cont,
         .dropdown{
@@ -69,6 +74,13 @@
                 <el-tab-pane label="常用台账" name="common" class="common">
                     <!-- 左侧树形 -->
                     <div class="sider">
+                        <span class="switch_title">含共享台账：</span>
+                        <el-switch
+                            v-model="switchValue"
+                            active-color="#19ADE6"
+                            inactive-color="#ccc"
+                            @change="switchChange">                           
+                        </el-switch>
                        <tree :treeData="treeData"></tree>
                     </div>
                     <div class="common_content">
@@ -150,7 +162,9 @@ import commonTable from "../../components/table/commonTable";
 import { archives_ledger_api1,
          archives_ledger_api2,
          archives_ledger_api3,
-         archives_ledger_api4, 
+         archives_ledger_api4,
+         archives_ledger_api5,
+         archives_ledger_api6,
          } from '../../request/api'
 export default {
     name:"archives_ledger",
@@ -161,7 +175,7 @@ export default {
     data(){
         return {
             activeName:"setting",
-            switchValue:true, 
+            switchValue:false,
             treeData: {
                 data: [],
                 // nodeKey: "",
@@ -171,9 +185,6 @@ export default {
                 },
                 icons:[],
                 nodeClick: this.ledgerNodeClick,
-                switchOpen: true,
-                switchTitle:"含共享台账：",
-                switchChange: this.switchChange,
             },
             ledgerNode:"",
             //台账表格
@@ -260,6 +271,7 @@ export default {
                         label:"显示方案：",
                         defaultVal: '默认显示方案',
                         isShow :false,
+                        method:this.selectValueChange,
                         list:[
                             {value:"默认显示方案"},
                             {value:"人员档案展示方案"},
@@ -294,6 +306,7 @@ export default {
             addLegerForm:{
                 name:"",
                 isShare:false,
+                standingBookId:"",
             },
             rules:{
                 name: [
@@ -331,23 +344,61 @@ export default {
         },
         //台账设置--删除台账请求
         delLedgerReq(){
-             console.log("发送删除台账请求");
-             
-        },
-    
-        //台账设置--新增/编辑台账请求
+            let send = {
+                standingBookId:this.ledgerNode.standingBookId
+            }
+            base.log("s","删除台账请求",send)
+             archives_ledger_api5(send,res=>{
+                 base.log("r","删除台账请求",res.data)
+                 if(res.data.success){
+                     this.$message.success("删除台账成功")
+                     this.getNotShareLeger()
+                     this.delDialogShow = false;
+                 }else{
+                     base.error(res.data)
+                 }
+             })             
+        }, 
+        //台账设置--新增/编辑弹窗确定按钮
         addLedgerReq(formName){
                this.$refs[formName].validate((valid) => {
                 if (valid) {
                     if(this.dialogTitle === "新增台账"){
-                        console.log("发送新增请求");                       
+                        let send ={
+                            standingBookVo: {
+                                  isShare: this.addLegerForm.isShare ? 1 : 0,
+                                  standingBookName: this.addLegerForm.name,
+                            }
+                         }
+                        base.log("s","新增编辑台账",send)
+                         archives_ledger_api6(send,res =>{
+                         base.log("s","新增编辑台账",res.data)
+                           if(res.data.success){
+                               this.addDialogShow = false
+                           }else{
+                               base.error(res.data)
+                           }
+                       })                     
                     }else{
-                        console.log("发送编辑请求");
+                        let send = {
+                            isShare: this.addLegerForm.isShare,
+                            standingBookName: this.addLegerForm.name,
+                            standingBookId: this.addLegerForm.standingBookId,
+                        }
+                        base.log("s","新增编辑台账",send)
+                         archives_ledger_api6(send,res =>{
+                         base.log("s","新增编辑台账",res.data)
+                           if(res.data.success){
+                               this.addDialogShow = false
+                           }else{
+                               base.error(res.data)
+                           }
+                       })  
                     }                  
                 } else {                
                   return false;
                 }
-        });           
+          });           
         },
         //台账设置--编辑
         editLedger(){
@@ -355,6 +406,9 @@ export default {
                 this.$message.warning("请选择需要编辑的台账")
                 return
             }
+            this.addLegerForm.standingBookId = this.ledgerNode.standingBookId
+            this.addLegerForm.name = this.ledgerNode.standingBookName
+            this.addLegerForm.isShare = this.ledgerNode.isShare
             this.addDialogShow = true;
             this.dialogTitle = "编辑台账"
               setTimeout(() => {
@@ -367,7 +421,6 @@ export default {
              this.dialogTitle = "新增台账";
              this.addLegerForm.name = "";
              this.addLegerForm.isShare = false;
-
              setTimeout(() => {
                  this.$refs.addLegerForm.clearValidate()
              }, 0);
@@ -393,7 +446,7 @@ export default {
                 // orgId:ids,
                 orgId:28,                
                 // stangdingBookId:this.ledgerNode.standingBookId,
-                stangdingBookId:21,
+                stangdingBookId:19,
                 // type:this.workType,
                 type:"兼职",
             }
@@ -415,18 +468,22 @@ export default {
                 return
             }
             this.getLegerReq()            
-        },        
-        //下拉框 -- 机构 
+        }, 
+        //表格下拉框 --表格显示方案切换
+        selectValueChange(val){
+            console.log(val);            
+        },       
+        //表格下拉框 -- 机构树 
         checkTreeClick(val,list){
             this.orgList =  list.checkedNodes
             console.log("机构",list.checkedNodes);            
         },
-        //下拉框 -- 工作状态 
+        //表格下拉框 -- 工作状态 
         selectStatus(val){
             this.workType = val
             console.log(val);
         }, 
-        //下拉框 -- 人员分类
+        //表格下拉框 -- 人员分类
         selectArchiveType(val){
             this.archiveType = val
             console.log(val);            
@@ -486,12 +543,13 @@ export default {
         //tabs栏切换
         handleClick(tab){
             if(tab.name === "setting"){              
-                this.treeData.switchOpen = false
                 this.ledgerNode = ""
+                console.log(this.switchValue);               
                 this.getNotShareLeger()
             }else{              
-                this.treeData.switchOpen = true
                 this.ledgerNode = ""
+                this.getNotShareLeger()
+                this.switchValue ? this.getShareLeger() : this.getNotShareLeger()
             }
         }
     }

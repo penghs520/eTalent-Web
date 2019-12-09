@@ -401,7 +401,7 @@ export default {
                 webPage: true,
                 activeColumn: "职位族",            
                 cellClick: this.groupCellClick,
-                pageHide:true,  
+                // pageHide:true,  
           
             },
             positionGroupDialog: false,
@@ -437,8 +437,7 @@ export default {
                     }
                 ],
                 showCheckbox: false /* 非必须，是否显示多选框 */,
-                checkClick: this
-                    .checkClick /* 非必须，点击多选框事件,接收两个参数,当前选中的节点数据,树中选中的所有节点*/,
+                checkClick: this.checkClick ,
                 showDefaultIcon: true /* 非必须，是否显示默认图标 */,
                 showAllNode: false /* 非必须，是否展开所有的子节点*/,
                 nodeClick: this.positionTreeClick
@@ -483,7 +482,7 @@ export default {
                 loading: false,
                 pageResize: false,
                 loading: false,
-                pageHide: true,
+                // pageHide: true,
                 webPage:true,
                 activeColumn: "职位名称",             /* 非必须，给列加高亮，值是该列表格头显示的名称，多列的话要写成数组格式 */
                 cellClick: this.cellClick,  
@@ -643,12 +642,11 @@ export default {
             };
             base.log("s", "获取职位表格", send);
             position_api1(send, res => {
-                this.positionTable.pageResize = false;
                 base.log("r", "获取职位表格", res.data);
                 if (res.data.success) {
                     this.positionTable.data = res.data.result.list;
+                    this.positionTable.total = res.data.result.list.length;
                     this.exportPositionList= res.data.result.list
-                    this.positionTable.total = res.data.result.total;
                 } else {
                     base.error(res.data);
                 }
@@ -769,6 +767,7 @@ export default {
                 base.log("r", "获取所有职位族", res.data);
                 if (res.data.success) {
                     this.positionGroupTable.data = res.data.result;
+                    this.positionGroupTable.total = res.data.result.length;
                 } else {
                     base.error(res.data);
                 }
@@ -843,9 +842,7 @@ export default {
         },
         // 职位排序提交
         positionSortSubmit(list) {
-            let send = {
-                positionGroupIds: list
-            };
+            let send = list
             base.log("s", "职位排序", send);
             position_api5(send, res => {
                 this.sortLoading = false;

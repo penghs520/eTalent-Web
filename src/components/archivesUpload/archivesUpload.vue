@@ -17,23 +17,14 @@
 .el-upload__tip .text {
     color: #777b7c;
 }
+.commonUpload2{
+    width: 80%;
+    max-width: 1040px;
+}
 .table {
     margin-top: 20px;
     height: 260px;
     overflow: auto;
-}
-.text_success,
-.el-icon-success {
-    color: #2fc42f;
-}
-.report {
-    color: #1fafe7;
-    cursor: pointer;
-}
-.checkFailshow,
-.el-icon-error {
-    color: #f03838;
-    font-weight: 700;
 }
 .footer {
     display: flex;
@@ -44,6 +35,7 @@
 .com{
     margin: 0 auto;
     width: 80%;
+    text-align: left;
 }
 .format{
     display: flex;
@@ -76,7 +68,7 @@
 </style>
 
 <template>
-    <div id="commonUpload">
+    <div id="commonUpload2">
         <!-- 导入 -->
         <div class="content">
             <div class="com">
@@ -102,8 +94,6 @@
                 :auto-upload="false"
                 :limit="data.maxNum ? data.maxNum : 1"
                 :on-change="fileChange"
-                :on-success="uploadSuccess"
-                :on-error="uploadError"
                 :action="data.uploadUrl">
                 <i class="el-icon-upload uploadIcon"></i>
                 <div>
@@ -138,7 +128,7 @@ import file from "../../request/filePath";
 import commonTable from "../table/commonTable";
 
 export default {
-    name: "commonUpload", // 导入
+    name: "commonUpload2", // 导入
     props: {
         active: Number,
         data: Object
@@ -172,8 +162,6 @@ export default {
                 this.data.download();
             }
         },
-
-
         // 文件状态改变
         fileChange(file, fileList) {
             this.data.fileList = fileList;

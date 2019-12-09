@@ -126,7 +126,7 @@
                     </template>
                 </el-table-column>
             </template>
-            <el-table-column v-for="(item,index) in head" :key="index" :prop="item.key" :label="item.name" :width="item.width" :formatter="columnFormatter" v-show="item.isShow" >
+            <el-table-column v-for="(item,index) in head" :key="index" :prop="item.key" :label="item.name" :width="item.width" :formatter="columnFormatter" v-show="Boolean(item.isShow)" >
             </el-table-column>
             <el-table-column width="14"></el-table-column>
         </el-table>
@@ -175,7 +175,6 @@ export default {
         };
     },
     created() {
-            
         // 变量初始化
         this.barModelInit(this.table.bar);
         Object.assign(this.page, this.table.page);
@@ -183,7 +182,17 @@ export default {
     },
     computed: {
         head(){
-            return this.table.head;
+            if (Array.isArray(this.table.head)) {
+                if (this.table.head.length > 0) {
+                    if (this.table.head[0].hasOwnProperty('index')) {
+                        let r = this.headFormatter(this.table.head);
+                        return r;
+                    }
+                }
+                return this.table.head;
+            }
+            console.error('commonTable：head不是个数组');
+            return [];
         },
         total(){
             return this.table.total;
@@ -232,6 +241,13 @@ export default {
         };
     },
     methods: {
+        // 表格头格式化
+        headFormatter(list) {
+            let r = list.sort((a,b) => {
+                return a.index - b.index;
+            })
+            return r;
+        },
         // selectTree勾选改变
         selectTreeCheckedChange(checkedList,domOptions) {
             let showList  = checkedList.map(item => item[domOptions.nodeShowKey]);

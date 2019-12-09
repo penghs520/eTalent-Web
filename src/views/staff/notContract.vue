@@ -33,15 +33,18 @@
         font-size: 14px;
     }
 } 
+.upload{
+    padding: 20px;
+}
 </style>
 
 <template>
     <div id="notContract" class="commonRightCont">
         <!-- 主页 -->
-        <commonTable v-show="!addShow" :table="table" ref="commonTable" ></commonTable>
+        <commonTable v-show="showType === 'main'" :table="table" ref="commonTable" ></commonTable>
 
         <!-- 新签 -->
-        <div class="add" v-show="addShow" >
+        <div class="add" v-show="showType === 'add'" >
             <commonTitle name="合同签订信息" ></commonTitle>
             <!-- 业务对象 -->
             <ul class="person" >
@@ -63,6 +66,25 @@
             <!-- 表单 -->
             <commonForm :data="commonForm" ref="commonForm" ></commonForm>
         </div>
+
+        <div class="upload" v-if="showType === 'upload'" >
+            <commonUpload :data="uploadData"  :active="uploadActive">
+                <template v-slot:remind>
+                    <div style="marginTop:-2px">
+                        <span style="marginRight:10px">推荐下载标准模板,填写信息后再上传</span>
+                        <el-button type="primary" size="mini" @click="upload_download">下载模板</el-button>
+                    </div>                           
+                </template>
+                    <template v-slot:explain>
+                        <div>
+                        <p>一次最多导入1000条数据</p>
+                        </div>  
+                </template>
+                <template v-slot:btn>
+                    <el-button size="small" plain="" @click="showType = 'main'" >返回</el-button>
+                </template>
+            </commonUpload>
+        </div>
     </div>
 </template>
 
@@ -73,12 +95,15 @@ import cr from '../../request/commonRequest';
 import commonTable from '../../components/table/commonTable';
 import commonTitle from '../../components/title';
 import commonForm from '../../components/form/commonForm';
+import commonUpload from '../../components/archivesUpload/archivesUpload';
+import file from '../../request/filePath';
 
 export default {
     name: 'notContract',            /* 未签合同 */
-    components: {commonTable, commonTitle, commonForm},
+    components: {commonTable, commonTitle, commonForm, commonUpload},
     data() {
         return {
+            showType: 'main',
             table: {
                 head: [
                     {
@@ -139,7 +164,6 @@ export default {
             pageSize: 10,
 
             // 新签
-            addShow: true,
             contractType: '1',
             commonForm: {
                 domList: [
@@ -164,6 +188,18 @@ export default {
                 sure: this.addSure,
                 cancel: this.addCancel
             },
+
+            // 上传
+            uploadActive: 0,                   // 必须，步骤条的进度，初始化应该是0，然后是1、2、3
+            uploadData: {                           // 必须，上传组件的配置项
+                uploadUrl: '',                  // 必须，上传地址
+                uploadSuccess: this.upload_success,            // 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
+                uploadError: this.upload_error,              // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList               
+
+                tableShow: false,                  // 非必须,是否显示表格
+                tableData: {},                   // 非必须，表格数据(同公共表格组件格式)
+                fileList: [],                     // 必须，上传文件存储
+            }
         };
     },
     created() {
@@ -211,6 +247,7 @@ export default {
                 })
                 return false;
             }
+            this.showType = 'add';
         },
 
         // 新签--合同期限类型改变
@@ -218,7 +255,6 @@ export default {
             if (v === '1') {
                 this.$set(this.commonForm.domList[0].list, 5, {type: 'input', label: '合同终止日期', key: 'endDate', default: '根据合同期限(月)自动生成', isReadOnly: true})
             }else if (v === '2') {
-                console.log(2)
                 this.$set(this.commonForm.domList[0].list, 5, {type: 'date', label: '合同终止日期', key: 'endDate', isMust: true})
             }
         },
@@ -228,11 +264,24 @@ export default {
 
         // 新签--取消
         addCancel() {
-            this.addShow = false;
+            this.showType = 'main';
         },
 
-        upload() {},
         download() {},
+
+        // 上传
+        upload() {
+            this.showType = 'upload';
+        },
+
+        upload_download() {
+            let url = file['新签合同'];
+            if (url) {
+                window.open(url, "_self");
+            }
+        },
+        upload_success() {},
+        upload_error() {},
     }
 }
 </script>

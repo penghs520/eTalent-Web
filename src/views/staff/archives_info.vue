@@ -196,6 +196,7 @@ export default {
                 base.log("r", "获取档案信息", res.data);
                 if (res.data.success) {
                     this.archivesTable.data = res.data.result.list;
+                    this.archivesTable.head = res.data.result.heads;
                     this.archivesTable.total = res.data.result.total;
                 } else {
                     base.error(res.data);

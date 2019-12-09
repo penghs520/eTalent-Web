@@ -44,6 +44,7 @@
 .com{
     margin: 0 auto;
     width: 80%;
+    text-align: left;
 }
 .format{
     display: flex;

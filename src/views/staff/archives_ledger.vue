@@ -73,7 +73,7 @@
                 <!-- 常用台账 -->
                 <el-tab-pane label="常用台账" name="common" class="common">
                     <!-- 左侧树形 -->
-                    <div class="sider">
+                    <div  class="sider">
                         <span class="switch_title">含共享台账：</span>
                         <el-switch
                             v-model="switchValue"
@@ -83,12 +83,14 @@
                         </el-switch>
                        <tree :treeData="treeData"></tree>
                     </div>
-                    <div class="common_content">
+                    <div  class="common_content">
                         <commonTable :table="ledgerTable" ref="commonTable" ></commonTable>                       
-                    </div>                   
-                </el-tab-pane>
+                    </div>
+                    <!-- 展示方案组件 -->
+                    <showStyle v-model="addStyleShow" :data="styleData"></showStyle>                   
+                  </el-tab-pane>
                    <!-- 台账设置 -->
-                <el-tab-pane label="台账设置" name="setting" class="common">
+                   <el-tab-pane label="台账设置" name="setting" class="common">
                     <!-- 台账设置侧边 -->
                     <div class="sider">
                         <el-button type="plain" size="small" :style="{ marginBottom :'16px'} " @click="addLedger">新增</el-button>
@@ -159,6 +161,8 @@
 import tree from '../../components/tree/tree'
 import base from '../../assets/js/base'
 import commonTable from "../../components/table/commonTable";
+import showStyle from "./components/showStyle.vue";
+
 import { archives_ledger_api1,
          archives_ledger_api2,
          archives_ledger_api3,
@@ -170,11 +174,12 @@ export default {
     name:"archives_ledger",
     components:{
         tree,
-        commonTable,        
+        commonTable,
+        showStyle,        
     },
     data(){
         return {
-            activeName:"setting",
+            activeName:"common",
             switchValue:false,
             treeData: {
                 data: [],
@@ -264,13 +269,13 @@ export default {
                         btnType: 'primary',             /* 非必须，element-ui提供的按钮样式，新增 plain */
                         method: this.seachLedger             /* 必须，按钮点击时的回调，接收3个参数：搜索栏数据，单选框数据，多选框数据 */
                     },
-                     {
+                    {
                         type: 'select',                 /* 单选下拉框 */
                         placeholder: '请选择',
                         key: 'type3',
                         label:"显示方案：",
                         defaultVal: '默认显示方案',
-                        isShow :false,
+                        isShow :true,
                         method:this.selectValueChange,
                         list:[
                             {value:"默认显示方案"},
@@ -300,6 +305,9 @@ export default {
             archiveType:"",
             orgList:[],
             workType:"",
+            //显示台账方案
+            addStyleShow:false, 
+            styleData:{},
             //新增编辑台账
             addDialogShow:false,
             dialogTitle:"", 
@@ -322,15 +330,15 @@ export default {
         this.getNotShareLeger()
     },
     watch:{
-        'ledgerTable.data'(newVal,oldVal){
-            if(newVal.length === 0){
-                this.ledgerTable.bar[4].isShow = false
-                this.ledgerTable.bar[5].isShow = false
-            }else{
-                this.ledgerTable.bar[4].isShow = true
-                this.ledgerTable.bar[5].isShow = true
-            }
-        }
+        // 'ledgerTable.data'(newVal,oldVal){
+        //     if(newVal.length === 0){
+        //         this.ledgerTable.bar[4].isShow = false
+        //         this.ledgerTable.bar[5].isShow = false
+        //     }else{
+        //         this.ledgerTable.bar[4].isShow = true
+        //         this.ledgerTable.bar[5].isShow = true
+        //     }
+        // }
     },
     methods:{
 
@@ -471,7 +479,9 @@ export default {
         }, 
         //表格下拉框 --表格显示方案切换
         selectValueChange(val){
-            console.log(val);            
+           if(val ===  "+新增显示方案"){
+              this.addStyleShow = true
+           }          
         },       
         //表格下拉框 -- 机构树 
         checkTreeClick(val,list){

@@ -17,10 +17,6 @@
 .el-upload__tip .text {
     color: #777b7c;
 }
-.commonUpload2{
-    width: 80%;
-    max-width: 1040px;
-}
 .table {
     margin-top: 20px;
     height: 260px;
@@ -65,12 +61,13 @@
 .uploadIcon {
     color: #19ade6 !important;
 }
+
 </style>
 
 <template>
     <div id="commonUpload2">
         <!-- 导入 -->
-        <div class="content">
+        <div>
             <div class="com">
                 <el-steps :active="active" finish-status="success">
                     <el-step title="上传文件"></el-step>

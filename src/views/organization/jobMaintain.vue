@@ -1,9 +1,7 @@
 <style lang="scss">
 #organization_jobMaintain{
     .el-tabs{
-        box-sizing: border-box;
-        height: 100%;       
-        overflow: hidden;
+        height: 100%;        
     }
     .el-tabs__header {      
         padding: 0 24px;
@@ -13,7 +11,6 @@
     .el-tabs__content {
         height: calc(100% - 64px);
         overflow: auto;
-        height: 100%;
         #pane-orgPic {
             height: 100%;
         }
@@ -36,7 +33,6 @@
     }
     .content {
         flex: 1;
-        height: 100%;
         border: 10px solid #f0f0f0;
         border-bottom: none;
         box-sizing: border-box;

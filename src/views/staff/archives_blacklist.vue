@@ -21,12 +21,10 @@
         </div>
     </div>
 </template>
-
 <script>
 import  commonTable  from "../../components/table/commonTable";
 import base from "../../assets/js/base"
 import { archives_file_api1 } from '../../request/api'
-
 export default {
     name: "archives_blacklist",
     components:{

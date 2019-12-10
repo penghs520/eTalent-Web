@@ -1,6 +1,6 @@
 <template>
     <div>
-        <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive" @changeActive="uploadActive = $event"></commonUpload>
+        <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"></commonUpload>
     </div>
 </template>
 

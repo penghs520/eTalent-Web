@@ -404,7 +404,7 @@
             </span>
         </el-dialog>
 
-        <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"></commonUpload>
+        <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive" @close="uploadShow=$event"></commonUpload>
     </div>
 </template>
 
@@ -435,7 +435,9 @@ import {
     entry_api10,
     entry_api13,
     entry_api14,
-    entry_api15
+    entry_api15,
+    entry_api16,
+    entry_api17,
 } from "../../request/api";
 
 export default {
@@ -625,6 +627,7 @@ export default {
                     webPage: true
                 }
             },
+            uploadKey:"PRE",
 
             // 新增表单
             addDialog2: false,
@@ -1199,16 +1202,55 @@ export default {
             })
         },
 
-
-        //导入--点击查看校验报告
+        //导入--导出校验txt
+        exportTxTReq(){
+            let send = {
+                funcCode:this.uploadKey
+            }
+            base.log("s","导出txt",send)
+            entry_api17(send,res=>{
+                 base.log("r","查看校验报告",res.data)
+                 base.blobDownLoad(res,true);
+            })
+        },
+        //导入--点击查看校验报告--记号 
         readReport() {
             this.uploadData.tableShow = false;
             this.uploadData.checkFailshow = true;
             this.uploadData.title = "校验报告";
             this.uploadData.btnText = "确定";
             this.uploadData.cancelbtn = "返回";
+            this.readReportReq()
         },
-        //导入--上传按钮
+        //导入--查看校验报告请求接口
+        readReportReq(){
+            let send = {
+                funcCode: this.uploadKey
+            }
+            base.log("s","查看校验报告",send)
+            
+            entry_api16(send,res=>{
+                base.log("r","查看校验报告",res.data)
+                if(res.data.success){
+                    let dict = JSON.parse(res.data.result)
+                    let list = [];
+                    for (const key in dict) {
+                        if (dict.hasOwnProperty(key)) {
+                            const val = dict[key];
+                            let o = {
+                                lineNumber: key,
+                                resultMsg: val
+                            };
+                            list.push(o)
+                        }
+                    };
+                    this.uploadData.checkFailTable.data = list
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
+        //导入--上传/校验/导入按钮
         uploadOrReturn() {
             if (this.uploadData.btnText === "导入") {
                 this.uploadReq();
@@ -1233,35 +1275,14 @@ export default {
         uploadReq() {
             
         },
-        //导入--校验请求接口
-        uploadCheckReq() {
-            let file = this.uploadData.fileList[0].raw       
-            let formData = new FormData();
-            formData.append('funcCode', 'PRE');
-            formData.append('file',file);
-            base.log("s", "人员导入校验", formData);
-            entry_api15(formData, res => {
-              base.log("r", "人员导入校验", res.data);
-                if (res.data.success) {
-                    this.uploadData.tableData.head = res.data.result.headList
-                    this.uploadData.tableData.data = res.data.result.list
-                    this.uploadData.checkedResult = "success";
-                    this.uploadData.btnText = "导入";
-                    this.uploadActive = 2;
-                } else {
-                    this.uploadData.checkedResult = "fail";
-                    this.uploadData.btnText = "返回";                    
-
-                }
-            })   
-
-        // 导入--校验
-        upload_check() {
+        // 导入--校验请求接口
+        uploadCheckReq() {         
             let file = this.uploadData.fileList[0].raw;
             let formData = new FormData();
-            formData.append('funcCode', 'PRE');
+            formData.append('funcCode', this.uploadKey);
             formData.append('file',file);
             entry_api15(formData, res => {
+                 base.log("r","校验请求",res.data)
                 console.log(res);
                 let d = res.data;
                 if (d.success) {
@@ -1277,8 +1298,9 @@ export default {
                     this.uploadData.tableShow = true;
                     if (r.checkResult) {
                         // 成功
-                        this.uploadData.checkedResult = 'success';
-                        this.uploadData.btnText = '导入';
+                        this.uploadData.checkedResult = "success";
+                        this.uploadData.btnText = "导入";
+                        this.uploadActive = 2;
                     }else{
                         this.uploadData.checkedResult = 'fail';
                         this.uploadData.btnText = '返回';
@@ -1311,9 +1333,7 @@ export default {
             this.uploadData.checkedResult = "";
             this.uploadData.btnText = "校验"
         },
-
-
-        // 解析校验结果
+        //导入 -- 解析校验结果
         checkResultFormatter(list) {
             let result = new Object();
             result.checkResult = list.every(item => item.checkResult);
@@ -1330,8 +1350,6 @@ export default {
             return result;
         },
 
-        // 导入--完成
-        upload_finish() {},
 
         // 打印登记表
         print(searchData,radioData,checkboxData) {

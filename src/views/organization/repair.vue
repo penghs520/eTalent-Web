@@ -637,7 +637,7 @@
                 </el-tab-pane>
             </el-tabs>
             <!-- 导入弹框 -->
-            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"></commonUpload>
+            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"  @changeActive="uploadActive = $event"></commonUpload>
         </div>
     </div>
 </template>
@@ -880,17 +880,11 @@ export default {
                 uploadDescription: "这句话的内容还需要和产品沟通",
                 templateName: "机构导入",
                 uploadUrl: "",
-                uploadSuccess: this.uploadSuccess, // 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
-                uploadError: this.uploadError, // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
-                check: this.uploadCheck, // 必须，校验操作
-                cancel: this.uploadCancel, // 必须，取消操作
-                finish: this.uploadFinish, // 必须，完成操作
-                upload: this.uploadOrReturn, // 必须，上传操作
-                cancelLoading: false, // 必须，取消loading
-                checkLoading: false, // 必须，校验loading
-                finishLoading: false, // 必须，完成loading
+                cancel: this.uploadCancel,    // 必须，取消操作
+                upload: this.uploadOrReturn,  // 必须，上传操作
+                cancelLoading: false,         // 必须，取消loading
 
-                btnText: "", //按钮文字
+                btnText: "校验", //按钮文字
                 cancelbtn: "取消",
                 tableShow: false, //是否显示表格
                 tableData: {
@@ -979,9 +973,14 @@ export default {
                 this.uploadData.tableShow = false;
                 this.uploadData.checkFailshow = false;
                 this.uploadData.title = "机构导入";
+                this.uploadData.btnText = "校验"
             } else if (this.uploadData.btnText === "确定") {
                 this.uploadShow = false;
                 this.uploadData.tableShow = false;
+            }else if(this.uploadData.btnText === "校验"){
+                this.uploadActive = 1;
+                this.uploadData.tableShow = true;
+                this.uploadCheckReq();
             }
         },
         //机构导入--文件上传请求
@@ -1003,12 +1002,6 @@ export default {
                     base.error(res.data);
                 }
             });
-        },
-        //机构导入--点击校验按钮
-        uploadCheck() {
-            this.uploadActive = 1;
-            this.uploadData.tableShow = true;
-            this.uploadCheckReq();
         },
         //机构导入--校验请求接口
         uploadCheckReq() {
@@ -1056,6 +1049,7 @@ export default {
             this.uploadData.title = "机构导入";
             this.uploadData.cancelbtn = "取消";
             this.uploadData.checkedResult = "";
+            this.uploadData.btnText = "校验"
         },
 
         //机构排序--表格按钮

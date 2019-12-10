@@ -23,22 +23,21 @@ export default {
                 uploadUrl: String,                  // 必须，上传地址
                 multiple: Boolean,                  // 非必须，是否支持多选，true-支持，false-不支持，默认false
                 maxNum: Number,                     // 非必须，最大上传个数，默认1个
-                cancel: Function,                   // 必须，取消操作
-                check: Function,                    // 必须，校验操作
-                upload:Function,                    // 必须, 上传操作                
+                cancel: Function,                   // 必须，取消操作(按钮1)
+                upload:Function,                    // 必须, 上传操作(按钮2)               
                 cancelLoading: Boolean,             // 必须，取消loading
-                checkLoading: Boolean,              // 必须，校验loading
-                finishLoading: Boolean,             // 必须，完成loading
 
-                btnText: String,                    // 必须，校验完成后按钮的显示
-                cancelbtn:String,                   // 必须, 取消的按钮显示
+                btnText: String,                    // 必须，(按钮2的文本显示)
+                cancelbtn:String,                   // 必须, (按钮1的文本显示)
                 tableShow:Boolean,                  // 非必须,是否显示表格
                 tableData:Object,                   // 非必须，表格数据(同公共表格组件格式)
                 fileList:Array,                     // 必须，上传文件存储
-                checkedResult:String,              // 必须, 校验结果
-                readReport:Function,                // 非必须, 查看校验的方法
-                checkFailshow:Boolean,              // 非必须, 校验结果
+                checkedResult:String,               // 必须, 校验结果(传success显示成功,fail显示失败,""显示默认)
+                readReport:Function,                // 非必须, 查看校验的回调函数
+                checkFailshow:Boolean,              // 非必须, 是否显示校验的表格
 
+                //------------------------------------------
+                // @changeActive                    //非必须,点击校验,点亮第一步上传按钮(待调整)
             }
         }
     },

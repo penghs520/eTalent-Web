@@ -580,24 +580,50 @@ export default {
 
             // 导入
             uploadShow: false,
-            uploadActive: 0,
+            uploadActive:0, 
             uploadData: {
-                title: '导入机构',                  // 非必须，弹窗标题
-                templateName: '预入职',                 // 非必须，下载模板方法
+                title: '导入人员',                               // 非必须，弹窗标题
+                templateName: '预入职',                          // 非必须，下载模板方法
                 fileFormatDescription: '仅支持扩展名：.xls .xles，大小不能超过5M',      // 非必须，文件格式说明
                 uploadDescription: '这句话的内容还需要和产品沟通',                      // 非必须，导入说明
-                uploadUrl: '',                  // 必须，上传地址
-                cancel: this.upload_cancel,                   // 必须，取消操作
-                check: this.upload_check,                    // 必须，校验操作
-                finish: this.upload_finish,                   // 必须，完成操作
-                cancelLoading: false,             // 必须，取消loading
-                checkLoading: false,              // 必须，校验loading
-                finishLoading: false,             // 必须，完成loading
+                uploadUrl: '',                                  // 必须，上传地址
+                cancel: this.uploadCancel,    // 必须，取消操作
+                upload: this.uploadOrReturn,  // 必须，上传操作
+                
+                cancelLoading: false,                           // 必须，取消loading
                 fileList: [],
+                btnText: "校验",                                //按钮文字
                 cancelbtn: "取消",
-                btnText: '',
-                tableShow: false,
-                tableData: [],
+                tableShow: false, //是否显示表格
+                tableData: {
+                    head: [],
+                    hideHeader: false,
+                    data: [],
+                    total: 0,
+                    pageHide: true
+                },
+                checkedResult: "", //校验结果
+                fileList: [], //上传的文件
+                readReport: this.readReport, //查看检验报告的回调
+                checkFailshow: false,
+                checkFailTable: {
+                    head: [
+                        { name: "行号", key: "lineNumber", isShow: true },
+                        { name: "说明", key: "resultMsg", isShow: true }
+                    ],
+                    hideHeader: false,
+                    bar: [
+                        {
+                            type: "button",
+                            text: "导出Txt",
+                            btnType: "primary",
+                            method: this.exportTxTReq
+                        }
+                    ],
+                    data: [],
+                    total: 0,
+                    webPage: true
+                }
             },
 
             // 新增表单
@@ -1173,15 +1199,61 @@ export default {
             })
         },
 
-        // 导入
-        upload() {
-            this.uploadShow = true;
-        },
 
-        // 导入--取消
-        upload_cancel() {
-            this.uploadShow = false;
+        //导入--点击查看校验报告
+        readReport() {
+            this.uploadData.tableShow = false;
+            this.uploadData.checkFailshow = true;
+            this.uploadData.title = "校验报告";
+            this.uploadData.btnText = "确定";
+            this.uploadData.cancelbtn = "返回";
         },
+        //导入--上传按钮
+        uploadOrReturn() {
+            if (this.uploadData.btnText === "导入") {
+                this.uploadReq();
+            } else if (this.uploadData.btnText === "返回") {
+                this.uploadActive = 0;
+                this.uploadData.fileList = [];
+                this.uploadData.tableShow = false;
+                this.uploadData.checkFailshow = false;
+                this.uploadData.title = "机构导入";
+                this.uploadData.btnText = "校验"
+            } else if (this.uploadData.btnText === "确定") {
+                this.uploadShow = false;
+                this.uploadData.tableShow = false;
+            }else if(this.uploadData.btnText === "校验"){
+                
+                this.uploadActive = 1;
+                this.uploadData.tableShow = true;
+                this.uploadCheckReq();
+            }
+        },
+        //导入--文件上传请求
+        uploadReq() {
+            
+        },
+        //导入--校验请求接口
+        uploadCheckReq() {
+            let file = this.uploadData.fileList[0].raw       
+            let formData = new FormData();
+            formData.append('funcCode', 'PRE');
+            formData.append('file',file);
+            base.log("s", "人员导入校验", formData);
+            entry_api15(formData, res => {
+              base.log("r", "人员导入校验", res.data);
+                if (res.data.success) {
+                    this.uploadData.tableData.head = res.data.result.headList
+                    this.uploadData.tableData.data = res.data.result.list
+                    this.uploadData.checkedResult = "success";
+                    this.uploadData.btnText = "导入";
+                    this.uploadActive = 2;
+                } else {
+                    this.uploadData.checkedResult = "fail";
+                    this.uploadData.btnText = "返回";                    
+
+                }
+            })   
 
         // 导入--校验
         upload_check() {
@@ -1215,6 +1287,31 @@ export default {
             })
             
         },
+        //导入--取消/关闭按钮
+        uploadCancel() {
+            if (this.uploadData.cancelbtn === "取消") {
+                this.uploadShow = false;
+                this.uploadData.tableShow = false;
+            } else if (this.uploadData.cancelbtn === "返回") {
+                this.uploadData.tableShow = true;
+                this.uploadData.checkFailshow = false;
+                this.uploadData.cancelbtn = "取消"
+                this.uploadData.btnText = "返回"
+            }
+        },
+        //导入--点击表格按钮
+        upload() {
+            this.uploadShow = true;
+            this.uploadActive = 0;
+            this.uploadData.fileList = [];
+            this.uploadData.tableShow = false;
+            this.uploadData.checkFailshow = false;
+            this.uploadData.title = "机构导入";
+            this.uploadData.cancelbtn = "取消";
+            this.uploadData.checkedResult = "";
+            this.uploadData.btnText = "校验"
+        },
+
 
         // 解析校验结果
         checkResultFormatter(list) {

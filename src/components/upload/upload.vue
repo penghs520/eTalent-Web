@@ -1,4 +1,4 @@
-<style scoped>
+<style scoped lang="scss">
 .remindLabel {
     color: #000;
 }
@@ -28,6 +28,9 @@
     width: 510px;
     height: 260px;
     overflow: auto;
+    .el-table{
+        height: 100%;
+    }
 }
 .text_success,
 .el-icon-success {
@@ -89,8 +92,8 @@
                     ref="upload"
                     :multiple="Boolean(data.multiple)"
                     :auto-upload="false"
+                    :on-change="fileChange"
                     :limit="data.maxNum ? data.maxNum : 1"
-                    :on-error="uploadError"
                     :action="data.uploadUrl"
                 >
                     <i class="el-icon-upload uploadIcon"></i>
@@ -106,7 +109,7 @@
 
                 <!-- 表格 -->
                 <div class="table" v-if="data.tableShow">
-                    <commonTable :table="data.tableData" key="table1" ></commonTable>
+                    <commonTable :table="data.tableData" key="table1" class="table_content"></commonTable>
                 </div>
                 <!-- 导入说明 -->
                 <div v-if="data.uploadDescription" class="el-upload__tip" slot="tip">
@@ -132,25 +135,15 @@
                 <el-button
                     size="small"
                     @click="cancel"
-                    v-show="active <= 3"
                     :loading="cancelLoading"
                 >{{data.cancelbtn}}</el-button>
                 <el-button
                     size="small"
                     type="primary"
-                    @click="check"
-                    v-show="active === 0"
-                    :loading="checkLoading"
-                    :disabled="data.fileList.length === 0"
-                >校验</el-button>
-                <el-button
-                    size="small"
-                    type="primary"
                     @click="upload"
-                    v-show="active !== 0"
                     :loading="uploadLoading"
+                    :disabled="data.fileList < 1"
                 >{{data.btnText}}</el-button>
-
             </span>
         </el-dialog>
     </div>
@@ -179,12 +172,6 @@ export default {
         cancelLoading() {
             return this.data.cancelLoading;
         },
-        checkLoading() {
-            return this.data.checkLoading;
-        },
-        finishLoading() {
-            return this.data.finishLoading;
-        }
     },
     mounted() {},
     methods: {
@@ -252,12 +239,6 @@ export default {
             }
         },
 
-        // 校验
-        check() {
-            if (this.data.check) {
-                this.data.check();
-            }
-        },
         
         // 完成
         finish() {

@@ -914,17 +914,12 @@ export default {
                 uploadDescription: "这句话的内容还需要和产品沟通",
                 templateName: "岗位导入",
                 uploadUrl: "",
-                uploadSuccess: this.uploadSuccess, // 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
-                uploadError: this.uploadError, // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
-                check: this.uploadCheck, // 必须，校验操作
                 cancel: this.uploadCancel, // 必须，取消操作
-                finish: this.uploadFinish, // 必须，完成操作
                 upload: this.uploadOrReturn, // 必须，上传操作
                 cancelLoading: false, // 必须，取消loading
-                checkLoading: false, // 必须，校验loading
-                finishLoading: false, // 必须，完成loading
-                btnText: "返回", //按钮文字
+                btnText: "校验", //按钮文字
                 cancelbtn: "取消",
+                
                 tableShow: false, //是否显示表格
                 tableData: {
                     head: [
@@ -979,6 +974,7 @@ export default {
             this.uploadData.title = "岗位导入";
             this.uploadData.cancelbtn = "取消";
             this.uploadData.checkedResult = "";
+            this.uploadData.btnText = "校验"
         },
         //岗位导入---导出txt
         exportTxTReq() {
@@ -1012,6 +1008,10 @@ export default {
             } else if (this.uploadData.btnText === "确定") {
                 this.uploadShow = false;
                 this.uploadData.tableShow = false;
+            }else if(this.uploadData.btnText === "校验"){
+                this.uploadActive = 1;
+                this.uploadData.tableShow = true;
+                this.uploadCheckReq();
             }
         },
         //岗位导入--文件上传请求
@@ -1033,12 +1033,6 @@ export default {
                     base.error(res.data);
                 }
             });
-        },
-        //岗位导入--点击校验按钮
-        uploadCheck() {
-            this.uploadActive = 1;
-            this.uploadData.tableShow = true;
-            this.uploadCheckReq();
         },
         //岗位导入--校验请求接口
         uploadCheckReq() {

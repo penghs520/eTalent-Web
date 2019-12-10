@@ -637,7 +637,7 @@
                 </el-tab-pane>
             </el-tabs>
             <!-- 导入弹框 -->
-            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"  @changeActive="uploadActive = $event"></commonUpload>
+            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive" @close="uploadShow=$event"></commonUpload>
         </div>
     </div>
 </template>

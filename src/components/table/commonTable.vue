@@ -220,7 +220,7 @@ export default {
         'table.pageResize': {
             handler: function(val) {
                 // 页码重置
-                if (val.pageResize) {
+                if (val) {
                     this.currentPage = 1;
                 }
             },

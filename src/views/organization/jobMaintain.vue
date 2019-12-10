@@ -582,7 +582,7 @@
                 </el-tab-pane>
             </el-tabs>
             <!-- 岗位导入 -->
-            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"></commonUpload>
+            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"  @close="uploadShow=$event"></commonUpload>
         </div>
     </div>
 </template>

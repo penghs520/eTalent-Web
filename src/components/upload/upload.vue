@@ -201,7 +201,7 @@ export default {
 
         // 关闭弹窗
         handleClose() {
-            this.cancel();
+            this.$emit("close",false)
         },
 
         // 取消

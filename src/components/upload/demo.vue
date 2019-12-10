@@ -23,8 +23,6 @@ export default {
                 uploadUrl: String,                  // 必须，上传地址
                 multiple: Boolean,                  // 非必须，是否支持多选，true-支持，false-不支持，默认false
                 maxNum: Number,                     // 非必须，最大上传个数，默认1个
-                uploadSuccess: Function,            // 非必须，上传成功的回调函数，接收3个参数：response/file/fileList
-                uploadError: Function,              // 非必须，上传失败的回调函数，接收3个参数：error/file/fileList
                 cancel: Function,                   // 必须，取消操作
                 check: Function,                    // 必须，校验操作
                 upload:Function,                    // 必须, 上传操作                

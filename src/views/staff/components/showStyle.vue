@@ -36,9 +36,9 @@
             <span slot="title" >新增显示方案</span>
             <div class="archives_style">
                     <div class="side_tree">
-                        <p>默认显示方案</p>
-                        <p>默认显示方案1</p>
-                        <p>默认显示方案2</p>
+                        <tree :treeData = data.treeData ></tree>
+                        <el-input v-show="showInput" size="mini" v-model="data.styleName" @click="inputName" placeholder="请输入方案名称"></el-input>
+                        <el-button @click="addNewStyle" size="small">添加新的方案</el-button>
                     </div>
                     <div class="content">
                         显示内容
@@ -55,17 +55,33 @@
 </template>
 
 <script>
+import tree from "../../../components/tree/tree"
+
 export default {
     name:"show_style",
+    components:{
+        tree,
+    },
     props:{
         show:Boolean,
-        data:Object,        
+        data:Object,       
     },
     model:{
         prop:"show",
         event:"close"
     },
+    data(){
+        return{
+            showInput:false,
+        }       
+    },
     methods:{
+        inputName(){
+            
+        },
+        addNewStyle(){
+            this.showInput = true
+        },
         handleClose(){
             this.$emit("close",false)          
         },

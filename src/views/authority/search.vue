@@ -95,6 +95,7 @@ import {
     userCheck_api3,
     userCheck_api4
 } from "../../request/api";
+import { log } from 'util';
 
 export default {
     name: "search" /* 角色反查 */,
@@ -142,15 +143,14 @@ export default {
                     /* 非必须，表格上面的操作栏配置 */
                     {
                         type: "input" /* 输入框 */,
-                        placeholder:
-                            "请输入工号或姓名" /* 非必须，输入框提示语 */,
+                        placeholder:"请输入工号或姓名" /* 非必须，输入框提示语 */,
                         key: "name" /* 必须，输入框绑定的变量字符串 */,
                         defaultVal: "",
                         enter: this.search
                     },
                     {
                         type: "button",
-                        text: "确定",
+                        text: "查询",
                         btnType: "primary",
                         method: this.search
                     }
@@ -196,7 +196,7 @@ export default {
             currentPage: 1,
             pageSize: 10,
             searchVal: "",
-            orgId: "82",
+            orgId: "",
             showUserList: false,
             archiveId: "", //人员id
             value: false,
@@ -317,8 +317,7 @@ export default {
                 let d = res.data;
                 base.log("r", "查询树", d);
                 if (d.success) {
-                    this.treeData.data = d.result.list;
-                    this.orgId = d.result.list[0].orgId;
+                    this.treeData.data = d.result;
                 } else {
                     base.error(d);
                 }
@@ -327,6 +326,8 @@ export default {
         //点击树形节点获取数据
         nodeClick(node) {
             this.orgId = node.orgId;
+            console.log(node);
+            
             // 重置表格操作栏
             this.$refs.commonTable.resizeOperationBar();
             this.search({ name: "" });

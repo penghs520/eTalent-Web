@@ -16,11 +16,18 @@ module.exports = {
                     '^/api': '/api'
                 }
             },
-            '/hpi': {
+            '/hpi': {   /* 黄开添 */
                 target: 'http://192.168.1.119:8080',
                 changeOrigin: true,
                 pathRewrite: {
                     '^/hpi/masterdata': ''
+                }
+            },
+            '/ppi': {   /* 彭洪思 */
+                target: 'http://192.168.1.138:8080',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/ppi/masterdata': ''
                 }
             },
         },

@@ -83,6 +83,13 @@ const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogi
         // 已签合同
         const contractHas_api1       = (data, callback) => {request('get', `hpi/masterdata/staffcon/selectLaborContractserUser`, data, callback)};
 
+    // 统计报表
+        // 内置报表
+        const table_api1       = (data, callback) => {request('post', `ppi/masterdata/staffreport/selectOrgIncreaseMemberDetail`, data, callback)};
+        const table_api2       = (data, callback) => {request('post', `ppi/masterdata/staffreport/selectOrgDecreaseMemberDetail`, data, callback)};
+        const table_api3       = (data, callback) => {request('post', `ppi/masterdata/staffreport/exportRegulation`, data, callback)};
+
+
 
 // 系统管理
     // 权限管理
@@ -240,6 +247,10 @@ export {
         // 参数设置
             // 合同参数
             params_api1,params_api2,
+
+        // 统计报表
+            // 内置报表
+            table_api1, table_api2, table_api3,
 
     // 系统管理
         // 权限管理

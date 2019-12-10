@@ -127,7 +127,17 @@ let base = {
             callBack(persons)
         }; 
          fileReader.readAsBinaryString(file);              
-    }
+    },
+
+    /**
+     * dom对象转字符串
+     * @param {Object} domObject dom对象，ref注册的dom
+     */
+    domString(domObject) {
+        const div = document.createElement("div")
+        div.appendChild(domObject)
+        return div.innerHTML
+    },
 };
 
 export default base;

@@ -112,13 +112,12 @@ export default {
                     
                 ],
                 showSelect: true,
-                activeColumn: '姓名',
-                cellClick: Function,
+                // cellClick: Function,
                 loading: false,
                 pageResize: false,
                 pageSizeChange: this.pageSizeChange,
                 pageChange: this.pageChange,
-                formatter: Function,
+                // formatter: Function,
             },
             currentPage: 1,
             pageSize: 10,
@@ -139,30 +138,63 @@ export default {
             let send = {
                 currentPage: this.currentPage,
                 pageSize: this.pageSize,
-                isEnable: false,
-                orgId: orgId
+                isEnable: searchData.sign,
+                orgIdList: searchData.org,
+                status: searchData.contractStatus
             };
             this.table.loading = true;
             base.log('s', '获取表格', send);
             contractHas_api1(send, res => {
                 this.table.loading = false;
+                this.table.pageResize = false;
                 let d = res.data;
                 base.log('r', '获取表格', d);
                 if (d.success) {
-                    // 
+                    this.table.head = d.result.heads;
+                    this.table.data = d.result.pageResult.list;
+                    this.table.total = d.result.pageResult.total;
                 }else{
                     base.error(d);
                 }
             })
         },
 
-
-
-        // ===============
         // 查询
         search(searchData) {
+            if (searchData.org.length === 0 || searchData.contractStatus.length === 0) {
+                this.$message({
+                    message: '机构与合同状态为必选项',
+                    type: 'warning'
+                });
+                return false;
+            }
+            this.table.pageResize = true;
             this.getTable(searchData);
         },
+
+        // 页容量改变
+        pageSizeChange(size, serachData) {
+            this.pageSize = size;
+            this.search(searchData);
+        },
+        
+        // 翻页
+        pageChange(index, searchData) {
+            if (searchData.org.length === 0 || searchData.contractStatus.length === 0) {
+                this.$message({
+                    message: '机构与合同状态为必选项',
+                    type: 'warning'
+                });
+                return false;
+            }
+            this.currentPage = index;
+            this.getTable(searchData);
+        },
+
+
+
+
+
         renew() {},
         stop() {},
         relieve() {},

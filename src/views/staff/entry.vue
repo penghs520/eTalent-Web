@@ -1254,6 +1254,38 @@ export default {
 
                 }
             })   
+
+        // 导入--校验
+        upload_check() {
+            let file = this.uploadData.fileList[0].raw;
+            let formData = new FormData();
+            formData.append('funcCode', 'PRE');
+            formData.append('file',file);
+            entry_api15(formData, res => {
+                console.log(res);
+                let d = res.data;
+                if (d.success) {
+                    let r = this.checkResultFormatter(d.result.list);
+                    console.log(r);
+                    this.uploadActive = 1;
+                    this.uploadData.tableData = {
+                        head: d.result.headList,
+                        data: r.list,
+                        total: r.list.length,
+                        webPage: true
+                    };
+                    this.uploadData.tableShow = true;
+                    if (r.checkResult) {
+                        // 成功
+                        this.uploadData.checkedResult = 'success';
+                        this.uploadData.btnText = '导入';
+                    }else{
+                        this.uploadData.checkedResult = 'fail';
+                        this.uploadData.btnText = '返回';
+                    }
+                }
+            })
+            
         },
         //导入--取消/关闭按钮
         uploadCancel() {
@@ -1281,6 +1313,25 @@ export default {
         },
 
 
+        // 解析校验结果
+        checkResultFormatter(list) {
+            let result = new Object();
+            result.checkResult = list.every(item => item.checkResult);
+            result.list = new Array();
+            list.forEach((item,index) => {
+                // 
+                let cellList = item.customFieldVOList;
+                let row = new Object();
+                cellList.forEach(cell => {
+                    row[cell.fieldCode] = cell.fieldValue
+                });
+                result.list[index] = row;
+            });
+            return result;
+        },
+
+        // 导入--完成
+        upload_finish() {},
 
         // 打印登记表
         print(searchData,radioData,checkboxData) {

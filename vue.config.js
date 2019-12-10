@@ -16,13 +16,13 @@ module.exports = {
                     '^/api': '/api'
                 }
             },
-            // '/api': {
-            //     target: '192.168.1.119:8080/',
-            //     changeOrigin: true,
-            //     pathRewrite: {
-            //         '^/api/masterdata': ''
-            //     }
-            // },
+            '/hpi': {
+                target: 'http://192.168.1.119:8080',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/hpi/masterdata': ''
+                }
+            },
         },
     }
 }

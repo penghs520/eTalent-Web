@@ -404,7 +404,7 @@
             </span>
         </el-dialog>
 
-        <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="0"></commonUpload>
+        <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"></commonUpload>
     </div>
 </template>
 
@@ -580,6 +580,7 @@ export default {
 
             // 导入
             uploadShow: false,
+            uploadActive: 0,
             uploadData: {
                 title: '导入机构',                  // 非必须，弹窗标题
                 templateName: '预入职',                 // 非必须，下载模板方法
@@ -594,6 +595,9 @@ export default {
                 finishLoading: false,             // 必须，完成loading
                 fileList: [],
                 cancelbtn: "取消",
+                btnText: '',
+                tableShow: false,
+                tableData: [],
             },
 
             // 新增表单
@@ -1181,20 +1185,52 @@ export default {
 
         // 导入--校验
         upload_check() {
-            console.log('较远');
-            console.log(this.uploadData.fileList);
             let file = this.uploadData.fileList[0].raw;
             let formData = new FormData();
-            // formData.append('funcCode', 'PRE');
+            formData.append('funcCode', 'PRE');
             formData.append('file',file);
-            let send = {
-                funcCode: 'PRE',
-                file: formData
-            }
             entry_api15(formData, res => {
                 console.log(res);
+                let d = res.data;
+                if (d.success) {
+                    let r = this.checkResultFormatter(d.result.list);
+                    console.log(r);
+                    this.uploadActive = 1;
+                    this.uploadData.tableData = {
+                        head: d.result.headList,
+                        data: r.list,
+                        total: r.list.length,
+                        webPage: true
+                    };
+                    this.uploadData.tableShow = true;
+                    if (r.checkResult) {
+                        // 成功
+                        this.uploadData.checkedResult = 'success';
+                        this.uploadData.btnText = '导入';
+                    }else{
+                        this.uploadData.checkedResult = 'fail';
+                        this.uploadData.btnText = '返回';
+                    }
+                }
             })
             
+        },
+
+        // 解析校验结果
+        checkResultFormatter(list) {
+            let result = new Object();
+            result.checkResult = list.every(item => item.checkResult);
+            result.list = new Array();
+            list.forEach((item,index) => {
+                // 
+                let cellList = item.customFieldVOList;
+                let row = new Object();
+                cellList.forEach(cell => {
+                    row[cell.fieldCode] = cell.fieldValue
+                });
+                result.list[index] = row;
+            });
+            return result;
         },
 
         // 导入--完成

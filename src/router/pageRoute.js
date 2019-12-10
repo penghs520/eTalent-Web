@@ -32,6 +32,9 @@ let pageRoute = {
         '合同参数':     'staff_contract_params',
         '入职登记模板': 'staff_entry_template',
 
+        // 统计报表
+        '内置报表':     'staff_builtIn_table',
+
     // 系统管理 authority
         // 权限管理
         '角色授权': 'authority_role',

@@ -15,72 +15,72 @@ import request from './http';
 
 
 // 登录
-const login_api1 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
-const login_api2 = (data, callback) => {request('form', `api/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
-const login_api3 = (data, callback) => {request('form', `api/masterdata/userLogin/sendCodeByPhone`, data, callback)};
-const login_api4 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
-const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogin/logout`, data, callback)};
+const login_api1 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
+const login_api2 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
+const login_api3 = (data, callback) => {request('form', `hpi/masterdata/userLogin/sendCodeByPhone`, data, callback)};
+const login_api4 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
+const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogin/logout`, data, callback)};
 
 // 员工管理
     // 公用接口
         // 根据档案显示对应权限下的单位
-        const staff_api1     = (data, callback) => {request('get', `api/masterdata/staffarc/getCompany`, data, callback)};
+        const staff_api1     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getCompany`, data, callback)};
         // 根据档案id显示对应权限下的子集部门
-        const staff_api2     = (data, callback) => {request('get', `api/masterdata/staffarc/getOrgIdByCompanyId`, data, callback)};
+        const staff_api2     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getOrgIdByCompanyId`, data, callback)};
         // 显示部门下的岗位
-        const staff_api3     = (data, callback) => {request('get', `api/masterdata/staffarc/getPostByOrgId`, data, callback)};
+        const staff_api3     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getPostByOrgId`, data, callback)};
 
 
     // 入职管理
-    const entry_api1     = (data, callback) => {request('form', `api/masterdata/staffpre/selectPreEmployment`, data, callback)};
-    const entry_api2     = (data, callback) => {request('post', `api/masterdata/staffpre/insertPreEmployment`, data, callback)};
-    const entry_api3     = (data, callback) => {request('post', `api/masterdata/staffpre/sendMail`, data, callback)};
-    const entry_api4     = (data, callback) => {request('post', `api/masterdata/staffpre/confirmPreemployment`, data, callback)};
-    const entry_api5     = (data, callback) => {request('post', `api/masterdata/staffpre/deletePreEmployment`, data, callback)};
-    const entry_api6     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentChange`, data, callback)};
-    const entry_api7     = (data, callback) => {request('post', `api/masterdata/staffarc/importPreFile`, data, callback)};      // 导入
-    const entry_api8     = (data, callback) => {request('get', `api/masterdata/staffarc/getPostByOrgId`, data, callback)};
-    const entry_api9     = (data, callback) => {request('post', `api/masterdata/staffarc/sendMessage`, data, callback)};
-    const entry_api10     = (data, callback) => {request('post', `api/masterdata/port/exportPreFile`, data, callback, 'blob')};
-    const entry_api11     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmploymentField`, data, callback)};
-    const entry_api12     = (data, callback) => {request('post', `api/masterdata/staffpre/updatePreEmployment`, data, callback)};
-    const entry_api13     = (data, callback) => {request('post', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableCodePre`, data, callback)};
-    const entry_api14     = (data, callback) => {request('form', `api/masterdata/staffarc/selectCustomTableForPre`, data, callback)};
-    const entry_api15     = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFile`, data, callback)};
+    const entry_api1     = (data, callback) => {request('form', `hpi/masterdata/staffpre/selectPreEmployment`, data, callback)};
+    const entry_api2     = (data, callback) => {request('post', `hpi/masterdata/staffpre/insertPreEmployment`, data, callback)};
+    const entry_api3     = (data, callback) => {request('post', `hpi/masterdata/staffpre/sendMail`, data, callback)};
+    const entry_api4     = (data, callback) => {request('post', `hpi/masterdata/staffpre/confirmPreemployment`, data, callback)};
+    const entry_api5     = (data, callback) => {request('post', `hpi/masterdata/staffpre/deletePreEmployment`, data, callback)};
+    const entry_api6     = (data, callback) => {request('post', `hpi/masterdata/staffpre/updatePreEmploymentChange`, data, callback)};
+    const entry_api7     = (data, callback) => {request('post', `hpi/masterdata/staffarc/importPreFile`, data, callback)};      // 导入
+    const entry_api8     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getPostByOrgId`, data, callback)};
+    const entry_api9     = (data, callback) => {request('post', `hpi/masterdata/staffarc/sendMessage`, data, callback)};
+    const entry_api10     = (data, callback) => {request('post', `hpi/masterdata/port/exportPreFile`, data, callback, 'blob')};
+    const entry_api11     = (data, callback) => {request('post', `hpi/masterdata/staffpre/updatePreEmploymentField`, data, callback)};
+    const entry_api12     = (data, callback) => {request('post', `hpi/masterdata/staffpre/updatePreEmployment`, data, callback)};
+    const entry_api13     = (data, callback) => {request('post', `hpi/masterdata/staffarc/searchCustomTableGroupFieldListByTableCodePre`, data, callback)};
+    const entry_api14     = (data, callback) => {request('form', `hpi/masterdata/staffarc/selectCustomTableForPre`, data, callback)};
+    const entry_api15     = (data, callback) => {request('post', `hpi/masterdata/port/importFileAndCheckFile`, data, callback)};
 
     // 参数设置
         //合同参数
-        const params_api1     = (data, callback) => {request('form', `api/masterdata/number/insertContractParam`, data, callback)};
+        const params_api1     = (data, callback) => {request('form', `hpi/masterdata/number/insertContractParam`, data, callback)};
         //工号规则
-        const params_api2     = (data, callback) => {request('form', `api/masterdata/number/insertEmployNumber`, data, callback)};
+        const params_api2     = (data, callback) => {request('form', `hpi/masterdata/number/insertEmployNumber`, data, callback)};
     
     
     // 档案管理
         //信息维护
-        const archives_api1     = (data, callback) => {request('get', `api/masterdata/staffarc/selectArchivebatch`, data, callback)};
-        const archives_api2     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const archives_api1     = (data, callback) => {request('get', `hpi/masterdata/staffarc/selectArchivebatch`, data, callback)};
+        const archives_api2     = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
         //员工台账
-        const archives_ledger_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
-        const archives_ledger_api2     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBook`, data, callback)};
-        const archives_ledger_api3     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
-        const archives_ledger_api4     = (data, callback) => {request('get', `api/masterdata/staffsta/selectStaff`, data, callback)};
-        const archives_ledger_api5     = (data, callback) => {request('get', `api/masterdata/staffsta/deleteStandingBook`, data, callback)};
-        const archives_ledger_api6     = (data, callback) => {request('post', `api/masterdata/staffsta/updateStandingBook`, data, callback)};
+        const archives_ledger_api1     = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const archives_ledger_api2     = (data, callback) => {request('form', `hpi/masterdata/staffsta/selectMyStandingBook`, data, callback)};
+        const archives_ledger_api3     = (data, callback) => {request('form', `hpi/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
+        const archives_ledger_api4     = (data, callback) => {request('get', `hpi/masterdata/staffsta/selectStaff`, data, callback)};
+        const archives_ledger_api5     = (data, callback) => {request('get', `hpi/masterdata/staffsta/deleteStandingBook`, data, callback)};
+        const archives_ledger_api6     = (data, callback) => {request('post', `hpi/masterdata/staffsta/updateStandingBook`, data, callback)};
 
         //附件管理
-        const archives_file_api1       = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const archives_file_api1       = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
         //黑名单管理
-        const archives_blacklist_api1  = (data, callback) => {request('get', `api/masterdata/staffsta/selectBalckList`, data, callback)};
-        const archives_blacklist_api2  = (data, callback) => {request('post', `api/masterdata/staffsta/deleteBalckList`, data, callback)};
+        const archives_blacklist_api1  = (data, callback) => {request('get', `hpi/masterdata/staffsta/selectBalckList`, data, callback)};
+        const archives_blacklist_api2  = (data, callback) => {request('post', `hpi/masterdata/staffsta/deleteBalckList`, data, callback)};
 
     // 劳动合同
         // 未签合同
-        const notContract_api1       = (data, callback) => {request('get', `api/masterdata/staffcon/selectNoLaborContractU`, data, callback)};
+        const notContract_api1       = (data, callback) => {request('get', `hpi/masterdata/staffcon/selectNoLaborContractU`, data, callback)};
 
         // 已签合同
-        const contractHas_api1       = (data, callback) => {request('get', `api/masterdata/staffcon/selectNoLaborContractU`, data, callback)};
+        const contractHas_api1       = (data, callback) => {request('get', `hpi/masterdata/staffcon/selectLaborContractserUser`, data, callback)};
 
 
 // 系统管理

@@ -30,6 +30,9 @@ const organization_userInfo  = () => import(/* webpackChunkName: "group-organiza
     const staff_contract_params         = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/contract_params.vue');
     const staff_entry_template          = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/entry_template.vue');
 
+    // 统计报表
+    const staff_builtIn_table           = () => import(/* webpackChunkName: "group-staff" */ '../views/staff/builtIn_table.vue');
+
 // 权限管理
 const authority_role         = () => import(/* webpackChunkName: "group-authority" */ '../views/authority/role.vue');
 const authority_user         = () => import(/* webpackChunkName: "group-authority" */ '../views/authority/user.vue');
@@ -68,6 +71,9 @@ let path = {
         staff_jobNumber,
         staff_contract_params,
         staff_entry_template,
+
+        // 统计报表
+        staff_builtIn_table,
 
     // 权限管理
     authority_role,

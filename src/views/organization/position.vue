@@ -566,6 +566,7 @@ export default {
         //职位 -- 新增按钮
         addPosition() {
             this.positionDialog = true;
+            this.addPositionForm.positionGroupId = this.positionNode.positionGroupId
             setTimeout(() => {
                    this.$refs.addPositionForm.clearValidate()
             }, 0);

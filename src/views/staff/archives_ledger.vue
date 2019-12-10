@@ -169,6 +169,7 @@ import { archives_ledger_api1,
          archives_ledger_api4,
          archives_ledger_api5,
          archives_ledger_api6,
+         archives_ledger_api7,
          } from '../../request/api'
 export default {
     name:"archives_ledger",
@@ -307,7 +308,18 @@ export default {
             workType:"",
             //显示台账方案
             addStyleShow:false, 
-            styleData:{},
+            styleData:{
+                styleName:"",
+                treeData: {
+                data: [],
+                props: {
+                    children: "",
+                    label: "querySchemeId",
+                },
+                icons:[],
+                nodeClick: this.styleTreeNode,
+             },
+            },
             //新增编辑台账
             addDialogShow:false,
             dialogTitle:"", 
@@ -325,9 +337,10 @@ export default {
             delDialogShow:false,
         }
     },
-    mounted(){
+    created(){
         this.getOrgTreeReq()
         this.getNotShareLeger()
+         this.getStyleList()
     },
     watch:{
         // 'ledgerTable.data'(newVal,oldVal){
@@ -341,6 +354,29 @@ export default {
         // }
     },
     methods:{
+
+        //显示方案--树形节点点击
+        styleTreeNode(node){
+            console.log(node);          
+        },
+        //获取展示方案
+        getStyleList(){
+            console.log(123456);           
+            archives_ledger_api7(null,res=>{
+                base.log("r","获取显示方案",res.data)
+                if(res.data.success){
+                    this.styleData.treeData.data = res.data.result[0].querySchemeFieldList
+                    this.ledgerTable.bar[4].list = JSON.parse(JSON.stringify(res.data.result[0].querySchemeFieldList))
+                    this.ledgerTable.bar[4].list = this.ledgerTable.bar[4].list.map(item=>{
+                        item.value = item.querySchemeId
+                        item.label = item.querySchemeName
+                        return item
+                    })
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
 
         //台账设置--删除按钮
         delLedger(){
@@ -454,7 +490,7 @@ export default {
                 // orgId:ids,
                 orgId:28,                
                 // stangdingBookId:this.ledgerNode.standingBookId,
-                stangdingBookId:19,
+                stangdingBookId:10,
                 // type:this.workType,
                 type:"兼职",
             }
@@ -479,7 +515,7 @@ export default {
         }, 
         //表格下拉框 --表格显示方案切换
         selectValueChange(val){
-           if(val ===  "+新增显示方案"){
+           if(val ===  "8"){
               this.addStyleShow = true
            }          
         },       

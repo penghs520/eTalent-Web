@@ -90,8 +90,6 @@
                     :multiple="Boolean(data.multiple)"
                     :auto-upload="false"
                     :limit="data.maxNum ? data.maxNum : 1"
-                    :on-change="fileChange"
-                    :on-success="uploadSuccess"
                     :on-error="uploadError"
                     :action="data.uploadUrl"
                 >
@@ -127,7 +125,7 @@
                     </span>
                 </div>
             </div>
-            <div class="qinjeeDialogSmallCont" v-if="data.checkFailshow">
+            <div class="qinjeeDialogSmallCont table" v-if="data.checkFailshow"  >
                 <commonTable :table="data.checkFailTable" key="table2" ></commonTable>
             </div>           
             <span slot="footer" class="dialog-footer">

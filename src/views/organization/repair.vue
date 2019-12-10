@@ -752,7 +752,7 @@ export default {
                             { text: "合并", method: this.mergeOrg },
                             { text: "划转", method: this.enrolOrg },
                             { text: "排序", method: this.sortOrg },
-                            { text: "模板下载", method: this.downloadModle },
+                            // { text: "模板下载", method: this.downloadModle },
                             { text: "导入", method: this.uploadPostTable },
                             { text: "导出", method: this.downloadTable }
                         ]
@@ -1028,10 +1028,8 @@ export default {
                     this.uploadData.checkedResult = "fail";
                     this.uploadData.btnText = "返回";                    
                     this.uploadData.tableData.data = res.data.result.excelList;
-                    this.uploadData.checkFailTable.data =
-                        res.data.result.failCheckList;
-                    this.uploadData.checkFailTable.total =
-                        res.data.result.failCheckList.length;
+                    this.uploadData.checkFailTable.data =res.data.result.failCheckList;
+                    this.uploadData.checkFailTable.total =res.data.result.failCheckList.length;
                     this.orgExcelRedisKey = res.data.result.redisKey;
                 }
             });
@@ -1462,10 +1460,12 @@ export default {
         //新增机构--获取最大下级机构的编码
         getMaxOrgCode(parentrOrg) {
             if (parentrOrg.childList) {
-                // console.log(parentrOrg.childList);
                 let orgCode = parentrOrg.childList.map(item => item.orgCode);
                 let maxCode = Math.max.apply(this, orgCode);
                 this.maxCodeAdd = maxCode + 1;
+                if(isNaN(this.maxCodeAdd)){
+                    this.maxCodeAdd = parentrOrg.orgCode
+                }
             } else {
                 this.maxCodeAdd = parentrOrg.orgCode + "01";
             }
@@ -1657,12 +1657,12 @@ export default {
         },
 
         // 模板下载
-        downloadModle() {
-            let url = file["机构导入"];
-            if (url) {
-                window.open(url, "_self");
-            }
-        },
+        // downloadModle() {
+        //     let url = file["机构导入"];
+        //     if (url) {
+        //         window.open(url, "_self");
+        //     }
+        // },
         // 机构表--导出表格
         downloadTable(searchData, radioData, checkboxData) {
             if (!this.orgParent) {

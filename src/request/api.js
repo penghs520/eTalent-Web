@@ -89,7 +89,8 @@ const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogi
         // 内置报表
         const table_api1       = (data, callback) => {request('post', `ppi/masterdata/staffreport/selectOrgIncreaseMemberDetail`, data, callback)};
         const table_api2       = (data, callback) => {request('post', `ppi/masterdata/staffreport/selectOrgDecreaseMemberDetail`, data, callback)};
-        const table_api3       = (data, callback) => {request('post', `ppi/masterdata/staffreport/exportRegulation`, data, callback)};
+        const table_api3       = (data, callback) => {request('post', `ppi/masterdata/staffreport/exportRegulation`, data, callback, 'blob')};
+        const table_api4       = (data, callback) => {request('post', `ppi/masterdata/staffreport/selectOrgRegulationCount`, data, callback)};
 
 
 
@@ -252,7 +253,7 @@ export {
 
         // 统计报表
             // 内置报表
-            table_api1, table_api2, table_api3,
+            table_api1, table_api2, table_api3, table_api4,
 
     // 系统管理
         // 权限管理

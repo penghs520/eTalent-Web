@@ -196,7 +196,7 @@
                             <!-- 多选框 -->
                             <template v-else-if="item.type === 'checkbox'" :disabled="Boolean(item.isReadOnly)">
                                 <el-checkbox-group v-model="form[item.key]">
-                                    <el-checkbox v-for="(se,seIndex) in item.list" :key="seIndex" :label="se.value">{{se.label}}</el-checkbox>
+                                    <el-checkbox v-for="(se,seIndex) in item.list" :key="seIndex" :disabled="se.disabled ? true : false" :label="se.value">{{se.label}}</el-checkbox>
                                 </el-checkbox-group>
                             </template>
 

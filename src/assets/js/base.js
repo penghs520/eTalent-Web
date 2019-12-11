@@ -61,13 +61,20 @@ let base = {
         if (response.status === 200) {
             // 
             console.log(response.headers)
-            let name = response.headers['filename'];
+            let name = null;
+            if (response.headers.hasOwnProperty('filename')) {
+                name = response.headers['filename'];
+            }else if (response.headers.hasOwnProperty('content-disposition')) {
+                let nameStr = response.headers['content-disposition'];
+                name = nameStr.split('filename=')[1];
+            }else{
+                console.error('导出错误--headers中没找到文件名');
+                return false;
+            }
             if (uncode) {
                 // 解码
                 name = decodeURI(name);
             }
-            console.log('文件名')
-            console.log(name);
             let blob;
             if (isTxt) {
                 blob = new Blob([JSON.stringify(response.data)]);

@@ -7,6 +7,7 @@
 }
 .radioGroup{
     margin-top: 20px;
+    height: 32px;
 }
 table{
     margin-top: 20px;
@@ -26,9 +27,18 @@ table{
     tbody{
         color: #676B6D;
     }
-    td{
+    td,th{
         border: 1px solid rgba(241,242,242,1);
         padding: 0 4px;
+        font-size: 14px;
+        font-weight: normal;
+    }
+}
+.table_3{
+    thead{
+        tr{
+            height: 30px;
+        }
     }
 }
 </style>
@@ -63,25 +73,33 @@ table{
                 <el-button type="primary" size="small" @click="download" >导出</el-button>
             </el-col>
         </el-row>
-        <el-row type="flex" class="radioGroup">
-            <el-radio-group v-model="tableType">
-                <el-radio :label="1">增员明细表</el-radio>
-                <el-radio :label="2">减员明细表</el-radio>
-                <el-radio :label="3">增减员统计表</el-radio>
-            </el-radio-group>
+        <el-row type="flex" align="middle" class="radioGroup" :gutter="20">
+            <el-col :span=".5">
+                <el-radio-group v-model="tableType">
+                    <el-radio :label="1">增员明细表</el-radio>
+                    <el-radio :label="2">减员明细表</el-radio>
+                    <el-radio :label="3">增减员统计表</el-radio>
+                </el-radio-group>
+            </el-col>
+            <el-col v-show="tableType === 3" :span=".5" class="label">统计部门层级</el-col>
+            <el-col v-show="tableType === 3" :span=".5">
+                <el-select v-model="layer" size="small" >
+                    <el-option v-for="item in layerList" :key="item" :value="item" ></el-option>
+                </el-select>
+            </el-col>
         </el-row>
 
         <!-- 增员明细表 -->
         <table class="table_1" v-show="tableType === 1" id="table_1">
             <thead>
                 <tr>
-                    <td>姓名</td>
-                    <td>增员单位</td>
-                    <td>增员部门</td>
-                    <td>增员职位</td>
-                    <td>增员岗位</td>
-                    <td>增员原因</td>
-                    <td>变动日期</td>
+                    <th>姓名</th>
+                    <th>增员单位</th>
+                    <th>增员部门</th>
+                    <th>增员职位</th>
+                    <th>增员岗位</th>
+                    <th>增员原因</th>
+                    <th>变动日期</th>
                 </tr>
             </thead>
             <tbody>
@@ -98,16 +116,16 @@ table{
         </table>
 
         <!-- 减员明细表 -->
-        <table class="table_2" v-show="tableType === 2" ref="table_2">
+        <table class="table_2" v-show="tableType === 2" id="table_2">
             <thead>
                 <tr>
-                    <td>姓名</td>
-                    <td>减员单位</td>
-                    <td>减员部门</td>
-                    <td>减员职位</td>
-                    <td>减员岗位</td>
-                    <td>减员原因</td>
-                    <td>变动日期</td>
+                    <th>姓名</th>
+                    <th>减员单位</th>
+                    <th>减员部门</th>
+                    <th>减员职位</th>
+                    <th>减员岗位</th>
+                    <th>减员原因</th>
+                    <th>变动日期</th>
                 </tr>
             </thead>
             <tbody>
@@ -122,7 +140,32 @@ table{
                 </tr>
             </tbody>
         </table>
+
         <!-- 增减员统计表 -->
+        <table class="table_3" v-show="tableType === 3" id="table_3" >
+            <thead>
+                <tr>
+                    <th rowspan="2">单位</th>
+                    <th rowspan="2">部门</th>
+                    <th rowspan="2">本期初实有人数</th>
+                    <th colspan="3">本期增加</th>
+                    <th colspan="4">本期减少</th>
+                    <th rowspan="2">本期末实有人数</th>
+                </tr>
+                <tr>
+                    <th>新入职</th>
+                    <th>调入</th>
+                    <th>小计</th>
+                    <th>调出</th>
+                    <th>离职</th>
+                    <th>退休</th>
+                    <th>小计</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr></tr>
+            </tbody>
+        </table>
     </div>
 </template>
 
@@ -130,8 +173,7 @@ table{
 import base from '../../assets/js/base';
 import tree from '../../components/tree/tree';
 import cr from '../../request/commonRequest';
-import {table_api1, table_api2, table_api3} from '../../request/api';
-import { log } from 'util';
+import {table_api1, table_api2, table_api3, table_api4} from '../../request/api';
 
 export default {
     name: 'builtIn_table',              /* 内置报表 */
@@ -156,8 +198,11 @@ export default {
             },
 
             tableType: 1,               /* 表格显示 */
+            layer: 1,
+            layerList: [1,2,3],
             tableData_1: [],
             tableData_2: [],
+            tableData_3: [],
         };
     },
     created() {
@@ -203,7 +248,7 @@ export default {
                     break;
 
                 case 3:
-                    // 
+                    this.getTable_3();
                     break;
             
                 default:
@@ -249,9 +294,104 @@ export default {
             })
         },
 
+        // 获取增减员明细表
+        getTable_3() {
+            let send = {
+                "orgIds": this.checkedValue,
+                "startDate": this.date[0],
+                "endDate": this.date[1],
+                "layer": this.layer
+            };
+            base.log('s', '增减员明细表', send);
+            table_api4(send, res => {
+                let d = res.data;
+                base.log('r', '增减员明细表', d);
+                if (d.success) {
+                    // this.tableData_2 = d.result;
+                    this.dataFormatter(d.result);
+                }else{
+                    base.error(d);
+                }
+            })
+        },
+
+        // 增减员数据解析
+        dataFormatter(list) {
+            let result = new Array();
+
+            // 取所有的行
+            let allRow = new Array();
+            this.getAllRow(list,allRow);
+            console.log(allRow);
+
+            // 构建表格需要的数组
+            let tableList = new Array();
+            allRow.forEach(item => {
+                let row = new Array();
+                row.push(item);
+                tableList.push(row);
+            });
+
+            // 添加爸爸
+            this.addParent(list,tableList);
+            console.log(tableList);
+            
+        },
+
+        // 添加爸爸
+        addParent(list, table) {
+            let currentRowIndex = 0,
+            parentId = '';
+            for (let i = 0; i < table.length; i++) {
+                const row = table[i];
+                let item = row[row.length - 1];
+                if (item.orgParentId !== parentId) {
+                   parentId =  item.orgParentId;
+                   currentRowIndex = i;
+                   let parentArry = [];
+                   this.getParent(list,parentId,parentArry);
+                   let parent = parentArry[0];
+                   parent.rowSpan = 1;
+                   row.push(parent);
+                }else{
+                    let row = table[currentRowIndex];
+                    let item = row[row.length - 1];
+                    item.rowSpan ++;
+                }
+            }
+        },
+
+        // 找爸爸
+        getParent(tree,parentId,result) {
+            tree.forEach(item => {
+                if (item.orgId === parentId) {
+                    result.push(item);
+                }else{
+                    if (item.childList) {
+                        this.getParent(item.childList, parentId, result)
+                    }
+                }
+            });
+        },
+
+        // 取最深层节点
+        getAllRow(list, result) {
+            list.forEach(item => {
+                if (item.childList) {
+                    this.getAllRow(item.childList, result);
+                }else{
+                    result.push(item);
+                }
+            });
+        },
+
+        // 取数据深度
+        getLayer(dict) {},
+
         // 导出
         download() {
-            let dom = document.getElementById('table_1').cloneNode(true);
+            let id = `table_${this.tableType}`;
+            let dom = document.getElementById(id).cloneNode(true);
             let domStr = base.domString(dom);
             let send = {
                 htmlContent: domStr
@@ -259,6 +399,7 @@ export default {
             base.log('s', '导出', send);
             table_api3(send, res => {
                 console.log(res);
+                base.blobDownLoad(res);
             })
         },
 

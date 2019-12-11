@@ -5,7 +5,7 @@
     text-align: left;
     .side_tree{
         width: 215px;
-        height: 400px;
+        height: 600px;
         box-sizing: border-box;
         border-right: 1px solid #f0f0f0;
         padding: 16px;
@@ -16,6 +16,22 @@
         box-sizing: border-box;
         padding: 16px;
         overflow: auto;
+        .show_heaher{
+            .btn{
+                position: relative;
+                display: inline-block;
+                margin-top: 5px;
+                i{
+                    position: absolute;
+                    display: none;
+                    right: 0px;
+                    color: red;
+                }                
+            }
+            .btn:hover i{
+                    display: block;
+                }
+        }
     }
 }
 .archives_style{
@@ -23,6 +39,8 @@
     margin: -32px -25px;
 }
 
+</style>
+<style lang="scss">
 </style>
 <template>
     <div id="archives_style">
@@ -41,21 +59,59 @@
                         <el-button @click="addNewStyle" size="small">添加新的方案</el-button>
                     </div>
                     <div class="content">
-                        显示内容
+                        <div class="operate">
+                            <el-button type="plain" size="mini">删除</el-button>
+                            <el-button type="plain" size="mini">设为默认方案</el-button>
+                            <el-button type="primary" size="mini">保存</el-button>
+                        </div>
+                        <div class="show_heaher">
+                            <h3>显示表头</h3>
+                            <el-row :gutter="20">
+                                  <el-col :span="3" v-for="item in 12" :key="item" >
+                                      <span class="btn">
+                                            <i class="el-icon-close"></i>
+                                            <el-button type="plain" size="small">内容</el-button>
+                                      </span> 
+                                  </el-col>
+                            </el-row>                         
+                       </div>
+                        <div class="sort">
+                            <h3>数据排序</h3>
+                            <el-button type="plain" size="small">单位升序<i class="el-icon-arrow-up"></i></el-button>
+                            <el-button type="plain" size="small">部门升序<i class="el-icon-arrow-up"></i></el-button>
+                        </div>
+                        <div class="readyField">
+                            <h3>待选字段</h3>
+                            <el-tabs  type="border-card" @tab-click="handleClick"  v-model="activeName">
+                                <el-tab-pane :label="item.tableName" :name="String(item.tableId)" v-for="(item,index) in tabsList" :key="index" >
+                                    <div class="title" v-for ="(sec,index) in fieldList" :key="index">
+
+                                        <el-checkbox :indeterminate="sec.isIndeterminate" v-model="sec.checkAll"  @change="handleCheckAll($event,sec)">{{sec.groupName}}</el-checkbox>
+                                        <div style="margin: 15px 0;"></div>
+                                        <el-checkbox-group v-model="sec.checkedList" @change="handleCheckedChange($event,sec)">
+
+                                               <el-row :gutter="20">
+                                                <el-col :span="5"  v-for="(it,index) in sec.forList" :key="index">
+                                                    <el-checkbox  :label="it"></el-checkbox>                                                
+                                                </el-col>
+
+                                              </el-row>
+                                        </el-checkbox-group>
+
+                                    </div>
+                               </el-tab-pane>
+                            </el-tabs>
+                        </div>
                     </div>
              </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button size="small" @click="cancel">取 消</el-button>
-                <el-button size="small" type="primary" @click="show = false">确 定</el-button>
-            </span>
-        </el-dialog>
-
-      
+        </el-dialog>      
     </div>
 </template>
 
 <script>
 import tree from "../../../components/tree/tree"
+import base from "../../../assets/js/base"
+import { archives_ledger_api8, archives_ledger_api9 } from "../../../request/api";
 
 export default {
     name:"show_style",
@@ -70,24 +126,89 @@ export default {
         prop:"show",
         event:"close"
     },
+    created(){
+        this.getTabsMenu() 
+    },
     data(){
         return{
+            activeName:"",
             showInput:false,
+            tabsList:[],
+            fieldList:[],
+            checkedList:[],
         }       
     },
     methods:{
+        //多选框点击
+        handleCheckedChange(value,sec){
+             let checkedCount = value.length;
+             sec.checkAll = checkedCount === sec.forList.length;
+             sec.isIndeterminate = checkedCount > 0 && checkedCount < sec.forList.length;
+        },
+        //全选改变
+        handleCheckAll(val,sec){ 
+            console.log(val);
+            console.log(sec);
+            let total = sec.checkedList.length;
+                      
+            sec.checkedList = val ? sec.forList : [];
+            
+            sec.isIndeterminate = false;          
+        },
+
+        //获取字段名
+        getField(tableId){
+            let send = {
+                tableId,
+            }
+            base.log("s","获取字段",send)
+              archives_ledger_api9(send,res=>{
+                base.log("r","获取字段",res.data)
+                if(res.data.success){
+                   let list =   JSON.parse(JSON.stringify(res.data.result.customGroupVOList))
+                    list.forEach(item=>{                       
+                        item.checkAll = false
+                        item.isIndeterminate = true
+                        item.checkedList = []
+                        item.forList = item.customFieldVOList.map(item=>item.fieldName)
+                    }) 
+                    this.fieldList =  list                
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
+        //获取tab栏菜单
+        getTabsMenu(){
+            archives_ledger_api8(null,res=>{
+                base.log("r","获取tab菜单",res.data)
+                if(res.data.success){
+                    this.tabsList = res.data.result
+                    this.activeName = String(res.data.result[0].tableId) 
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
+        //显示方案名
         inputName(){
             
         },
+        //点击添加新方案按钮
         addNewStyle(){
             this.showInput = true
         },
+        //关闭弹窗
         handleClose(){
             this.$emit("close",false)          
         },
-        cancel(){
-            this.$emit("close",false)         
-        },
+        //tab栏切换
+        handleClick(tab){
+            if(!tab.name){
+                return
+            }      
+            this.getField(Number(tab.name))              
+        }
     }
 };
 </script>

@@ -206,8 +206,7 @@ export default {
                 props: {
                     /* 必须，树形结构数据绑字段配置 */
                     children: "childRoleGroupList" /* 必须，子集key */,
-                    label:
-                        "roleGroupName" /* 必须，菜单节点要显示的文字对应的字段 */
+                    label:"roleGroupName" /* 必须，菜单节点要显示的文字对应的字段 */
                 },
                 showDefaultIcon: true /* 非必须，是否显示默认图标 */,
                 showCheckbox: true,

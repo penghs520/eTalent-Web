@@ -582,7 +582,7 @@
                 </el-tab-pane>
             </el-tabs>
             <!-- 岗位导入 -->
-            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"  @close="uploadShow=$event"></commonUpload>
+            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive" ></commonUpload>
         </div>
     </div>
 </template>
@@ -919,6 +919,7 @@ export default {
                 cancelLoading: false, // 必须，取消loading
                 btnText: "校验", //按钮文字
                 cancelbtn: "取消",
+                close:this.closeUpload,
                 
                 tableShow: false, //是否显示表格
                 tableData: {
@@ -964,6 +965,10 @@ export default {
         this.getPostTreeReq();
     },
     methods: {
+        //岗位--关闭弹窗
+        closeUpload(){
+            this.uploadShow =  false 
+        },
         //岗位--导入按钮
         importPost() {
             this.uploadShow = true;
@@ -1028,7 +1033,7 @@ export default {
                     this.uploadActive = 3;
                     setTimeout(() => {
                         this.uploadShow = false;
-                    }, 800);
+                    }, 300);
                 } else {
                     base.error(res.data);
                 }

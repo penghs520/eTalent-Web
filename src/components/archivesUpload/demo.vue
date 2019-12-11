@@ -2,7 +2,7 @@
     <div>
         <commonUpload :data="uploadData"  :active="uploadActive">
             <template v-slot:remind>
-              <!--温馨提示 -->
+              <!--温馨提示(插槽全为非必须) -->
             </template>
             <template v-slot:explain>
               <!--导入说明 -->

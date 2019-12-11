@@ -25,6 +25,7 @@ export default {
                 maxNum: Number,                     // 非必须，最大上传个数，默认1个
                 cancel: Function,                   // 必须，取消操作(按钮1)
                 upload:Function,                    // 必须, 上传操作(按钮2)               
+                close:Function,                     // 非必须,关闭弹窗               
                 cancelLoading: Boolean,             // 必须，取消loading
 
                 btnText: String,                    // 必须，(按钮2的文本显示)

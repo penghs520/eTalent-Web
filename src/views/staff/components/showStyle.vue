@@ -85,15 +85,21 @@
                             <el-tabs  type="border-card" @tab-click="handleClick"  v-model="activeName">
                                 <el-tab-pane :label="item.tableName" :name="String(item.tableId)" v-for="(item,index) in tabsList" :key="index" >
                                     <div class="title" v-for ="(sec,index) in fieldList" :key="index">
-                                        <h4>{{sec.groupName}}</h4>
-                                        <el-row :gutter="20">
-                                              <el-col :span="5"  v-for="(it,index) in sec.customFieldVOList" :key="index">
-                                                    <el-checkbox :label="it.fieldName"></el-checkbox>                                                
-                                            </el-col>
-                                        </el-row>
-                                    </div>
 
-                                </el-tab-pane>
+                                        <el-checkbox :indeterminate="sec.isIndeterminate" v-model="sec.checkAll"  @change="handleCheckAll($event,sec)">{{sec.groupName}}</el-checkbox>
+                                        <div style="margin: 15px 0;"></div>
+                                        <el-checkbox-group v-model="sec.checkedList" @change="handleCheckedChange($event,sec)">
+
+                                               <el-row :gutter="20">
+                                                <el-col :span="5"  v-for="(it,index) in sec.forList" :key="index">
+                                                    <el-checkbox  :label="it"></el-checkbox>                                                
+                                                </el-col>
+
+                                              </el-row>
+                                        </el-checkbox-group>
+
+                                    </div>
+                               </el-tab-pane>
                             </el-tabs>
                         </div>
                     </div>
@@ -121,7 +127,7 @@ export default {
         event:"close"
     },
     created(){
-        this.getTabsMenu()   
+        this.getTabsMenu() 
     },
     data(){
         return{
@@ -129,9 +135,27 @@ export default {
             showInput:false,
             tabsList:[],
             fieldList:[],
+            checkedList:[],
         }       
     },
     methods:{
+        //多选框点击
+        handleCheckedChange(value,sec){
+             let checkedCount = value.length;
+             sec.checkAll = checkedCount === sec.forList.length;
+             sec.isIndeterminate = checkedCount > 0 && checkedCount < sec.forList.length;
+        },
+        //全选改变
+        handleCheckAll(val,sec){ 
+            console.log(val);
+            console.log(sec);
+            let total = sec.checkedList.length;
+                      
+            sec.checkedList = val ? sec.forList : [];
+            
+            sec.isIndeterminate = false;          
+        },
+
         //获取字段名
         getField(tableId){
             let send = {
@@ -141,7 +165,14 @@ export default {
               archives_ledger_api9(send,res=>{
                 base.log("r","获取字段",res.data)
                 if(res.data.success){
-                    this.fieldList = JSON.parse(JSON.stringify(res.data.result.customGroupVOList))
+                   let list =   JSON.parse(JSON.stringify(res.data.result.customGroupVOList))
+                    list.forEach(item=>{                       
+                        item.checkAll = false
+                        item.isIndeterminate = true
+                        item.checkedList = []
+                        item.forList = item.customFieldVOList.map(item=>item.fieldName)
+                    }) 
+                    this.fieldList =  list                
                 }else{
                     base.error(res.data)
                 }

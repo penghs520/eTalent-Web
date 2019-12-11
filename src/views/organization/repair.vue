@@ -637,7 +637,7 @@
                 </el-tab-pane>
             </el-tabs>
             <!-- 导入弹框 -->
-            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive" @close="uploadShow=$event"></commonUpload>
+            <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"></commonUpload>
         </div>
     </div>
 </template>
@@ -882,7 +882,8 @@ export default {
                 uploadUrl: "",
                 cancel: this.uploadCancel,    // 必须，取消操作
                 upload: this.uploadOrReturn,  // 必须，上传操作
-                cancelLoading: false,         // 必须，取消loading
+                cancelLoading: false, 
+                close:this.closeUpload,        // 必须，取消loading
 
                 btnText: "校验", //按钮文字
                 cancelbtn: "取消",
@@ -942,6 +943,10 @@ export default {
         
     },
     methods: {
+        //机构导入--关闭弹窗
+        closeUpload(){
+            this.uploadShow =  false 
+        },
         //机构导入---导出txt
         exportTxTReq() {
             let send = {
@@ -997,7 +1002,7 @@ export default {
                     this.uploadActive = 3;
                     setTimeout(() => {
                         this.uploadShow = false;
-                    }, 800);
+                    }, 300);
                 } else {
                     base.error(res.data);
                 }

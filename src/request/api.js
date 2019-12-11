@@ -46,9 +46,11 @@ const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogi
     const entry_api12     = (data, callback) => {request('post', `hpi/masterdata/staffpre/updatePreEmployment`, data, callback)};
     const entry_api13     = (data, callback) => {request('post', `hpi/masterdata/staffarc/searchCustomTableGroupFieldListByTableCodePre`, data, callback)};
     const entry_api14     = (data, callback) => {request('form', `hpi/masterdata/staffarc/selectCustomTableForPre`, data, callback)};
-    const entry_api15     = (data, callback) => {request('post', `hpi/masterdata/port/importFileAndCheckFile`, data, callback)};
-    const entry_api16     = (data, callback) => {request('get', `hpi/masterdata/port/exportCheckFile`, data, callback)};
-    const entry_api17     = (data, callback) => {request('form', `hpi/masterdata/port/exportCheckFileTxt`, data, callback)};
+    const entry_api15     = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFile`, data, callback)};
+    const entry_api16     = (data, callback) => {request('get', `api/masterdata/port/exportCheckFile`, data, callback)};
+    const entry_api17     = (data, callback) => {request('form', `api/masterdata/port/exportCheckFileTxt`, data, callback)};
+    const entry_api18     = (data, callback) => {request('get', `api/masterdata/port/importFile`, data, callback)};
+    const entry_api19     = (data, callback) => {request('form', `api/masterdata/port/cancelForImport`, data, callback)};
 
     // 参数设置
         //合同参数
@@ -65,11 +67,13 @@ const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogi
         //员工台账
         const archives_ledger_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
         const archives_ledger_api2     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBook`, data, callback)};
-        const archives_ledger_api3     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
-        const archives_ledger_api4     = (data, callback) => {request('get', `api/masterdata/staffsta/selectStaff`, data, callback)};
+        const archives_ledger_api3     = (data, callback) => {request('form', `hpi/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
+        const archives_ledger_api4     = (data, callback) => {request('get', `hpi/masterdata/staffsta/selectStaff`, data, callback)};
         const archives_ledger_api5     = (data, callback) => {request('get', `api/masterdata/staffsta/deleteStandingBook`, data, callback)};
         const archives_ledger_api6     = (data, callback) => {request('post', `api/masterdata/staffsta/updateStandingBook`, data, callback)};
         const archives_ledger_api7     = (data, callback) => {request('form', `api/masterdata/staffarc/selectQueryScheme`, data, callback)};
+        const archives_ledger_api8     = (data, callback) => {request('post', `hpi/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
+        const archives_ledger_api9     = (data, callback) => {request('get', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
 
         //附件管理
         const archives_file_api1       = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
@@ -223,7 +227,7 @@ export {
         staff_api1, staff_api2, staff_api3,
         // 入职管理
         entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6, entry_api7, entry_api8, entry_api9, entry_api10,
-        entry_api11, entry_api12, entry_api13, entry_api14, entry_api15,entry_api16,entry_api17,
+        entry_api11, entry_api12, entry_api13, entry_api14, entry_api15,entry_api16,entry_api17,entry_api18,entry_api19,
 
         // 档案管理
             // 信息维护
@@ -231,7 +235,7 @@ export {
         
             // 员工台账
             archives_ledger_api1,archives_ledger_api2,archives_ledger_api3,archives_ledger_api4,archives_ledger_api5,archives_ledger_api6,
-            archives_ledger_api7,
+            archives_ledger_api7,archives_ledger_api8,archives_ledger_api9,
 
             // 附件管理
             archives_file_api1,

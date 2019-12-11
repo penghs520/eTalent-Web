@@ -201,7 +201,9 @@ export default {
 
         // 关闭弹窗
         handleClose() {
-            this.$emit("close",false)
+            if (this.data.close) {
+                this.data.close();
+            }
         },
 
         // 取消

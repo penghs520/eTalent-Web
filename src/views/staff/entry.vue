@@ -404,7 +404,7 @@
             </span>
         </el-dialog>
 
-        <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive" @close="uploadShow=$event"></commonUpload>
+        <commonUpload :data="uploadData" :uploadShow="uploadShow" :active="uploadActive"></commonUpload>
     </div>
 </template>
 
@@ -438,6 +438,8 @@ import {
     entry_api15,
     entry_api16,
     entry_api17,
+    entry_api18,
+    entry_api19,
 } from "../../request/api";
 
 export default {
@@ -591,6 +593,7 @@ export default {
                 uploadUrl: '',                                  // 必须，上传地址
                 cancel: this.uploadCancel,    // 必须，取消操作
                 upload: this.uploadOrReturn,  // 必须，上传操作
+                close:this.closeUpload,
                 
                 cancelLoading: false,                           // 必须，取消loading
                 fileList: [],
@@ -1201,7 +1204,44 @@ export default {
                 }
             })
         },
-
+        //导入-- 关闭弹窗
+        closeUpload(){
+            this.cancelImportReq()
+            this.uploadShow = false
+        },
+        //导入--取消上传请求
+        cancelImportReq(){
+            let send = {
+                funcCode:this.uploadKey
+            }
+            base.log("s","取消上传",send)
+            entry_api19(send,res=>{
+                 base.log("r","取消上传",res.data)
+                 if(res.data.success){
+                 }
+            })
+        
+        },
+        //导入--校验成功,上传文件请求       
+        uploadSuccessReq(){
+            let send = {
+                funcCode:this.uploadKey
+            }
+            base.log("s","上传成功",send)
+            entry_api18(send,res=>{
+                 base.log("r","上传成功",res.data)
+                 if(res.data.success){
+                     this.$message.success("上传成功")
+                     this.uploadData.fileList = [];
+                     this.uploadActive = 3;
+                     setTimeout(() => {
+                        this.uploadShow = false;
+                     }, 300);
+                 }else{
+                     base.error(res.data)
+                 }                
+            })
+        },
         //导入--导出校验txt
         exportTxTReq(){
             let send = {
@@ -1209,7 +1249,7 @@ export default {
             }
             base.log("s","导出txt",send)
             entry_api17(send,res=>{
-                 base.log("r","查看校验报告",res.data)
+                 base.log("r","导出txt",res.data)
                  base.blobDownLoad(res,true);
             })
         },
@@ -1227,8 +1267,7 @@ export default {
             let send = {
                 funcCode: this.uploadKey
             }
-            base.log("s","查看校验报告",send)
-            
+            base.log("s","查看校验报告",send)            
             entry_api16(send,res=>{
                 base.log("r","查看校验报告",res.data)
                 if(res.data.success){
@@ -1253,7 +1292,7 @@ export default {
         //导入--上传/校验/导入按钮
         uploadOrReturn() {
             if (this.uploadData.btnText === "导入") {
-                this.uploadReq();
+                this.uploadSuccessReq();
             } else if (this.uploadData.btnText === "返回") {
                 this.uploadActive = 0;
                 this.uploadData.fileList = [];
@@ -1262,6 +1301,7 @@ export default {
                 this.uploadData.title = "机构导入";
                 this.uploadData.btnText = "校验"
             } else if (this.uploadData.btnText === "确定") {
+                this.cancelImportReq()
                 this.uploadShow = false;
                 this.uploadData.tableShow = false;
             }else if(this.uploadData.btnText === "校验"){
@@ -1271,16 +1311,13 @@ export default {
                 this.uploadCheckReq();
             }
         },
-        //导入--文件上传请求
-        uploadReq() {
-            
-        },
         // 导入--校验请求接口
         uploadCheckReq() {         
             let file = this.uploadData.fileList[0].raw;
             let formData = new FormData();
             formData.append('funcCode', this.uploadKey);
             formData.append('file',file);
+                 base.log("s","校验请求",formData)
             entry_api15(formData, res => {
                  base.log("r","校验请求",res.data)
                 console.log(res);
@@ -1314,6 +1351,7 @@ export default {
             if (this.uploadData.cancelbtn === "取消") {
                 this.uploadShow = false;
                 this.uploadData.tableShow = false;
+                 this.cancelImportReq()
             } else if (this.uploadData.cancelbtn === "返回") {
                 this.uploadData.tableShow = true;
                 this.uploadData.checkFailshow = false;

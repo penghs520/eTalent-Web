@@ -177,7 +177,7 @@ export default {
         tree,
         commonTable,
         showStyle,        
-    },
+    },  
     data(){
         return {
             activeName:"common",
@@ -278,12 +278,7 @@ export default {
                         defaultVal: '默认显示方案',
                         isShow :true,
                         method:this.selectValueChange,
-                        list:[
-                            {value:"默认显示方案"},
-                            {value:"人员档案展示方案"},
-                            {value:"在职信息展示方案"},
-                            {value:"+新增显示方案"}
-                        ],
+                        list:[],
                     },
                     {
                         type: 'button',                 /* 必须，DOM类型：按钮 */
@@ -511,7 +506,9 @@ export default {
                 this.$message.warning("请选择台账")
                 return
             }
-            this.getLegerReq()            
+            this.getLegerReq() 
+            this.addStyleShow = true
+
         }, 
         //表格下拉框 --表格显示方案切换
         selectValueChange(val){

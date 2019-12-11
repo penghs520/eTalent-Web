@@ -66,13 +66,13 @@
                         </div>
                         <div class="show_heaher">
                             <h3>显示表头</h3>
-                            <el-row :gutter="20">
-                                  <el-col :span="3" v-for="item in 12" :key="item" >
-                                      <span class="btn">
-                                            <i class="el-icon-close"></i>
-                                            <el-button type="plain" size="small">内容</el-button>
-                                      </span> 
-                                  </el-col>
+                            <el-row :gutter="20" v-if="allCheckedList.length > 0">
+                                  <el-col :span="4" v-for="(item,index) in allCheckedList" :key="index" >
+                                       <span class="btn">
+                                            <i class="el-icon-close" @click="delField(index)"></i>
+                                            <el-button type="plain" size="small">{{item.fieldName}}</el-button>
+                                      </span>  
+                                   </el-col> 
                             </el-row>                         
                        </div>
                         <div class="sort">
@@ -86,15 +86,12 @@
                                 <el-tab-pane :label="item.tableName" :name="String(item.tableId)" v-for="(item,index) in tabsList" :key="index" >
                                     <div class="title" v-for ="(sec,index) in fieldList" :key="index">
 
-                                        <el-checkbox :indeterminate="sec.isIndeterminate" v-model="sec.checkAll"  @change="handleCheckAll($event,sec)">{{sec.groupName}}</el-checkbox>
-                                        <div style="margin: 15px 0;"></div>
+                                        <el-checkbox v-model="sec.checkAll"  @change="handleCheckAll($event,sec)">{{sec.groupName}}</el-checkbox>
                                         <el-checkbox-group v-model="sec.checkedList" @change="handleCheckedChange($event,sec)">
-
                                                <el-row :gutter="20">
-                                                <el-col :span="5"  v-for="(it,index) in sec.forList" :key="index">
-                                                    <el-checkbox  :label="it"></el-checkbox>                                                
+                                                <el-col :span="5"  v-for="(it,index) in sec.customFieldVOList" :key="index">
+                                                    <el-checkbox  :label="it">{{it.fieldName}}</el-checkbox>                                                
                                                 </el-col>
-
                                               </el-row>
                                         </el-checkbox-group>
 
@@ -135,25 +132,61 @@ export default {
             showInput:false,
             tabsList:[],
             fieldList:[],
-            checkedList:[],
+            allCheckedList:[],
         }       
     },
+    computed:{
+        "checkTry"(){
+           let list =  this.fieldList.map( item=>item.checkedList)
+           let arr= []
+            list.forEach(item=>{
+                item.forEach(sec=>{
+                    arr.push(sec)
+                })
+            })
+            return arr
+        }
+    },
+    watch:{
+        'fieldList':{
+        handler(newVal){
+           let list =  newVal.map( item=>item.checkedList)
+           let arr= []
+            list.forEach(item=>{
+                item.forEach(sec=>{
+                    arr.push(sec)
+                })
+            })
+            console.log("---------------",arr);
+            
+           this.allCheckedList.push(...arr)
+           this.allCheckedList = this.allCheckedList.filter((item, index, self) => index === self.findIndex((t) => (t.fieldId === item.fieldId && t.fieldName === item.fieldName)));
+            },
+            deep:true,
+        },
+    },
     methods:{
+        //点击叉号删除字段
+        delField(index){
+            // this.allCheckedList.splice(index,1)
+        },
         //多选框点击
         handleCheckedChange(value,sec){
              let checkedCount = value.length;
-             sec.checkAll = checkedCount === sec.forList.length;
-             sec.isIndeterminate = checkedCount > 0 && checkedCount < sec.forList.length;
+             sec.checkAll = checkedCount === sec.customFieldVOList.length;
+             let val = JSON.parse(JSON.stringify(value))
+            //  this.checkedList.push(...val)
+            //  this.checkedList = this.checkedList.filter((item, index, self) => index === self.findIndex((t) => (t.fieldId === item.fieldId && t.fieldName === item.fieldName)));
+             console.log(val);
+                        
+             
         },
         //全选改变
-        handleCheckAll(val,sec){ 
-            console.log(val);
-            console.log(sec);
-            let total = sec.checkedList.length;
-                      
-            sec.checkedList = val ? sec.forList : [];
-            
-            sec.isIndeterminate = false;          
+        handleCheckAll(val,sec){           
+            sec.checkedList = val ? sec.customFieldVOList : [];
+            // this.checkedList.push(...sec.checkedList) 
+            //  this.checkedList = this.checkedList.filter((item, index, self) => index === self.findIndex((t) => (t.fieldId === item.fieldId && t.fieldName === item.fieldName)));
+
         },
 
         //获取字段名
@@ -168,11 +201,9 @@ export default {
                    let list =   JSON.parse(JSON.stringify(res.data.result.customGroupVOList))
                     list.forEach(item=>{                       
                         item.checkAll = false
-                        item.isIndeterminate = true
                         item.checkedList = []
-                        item.forList = item.customFieldVOList.map(item=>item.fieldName)
                     }) 
-                    this.fieldList =  list                
+                    this.fieldList =  JSON.parse(JSON.stringify(list))              
                 }else{
                     base.error(res.data)
                 }

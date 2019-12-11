@@ -15,11 +15,11 @@ import request from './http';
 
 
 // 登录
-const login_api1 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
-const login_api2 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
-const login_api3 = (data, callback) => {request('form', `hpi/masterdata/userLogin/sendCodeByPhone`, data, callback)};
-const login_api4 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
-const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogin/logout`, data, callback)};
+const login_api1 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
+const login_api2 = (data, callback) => {request('form', `api/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
+const login_api3 = (data, callback) => {request('form', `api/masterdata/userLogin/sendCodeByPhone`, data, callback)};
+const login_api4 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
+const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogin/logout`, data, callback)};
 
 // 员工管理
     // 公用接口
@@ -67,12 +67,12 @@ const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogi
         //员工台账
         const archives_ledger_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
         const archives_ledger_api2     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBook`, data, callback)};
-        const archives_ledger_api3     = (data, callback) => {request('form', `hpi/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
-        const archives_ledger_api4     = (data, callback) => {request('get', `hpi/masterdata/staffsta/selectStaff`, data, callback)};
+        const archives_ledger_api3     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
+        const archives_ledger_api4     = (data, callback) => {request('get', `api/masterdata/staffsta/selectStaff`, data, callback)};
         const archives_ledger_api5     = (data, callback) => {request('get', `api/masterdata/staffsta/deleteStandingBook`, data, callback)};
         const archives_ledger_api6     = (data, callback) => {request('post', `api/masterdata/staffsta/updateStandingBook`, data, callback)};
         const archives_ledger_api7     = (data, callback) => {request('form', `api/masterdata/staffarc/selectQueryScheme`, data, callback)};
-        const archives_ledger_api8     = (data, callback) => {request('post', `hpi/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
+        const archives_ledger_api8     = (data, callback) => {request('post', `api/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
         const archives_ledger_api9     = (data, callback) => {request('get', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
 
         //附件管理

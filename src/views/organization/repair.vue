@@ -2,7 +2,7 @@
 @import url(../../assets/js/orgChart/orgchart-webcomponents.css);
 #organization_repair {
     display: flex;
-    height: 100%;
+    height: 100%; 
     .side_tree {
         width: 216px;
         height: 100%;

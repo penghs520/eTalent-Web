@@ -502,10 +502,10 @@ export default {
         },
         //查询按钮点击
         seachLedger(){
-            if(!this.ledgerNode){
-                this.$message.warning("请选择台账")
-                return
-            }
+            // if(!this.ledgerNode){
+            //     this.$message.warning("请选择台账")
+            //     return
+            // }
             this.getLegerReq() 
             this.addStyleShow = true
 

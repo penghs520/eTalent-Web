@@ -66,8 +66,8 @@
                         </div>
                         <div class="show_heaher">
                             <h3>显示表头</h3>
-                            <el-row :gutter="20" v-if="allCheckedList.length > 0">
-                                  <el-col :span="4" v-for="(item,index) in allCheckedList" :key="index" >
+                            <el-row :gutter="20" v-if="checkTry.length > 0">
+                                  <el-col :span="4" v-for="(item,index) in checkTry" :key="index" >
                                        <span class="btn">
                                             <i class="el-icon-close" @click="delField(index)"></i>
                                             <el-button type="plain" size="small">{{item.fieldName}}</el-button>

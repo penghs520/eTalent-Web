@@ -27,10 +27,14 @@
                     right: 0px;
                     color: red;
                 }                
+                .moveBtn{
+                    cursor: move;
+                }
             }
             .btn:hover i{
-                    display: block;
-                }
+                display: block;
+                cursor: pointer;
+            }
         }
     }
 }
@@ -42,9 +46,10 @@
 </style>
 <style lang="scss">
 </style>
+
 <template>
     <div id="archives_style">
-           <el-dialog
+        <el-dialog
             :visible.sync="show"
             class="qinjeeDialogBig"
             :append-to-body="true"
@@ -66,15 +71,24 @@
                         </div>
                         <div class="show_heaher">
                             <h3>显示表头</h3>
-                            <el-row :gutter="20" v-if="checkTry.length > 0">
-                                  <el-col :span="4" v-for="(item,index) in checkTry" :key="index" >
-                                       <span class="btn">
-                                            <i class="el-icon-close" @click="delField(item)"></i>
-                                            <el-button type="plain" size="small">{{item.fieldName}}</el-button>
-                                      </span>  
-                                   </el-col> 
+                            <span style="display: none;" :checkTry="checkTry" ></span>
+                            <el-row :gutter="20" v-if="checkTry2.length > 0">
+                                <draggable
+                                    class="sortComponent"
+                                    v-model="checkTry2"
+                                    group="people"
+                                    @start="drag=true"
+                                    @end="drag=false"
+                                >
+                                    <el-col :span="4" v-for="(item,index) in checkTry2" :key="index" >
+                                        <span class="btn">
+                                                <i class="el-icon-close" @click="delField(item)"></i>
+                                                <el-button class="moveBtn" type="plain" size="small">{{item.fieldName}}</el-button>
+                                        </span>  
+                                    </el-col> 
+                                </draggable>
                             </el-row>                         
-                       </div>
+                        </div>
                         <div class="sort">
                             <h3>数据排序</h3>
                             <el-button type="plain" size="small">单位升序<i class="el-icon-arrow-up"></i></el-button>
@@ -90,12 +104,12 @@
                                 <template v-if="typeof item !== 'number'">
                                     <div class="title" v-for ="(sec,index) in item" :key="index">
                                         <div v-if="sec.tableId == tabName">
-                                            <el-checkbox v-model="sec.checkAll"  @change="handleCheckAll($event,sec)">{{sec.groupName}}</el-checkbox>
+                                            <el-checkbox v-model="sec.checkAll" :indeterminate="sec.indeterminate"  @change="handleCheckAll($event,sec)">{{sec.groupName}}</el-checkbox>
                                             <el-checkbox-group v-model="sec.checkedList" @change="handleCheckedChange($event,sec)">
                                                     <el-row :gutter="20" style="marginLeft:20px">
-                                                    <el-col :span="5"  v-for="(it,index) in sec.customFieldVOList" :key="index">
-                                                        <el-checkbox  :label="it">{{it.fieldName}}</el-checkbox>                                                
-                                                    </el-col>
+                                                        <el-col :span="5"  v-for="(it,index) in sec.customFieldVOList" :key="index">
+                                                            <el-checkbox  :label="it">{{it.fieldName}}</el-checkbox>                                                
+                                                        </el-col>
                                                     </el-row>
                                             </el-checkbox-group>
                                         </div>
@@ -104,7 +118,7 @@
                             </div>
                         </div>
                     </div>
-             </div>
+            </div>
         </el-dialog>      
     </div>
 </template>
@@ -113,11 +127,13 @@
 import tree from "../../../components/tree/tree"
 import base from "../../../assets/js/base"
 import { archives_ledger_api8, archives_ledger_api9 } from "../../../request/api";
+import draggable from "vuedraggable";
 
 export default {
     name:"show_style",
     components:{
         tree,
+        draggable
     },
     props:{
         show:Boolean,
@@ -131,35 +147,40 @@ export default {
             tabsList:[],
             tabContList: [],
             tabName:"",
+            checkTry2: []
         }       
     },
     computed:{
         "checkTry"(){ 
-           let arr = []        
-           this.tabContList.forEach((item,index)=>{
-               if(typeof item !== "number"){
-                  item.forEach((sec,i)=>{
-                      arr.push(...sec.checkedList)
-                  })
-               }                        
-           })            
+            let arr = []        
+            this.tabContList.forEach((item,index)=>{
+                if(typeof item !== "number"){
+                    item.forEach((sec,i)=>{
+                        arr.push(...sec.checkedList)
+                    })
+                }                        
+            })            
+            this.$set(this,'checkTry2', arr);
             return arr
         },
 
     },
     created(){
-        this.$emit('getNav',this.getTabsMenu)  
+        // 初始化
+        this.$emit('getNav',this.getTabsMenu);
     },
     methods:{
         //点击叉号删除字段
         delField(val){            
            this.tabContList =  this.tabContList.map(item=>{ 
-               if(typeof item !== "number"){ 
-               item.map(sub=>{
-                   let checkedList =  sub.checkedList.filter(sec =>  sec.fieldId !== val.fieldId)
-                   sub.checkedList =  checkedList
-               })        
-             }                 
+                if(typeof item !== "number"){ 
+                    item.map(sub=>{
+                        let checkedList     =  sub.checkedList.filter(sec =>  sec.fieldId !== val.fieldId);
+                        sub.checkedList     =  checkedList;
+                        sub.checkAll        = checkedList.length === sub.customFieldVOList.length;
+                        sub.indeterminate   = checkedList.length > 0 && checkedList.length < sub.customFieldVOList.length;
+                    })        
+                }                 
               return item
            })           
         },
@@ -167,15 +188,15 @@ export default {
         handleCheckedChange(value,sec){
              let checkedCount = value.length;
              sec.checkAll = checkedCount === sec.customFieldVOList.length;
-             let val = JSON.parse(JSON.stringify(value))
-             console.log(val);             
+             sec.indeterminate = checkedCount > 0 && checkedCount < sec.customFieldVOList.length;
         },
         //全选改变
         handleCheckAll(val,sec){           
             sec.checkedList = val ? sec.customFieldVOList : [];
+            sec.indeterminate   = sec.checkedList.length > 0 && sec.checkedList.length < sec.customFieldVOList.length;
         },
         //获取字段名
-        getField(tableId){
+        getField(tableId,tabIndex){
             let send = {
                 tableId,
             }
@@ -185,9 +206,13 @@ export default {
                 if(res.data.success){
                    let list =   JSON.parse(JSON.stringify(res.data.result.customGroupVOList))
                     list.forEach(item=>{                       
-                        item.checkAll = false
-                        item.checkedList = []
-                        item.tableId = tableId
+                        item.checkAll       = false;            /* 是否全选 */
+                        item.checkedList    = [];               /* 已经勾选的 */
+                        item.tableId        = tableId;          /* tab栏id */
+                        item.indeterminate  = false;            /* 是否半选 */
+
+                        // 处理默认勾选状态
+                        // 处理默认全选状态
                     })            
                     this.tabContList = this.tabContList.map(item=>{                        
                         if(item == tableId){
@@ -206,7 +231,10 @@ export default {
                 base.log("r","获取tab菜单",res.data)
                 if(res.data.success){
                     this.tabsList = res.data.result;
-                    this.getField(res.data.result[0].tableId)
+                    // 构建全选状态存储的数组
+                    this.isIndeterminate = new Array(res.data.result.length).fill([]);
+
+                    this.getField(res.data.result[0].tableId,0)
                     this.tabName = res.data.result[0].tableId
                     this.tabContList = res.data.result.map(item => item.tableId)
                     this.activeName = String(res.data.result[0].tableId) 

@@ -156,7 +156,6 @@
     </div>
 </template>
 
-
 <script>
 import tree from '../../components/tree/tree'
 import base from '../../assets/js/base'

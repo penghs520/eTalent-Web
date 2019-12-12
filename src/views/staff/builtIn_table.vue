@@ -483,7 +483,6 @@ export default {
             let send = {
                 htmlContent: domStr
             };
-            base.log('s', '导出', send);
             table_api3(send, res => {
                 console.log(res);
                 base.blobDownLoad(res);

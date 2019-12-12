@@ -26,7 +26,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         // 根据档案显示对应权限下的单位
         const staff_api1     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getCompany`, data, callback)};
         // 根据档案id显示对应权限下的子集部门
-        const staff_api2     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getOrgIdByCompanyId`, data, callback)};
+        const staff_api2     = (data, callback) => {request('get', `ppi/masterdata/staffarc/getOrgIdByCompanyId`, data, callback)};
         // 显示部门下的岗位
         const staff_api3     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getPostByOrgId`, data, callback)};
 
@@ -172,7 +172,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     
     // 组织机构
         //机构维护
-        const orgRepair_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const orgRepair_api1     = (data, callback) => {request('get', `ppi/masterdata/organization/getAllOrganizationTree`, data, callback)};
         const orgRepair_api2     = (data, callback) => {request('post', `api/masterdata/organization/getOrganizationPageList`, data, callback)};
         const orgRepair_api3     = (data, callback) => {request('form', `api/masterdata/sysDict/searchSysDictListByDictType`, data, callback)};
         const orgRepair_api4     = (data, callback) => {request('get', `api/masterdata/organization/addOrganization`, data, callback)};

@@ -1,4 +1,7 @@
 <style scoped lang="scss">
+#builtIn_table{
+    overflow: auto;
+}
 .commonRightCont{
     padding: 12px 22px;
 }
@@ -39,6 +42,9 @@ table{
         tr{
             height: 30px;
         }
+    }
+    .total{
+        background-color: #f8f8f8;
     }
 }
 </style>
@@ -146,7 +152,7 @@ table{
             <thead>
                 <tr>
                     <th rowspan="2">单位</th>
-                    <th rowspan="2">部门</th>
+                    <th rowspan="2" :colspan="maxColspan">部门</th>
                     <th rowspan="2">本期初实有人数</th>
                     <th colspan="3">本期增加</th>
                     <th colspan="4">本期减少</th>
@@ -163,7 +169,31 @@ table{
                 </tr>
             </thead>
             <tbody>
-                <tr></tr>
+                <tr v-for="(row,rowIndex) in tableData_3" :key="rowIndex" >
+                    <td v-for="(item,index) in row" :key="index" :colspan="item.colspan ? item.colspan : 1" :rowspan="item.rowspan ? item.rowspan : 1">{{item.orgName}}</td>
+
+                    <td>{{row[row.length - 1]['beginNum']}}</td>
+                    <td>{{row[row.length - 1]['newJoinNum']}}</td>
+                    <td>{{row[row.length - 1]['transferInNum']}}</td>
+                    <td>{{row[row.length - 1]['newJoinNum'] + row[row.length - 1]['transferInNum']}}</td>
+                    <td>{{row[row.length - 1]['transferOutNum']}}</td>
+                    <td>{{row[row.length - 1]['leaveNum']}}</td>
+                    <td>{{row[row.length - 1]['retiredNum']}}</td>
+                    <td>{{row[row.length - 1]['transferOutNum'] + row[row.length - 1]['leaveNum'] + row[row.length - 1]['retiredNum']}}</td>
+                    <td>{{row[row.length - 1]['endNum']}}</td>
+                </tr>
+                <tr v-if="total" class="total">
+                    <td :colspan="maxColspan + 1">合计</td>
+                    <td>{{total.beginNum}}</td>
+                    <td>{{total.newJoinNum}}</td>
+                    <td>{{total.transferInNum}}</td>
+                    <td>{{total.increasedNum}}</td>
+                    <td>{{total.transferOutNum}}</td>
+                    <td>{{total.leaveNum}}</td>
+                    <td>{{total.retiredNum}}</td>
+                    <td>{{total.attritionNum}}</td>
+                    <td>{{total.endNum}}</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -185,10 +215,10 @@ export default {
             checkedName: '',
             treeData:{                                  /* tree按照树形结构封装的赋值，需要注意的是该对象下有注释的3个属性 */
                 data: [],
-                nodeKey: 'org_id',
+                nodeKey: 'orgId',
                 props: {
-                    children: 'list',
-                    label: 'org_name'
+                    children: 'childList',
+                    label: 'orgName'
                 },
                 showCheckbox: true,
                 checkClick: this.selectTreeCheck,
@@ -199,14 +229,16 @@ export default {
 
             tableType: 1,               /* 表格显示 */
             layer: 1,
-            layerList: [1,2,3],
+            layerList: [1,2,3,4,5,6],
             tableData_1: [],
             tableData_2: [],
             tableData_3: [],
+            maxColspan: 1,
+            total: null
         };
     },
     created() {
-        cr.getOrg(this.getOrg);
+        cr.getOrgP(this.getOrg);
     },
     mounted() {},
     methods: {
@@ -217,9 +249,10 @@ export default {
 
         // 节点被勾选
         selectTreeCheck(node,list) {
-            let names = list.checkedNodes.map(item => item.org_name).join(',');
+            console.log(list)
+            let names = list.checkedNodes.map(item => item.orgName).join(',');
             this.checkedName = names;
-            this.checkedValue = list.checkedKeys;
+            this.checkedValue = [...list.checkedKeys,...list.halfCheckedKeys];
         },
 
         // 查询
@@ -308,21 +341,21 @@ export default {
                 base.log('r', '增减员明细表', d);
                 if (d.success) {
                     // this.tableData_2 = d.result;
-                    this.dataFormatter(d.result);
+                    let r = JSON.parse(JSON.stringify(d.result));
+                    this.total = r[0];
+                    this.tableData_3 = this.dataFormatter(r[0].childList);
                 }else{
                     base.error(d);
                 }
             })
         },
 
+        // 解析数据--------------------------
         // 增减员数据解析
         dataFormatter(list) {
-            let result = new Array();
-
             // 取所有的行
             let allRow = new Array();
             this.getAllRow(list,allRow);
-            console.log(allRow);
 
             // 构建表格需要的数组
             let tableList = new Array();
@@ -332,36 +365,92 @@ export default {
                 tableList.push(row);
             });
 
-            // 添加爸爸
-            this.addParent(list,tableList);
+            // 添加父级
+            for (let i = 0; i < this.layer; i++) {
+                this.addParent(list,tableList);
+            }
+            // console.log(tableList);
+
+            // 反转
+            for (let i = 0; i < tableList.length; i++) {
+                const item = tableList[i];
+                item.reverse();
+            }
             console.log(tableList);
-            
+
+            // 取最大长度
+            let max = this.getMaxLength(tableList);
+            this.maxColspan = max - 1;
+
+            // 添加colspan
+            this.addColspan(tableList,max);
+
+            // 添加rowSpan
+            this.addRowspan(tableList,max);
+
+            return tableList;
         },
 
-        // 添加爸爸
-        addParent(list, table) {
-            let currentRowIndex = 0,
-            parentId = '';
-            for (let i = 0; i < table.length; i++) {
-                const row = table[i];
-                let item = row[row.length - 1];
-                if (item.orgParentId !== parentId) {
-                   parentId =  item.orgParentId;
-                   currentRowIndex = i;
-                   let parentArry = [];
-                   this.getParent(list,parentId,parentArry);
-                   let parent = parentArry[0];
-                   parent.rowSpan = 1;
-                   row.push(parent);
-                }else{
-                    let row = table[currentRowIndex];
-                    let item = row[row.length - 1];
-                    item.rowSpan ++;
+        // 添加rowspan
+        addRowspan(list,max) {
+            let orgId = null;
+            let operationCell = null;
+            for (let i = max - 1; i > -1; i--) {
+                for (let r = 0; r < list.length; r++) {
+                    const row = list[r];
+                    let cell = row[i];
+                    if (cell) {
+                        if (cell.orgId === orgId) {
+                            row.splice(i,1);
+                            operationCell.rowspan ++;
+                        }else{
+                            orgId = cell.orgId;
+                            operationCell = cell;
+                            operationCell.rowspan = 1;
+                        }
+                    }
                 }
             }
         },
 
-        // 找爸爸
+        // 添加colspan
+        addColspan(list, max) {
+            for (let i = 0; i < list.length; i++) {
+                const row = list[i];
+                let item = row[row.length - 1];
+                item.colspan = max - row.length + 1
+            }
+        },
+
+        // 获取最大长度
+        getMaxLength(list) {
+            let a = [];
+            list.forEach(item => {
+                a.push(item.length);
+            });
+            let max = Math.max.apply(Math,a);
+            return max;
+        },
+
+        // 添加父级
+        addParent(list, table) {
+            let currentRowIndex = 0,
+            parentId = '';
+            let rowSpan = 0;
+            for (let i = 0; i < table.length; i++) {
+                const row = table[i];
+                let item = row[row.length - 1];
+                rowSpan ++;
+                let parentArry = [];
+                this.getParent(list,item.orgParentId,parentArry);
+                let parent = parentArry[0];
+                if (parent) {
+                    row.push(parent);
+                }
+            }
+        },
+
+        // 找父级
         getParent(tree,parentId,result) {
             tree.forEach(item => {
                 if (item.orgId === parentId) {
@@ -384,9 +473,7 @@ export default {
                 }
             });
         },
-
-        // 取数据深度
-        getLayer(dict) {},
+        // 解析数据--------------------------
 
         // 导出
         download() {

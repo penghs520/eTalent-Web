@@ -55,21 +55,21 @@
             <div class="archives_style">
                     <div class="side_tree">
                         <tree :treeData = data.treeData ></tree>
-                        <el-input v-show="showInput" size="mini" v-model="data.styleName" @click="inputName" placeholder="请输入方案名称"></el-input>
-                        <el-button @click="addNewStyle" size="small">添加新的方案</el-button>
+                        <el-input style="marginTop:10px;marginBottom:10px" v-show="showInput" size="mini" v-model="styleName" placeholder="请输入方案名称"></el-input>
+                        <el-button  @click="addNewStyle" size="small">添加新的方案</el-button>
                     </div>
                     <div class="content">
                         <div class="operate">
                             <el-button type="plain" size="mini">删除</el-button>
                             <el-button type="plain" size="mini">设为默认方案</el-button>
-                            <el-button type="primary" size="mini">保存</el-button>
+                            <el-button type="primary" size="mini"  @click="saveStyle">保存</el-button>
                         </div>
                         <div class="show_heaher">
                             <h3>显示表头</h3>
                             <el-row :gutter="20" v-if="checkTry.length > 0">
                                   <el-col :span="4" v-for="(item,index) in checkTry" :key="index" >
                                        <span class="btn">
-                                            <i class="el-icon-close" @click="delField(index)"></i>
+                                            <i class="el-icon-close" @click="delField(item)"></i>
                                             <el-button type="plain" size="small">{{item.fieldName}}</el-button>
                                       </span>  
                                    </el-col> 
@@ -82,22 +82,26 @@
                         </div>
                         <div class="readyField">
                             <h3>待选字段</h3>
-                            <el-tabs  type="border-card" @tab-click="handleClick"  v-model="activeName">
+                            <el-tabs  type="card" @tab-click="handleClick"  v-model="activeName">
                                 <el-tab-pane :label="item.tableName" :name="String(item.tableId)" v-for="(item,index) in tabsList" :key="index" >
-                                    <div class="title" v-for ="(sec,index) in fieldList" :key="index">
-
-                                        <el-checkbox v-model="sec.checkAll"  @change="handleCheckAll($event,sec)">{{sec.groupName}}</el-checkbox>
-                                        <el-checkbox-group v-model="sec.checkedList" @change="handleCheckedChange($event,sec)">
-                                               <el-row :gutter="20">
-                                                <el-col :span="5"  v-for="(it,index) in sec.customFieldVOList" :key="index">
-                                                    <el-checkbox  :label="it">{{it.fieldName}}</el-checkbox>                                                
-                                                </el-col>
-                                              </el-row>
-                                        </el-checkbox-group>
-
-                                    </div>
                                </el-tab-pane>
                             </el-tabs>
+                            <div v-for="(item, itemIndex) in tabContList" :key="itemIndex">
+                                <template v-if="typeof item !== 'number'">
+                                    <div class="title" v-for ="(sec,index) in item" :key="index">
+                                        <div v-if="sec.tableId == tabName">
+                                            <el-checkbox v-model="sec.checkAll"  @change="handleCheckAll($event,sec)">{{sec.groupName}}</el-checkbox>
+                                            <el-checkbox-group v-model="sec.checkedList" @change="handleCheckedChange($event,sec)">
+                                                    <el-row :gutter="20" style="marginLeft:20px">
+                                                    <el-col :span="5"  v-for="(it,index) in sec.customFieldVOList" :key="index">
+                                                        <el-checkbox  :label="it">{{it.fieldName}}</el-checkbox>                                                
+                                                    </el-col>
+                                                    </el-row>
+                                            </el-checkbox-group>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
                     </div>
              </div>
@@ -118,77 +122,58 @@ export default {
     props:{
         show:Boolean,
         data:Object,       
-    },
-    model:{
-        prop:"show",
-        event:"close"
-    },
-    created(){
-        this.getTabsMenu() 
-    },
+    },   
     data(){
         return{
             activeName:"",
+            styleName:"",
             showInput:false,
             tabsList:[],
-            fieldList:[],
-            allCheckedList:[],
+            tabContList: [],
+            tabName:"",
         }       
     },
     computed:{
-        "checkTry"(){
-           let list =  this.fieldList.map( item=>item.checkedList)
-           let arr= []
-            list.forEach(item=>{
-                item.forEach(sec=>{
-                    arr.push(sec)
-                })
-            })
+        "checkTry"(){ 
+           let arr = []        
+           this.tabContList.forEach((item,index)=>{
+               if(typeof item !== "number"){
+                  item.forEach((sec,i)=>{
+                      arr.push(...sec.checkedList)
+                  })
+               }                        
+           })            
             return arr
-        }
-    },
-    watch:{
-        'fieldList':{
-        handler(newVal){
-           let list =  newVal.map( item=>item.checkedList)
-           let arr= []
-            list.forEach(item=>{
-                item.forEach(sec=>{
-                    arr.push(sec)
-                })
-            })
-            console.log("---------------",arr);
-            
-           this.allCheckedList.push(...arr)
-           this.allCheckedList = this.allCheckedList.filter((item, index, self) => index === self.findIndex((t) => (t.fieldId === item.fieldId && t.fieldName === item.fieldName)));
-            },
-            deep:true,
         },
+
+    },
+    created(){
+        this.$emit('getNav',this.getTabsMenu)  
     },
     methods:{
         //点击叉号删除字段
-        delField(index){
-            // this.allCheckedList.splice(index,1)
+        delField(val){            
+           this.tabContList =  this.tabContList.map(item=>{ 
+               if(typeof item !== "number"){ 
+               item.map(sub=>{
+                   let checkedList =  sub.checkedList.filter(sec =>  sec.fieldId !== val.fieldId)
+                   sub.checkedList =  checkedList
+               })        
+             }                 
+              return item
+           })           
         },
         //多选框点击
         handleCheckedChange(value,sec){
              let checkedCount = value.length;
              sec.checkAll = checkedCount === sec.customFieldVOList.length;
              let val = JSON.parse(JSON.stringify(value))
-            //  this.checkedList.push(...val)
-            //  this.checkedList = this.checkedList.filter((item, index, self) => index === self.findIndex((t) => (t.fieldId === item.fieldId && t.fieldName === item.fieldName)));
-             console.log(val);
-                        
-             
+             console.log(val);             
         },
         //全选改变
         handleCheckAll(val,sec){           
             sec.checkedList = val ? sec.customFieldVOList : [];
-            // this.checkedList.push(...sec.checkedList) 
-            //  this.checkedList = this.checkedList.filter((item, index, self) => index === self.findIndex((t) => (t.fieldId === item.fieldId && t.fieldName === item.fieldName)));
-
         },
-
         //获取字段名
         getField(tableId){
             let send = {
@@ -202,8 +187,14 @@ export default {
                     list.forEach(item=>{                       
                         item.checkAll = false
                         item.checkedList = []
-                    }) 
-                    this.fieldList =  JSON.parse(JSON.stringify(list))              
+                        item.tableId = tableId
+                    })            
+                    this.tabContList = this.tabContList.map(item=>{                        
+                        if(item == tableId){
+                            item = JSON.parse(JSON.stringify(list))
+                        }
+                        return  item
+                    })
                 }else{
                     base.error(res.data)
                 }
@@ -214,15 +205,22 @@ export default {
             archives_ledger_api8(null,res=>{
                 base.log("r","获取tab菜单",res.data)
                 if(res.data.success){
-                    this.tabsList = res.data.result
+                    this.tabsList = res.data.result;
+                    this.getField(res.data.result[0].tableId)
+                    this.tabName = res.data.result[0].tableId
+                    this.tabContList = res.data.result.map(item => item.tableId)
                     this.activeName = String(res.data.result[0].tableId) 
                 }else{
                     base.error(res.data)
                 }
             })
         },
-        //显示方案名
-        inputName(){
+        //保存方案名
+        saveStyle(){  
+            this.showInput = false  
+            if(this.data.getStyleName){
+                this.data.getStyleName(this.styleName)
+            }
             
         },
         //点击添加新方案按钮
@@ -230,15 +228,17 @@ export default {
             this.showInput = true
         },
         //关闭弹窗
-        handleClose(){
-            this.$emit("close",false)          
+        handleClose(){          
+            if(this.data.handleClose){
+                this.data.handleClose()
+            }       
         },
         //tab栏切换
         handleClick(tab){
-            if(!tab.name){
-                return
-            }      
-            this.getField(Number(tab.name))              
+            this.tabName = tab.name            
+            if(this.tabContList.includes(Number(tab.name))){
+               this.getField(Number(tab.name)) 
+            }                              
         }
     }
 };

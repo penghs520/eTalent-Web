@@ -163,7 +163,6 @@ export default {
             this.$set(this,'checkTry2', arr);
             return arr
         },
-
     },
     created(){
         // 初始化

@@ -75,8 +75,11 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const archives_ledger_api8     = (data, callback) => {request('post', `hpi/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
         const archives_ledger_api9     = (data, callback) => {request('get', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
 
+        //数据导入
+        const archives_import_api1       = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        
         //附件管理
-        const archives_file_api1       = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const archives_file_api1       = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFileArc`, data, callback)};
 
         //黑名单管理
         const archives_blacklist_api1  = (data, callback) => {request('get', `hpi/masterdata/staffsta/selectBalckList`, data, callback)};

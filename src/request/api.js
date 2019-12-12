@@ -72,7 +72,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const archives_ledger_api5     = (data, callback) => {request('get', `api/masterdata/staffsta/deleteStandingBook`, data, callback)};
         const archives_ledger_api6     = (data, callback) => {request('post', `api/masterdata/staffsta/updateStandingBook`, data, callback)};
         const archives_ledger_api7     = (data, callback) => {request('form', `api/masterdata/staffarc/selectQueryScheme`, data, callback)};
-        const archives_ledger_api8     = (data, callback) => {request('post', `api/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
+        const archives_ledger_api8     = (data, callback) => {request('post', `hpi/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
         const archives_ledger_api9     = (data, callback) => {request('get', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
 
         //附件管理

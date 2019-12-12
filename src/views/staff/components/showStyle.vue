@@ -69,7 +69,7 @@
                             <el-row :gutter="20" v-if="checkTry.length > 0">
                                   <el-col :span="4" v-for="(item,index) in checkTry" :key="index" >
                                        <span class="btn">
-                                            <i class="el-icon-close" @click="delField(index)"></i>
+                                            <i class="el-icon-close" @click="delField(item)"></i>
                                             <el-button type="plain" size="small">{{item.fieldName}}</el-button>
                                       </span>  
                                    </el-col> 
@@ -82,22 +82,24 @@
                         </div>
                         <div class="readyField">
                             <h3>待选字段</h3>
-                            <el-tabs  type="border-card" @tab-click="handleClick"  v-model="activeName">
+                            <el-tabs  type="card" @tab-click="handleClick"  v-model="activeName">
                                 <el-tab-pane :label="item.tableName" :name="String(item.tableId)" v-for="(item,index) in tabsList" :key="index" >
-                                    <div class="title" v-for ="(sec,index) in fieldList" :key="index">
-
+                               </el-tab-pane>
+                            </el-tabs>
+                            <div v-for="(item, itemIndex) in tabContList" :key="itemIndex">
+                                <template v-if="item !== false">
+                                    <div class="title" v-for ="(sec,index) in item" :key="index">
                                         <el-checkbox v-model="sec.checkAll"  @change="handleCheckAll($event,sec)">{{sec.groupName}}</el-checkbox>
                                         <el-checkbox-group v-model="sec.checkedList" @change="handleCheckedChange($event,sec)">
-                                               <el-row :gutter="20">
+                                                <el-row :gutter="20">
                                                 <el-col :span="5"  v-for="(it,index) in sec.customFieldVOList" :key="index">
                                                     <el-checkbox  :label="it">{{it.fieldName}}</el-checkbox>                                                
                                                 </el-col>
-                                              </el-row>
+                                                </el-row>
                                         </el-checkbox-group>
-
                                     </div>
-                               </el-tab-pane>
-                            </el-tabs>
+                                </template>
+                            </div>
                         </div>
                     </div>
              </div>
@@ -123,23 +125,21 @@ export default {
         prop:"show",
         event:"close"
     },
-    created(){
-        this.getTabsMenu() 
-    },
+    
     data(){
         return{
             activeName:"",
             showInput:false,
             tabsList:[],
+            tabContList: [],
             fieldList:[],
-            allCheckedList:[],
         }       
     },
     computed:{
         "checkTry"(){
-           let list =  this.fieldList.map( item=>item.checkedList)
+           let list =  this.fieldList.map(item=>item.checkedList)
            let arr= []
-            list.forEach(item=>{
+           list.forEach(item=>{
                 item.forEach(sec=>{
                     arr.push(sec)
                 })
@@ -147,48 +147,29 @@ export default {
             return arr
         }
     },
-    watch:{
-        'fieldList':{
-        handler(newVal){
-           let list =  newVal.map( item=>item.checkedList)
-           let arr= []
-            list.forEach(item=>{
-                item.forEach(sec=>{
-                    arr.push(sec)
-                })
-            })
-            console.log("---------------",arr);
-            
-           this.allCheckedList.push(...arr)
-           this.allCheckedList = this.allCheckedList.filter((item, index, self) => index === self.findIndex((t) => (t.fieldId === item.fieldId && t.fieldName === item.fieldName)));
-            },
-            deep:true,
-        },
+    created(){
+        this.getTabsMenu() 
     },
     methods:{
         //点击叉号删除字段
-        delField(index){
-            // this.allCheckedList.splice(index,1)
+        delField(val){          
+           this.fieldList =  this.fieldList.map(item=>{              
+              let checkedList =  item.checkedList.filter(sec =>  sec.fieldId !== val.fieldId)
+              item.checkedList =  checkedList
+              return item
+           })           
         },
         //多选框点击
         handleCheckedChange(value,sec){
              let checkedCount = value.length;
              sec.checkAll = checkedCount === sec.customFieldVOList.length;
              let val = JSON.parse(JSON.stringify(value))
-            //  this.checkedList.push(...val)
-            //  this.checkedList = this.checkedList.filter((item, index, self) => index === self.findIndex((t) => (t.fieldId === item.fieldId && t.fieldName === item.fieldName)));
-             console.log(val);
-                        
-             
+             console.log(val);             
         },
         //全选改变
         handleCheckAll(val,sec){           
             sec.checkedList = val ? sec.customFieldVOList : [];
-            // this.checkedList.push(...sec.checkedList) 
-            //  this.checkedList = this.checkedList.filter((item, index, self) => index === self.findIndex((t) => (t.fieldId === item.fieldId && t.fieldName === item.fieldName)));
-
         },
-
         //获取字段名
         getField(tableId){
             let send = {
@@ -214,7 +195,8 @@ export default {
             archives_ledger_api8(null,res=>{
                 base.log("r","获取tab菜单",res.data)
                 if(res.data.success){
-                    this.tabsList = res.data.result
+                    this.tabsList = res.data.result;
+                    this.tabContList = new Array(res.data.result.length).fill(false);
                     this.activeName = String(res.data.result[0].tableId) 
                 }else{
                     base.error(res.data)

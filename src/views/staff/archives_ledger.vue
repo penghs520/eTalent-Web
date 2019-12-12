@@ -87,7 +87,7 @@
                         <commonTable :table="ledgerTable" ref="commonTable" ></commonTable>                       
                     </div>
                     <!-- 展示方案组件 -->
-                    <showStyle v-model="addStyleShow" :data="styleData"></showStyle>                   
+                    <showStyle :show="addStyleShow" :data="styleData" @getNav="getMenuFun = $event" ></showStyle>                   
                   </el-tab-pane>
                    <!-- 台账设置 -->
                    <el-tab-pane label="台账设置" name="setting" class="common">
@@ -304,17 +304,20 @@ export default {
             //显示台账方案
             addStyleShow:false, 
             styleData:{
-                styleName:"",
+                getStyleName:this.getStyleName,
+                handleClose:this.handleClose,
                 treeData: {
                 data: [],
                 props: {
                     children: "",
-                    label: "querySchemeId",
+                    label: "querySchemeName",
                 },
                 icons:[],
                 nodeClick: this.styleTreeNode,
              },
             },
+            getMenuFun:null,
+            
             //新增编辑台账
             addDialogShow:false,
             dialogTitle:"", 
@@ -329,13 +332,13 @@ export default {
                 ],
             },           
             //删除台账
-            delDialogShow:false,
+            delDialogShow:false,           
         }
     },
     created(){
         this.getOrgTreeReq()
         this.getNotShareLeger()
-         this.getStyleList()
+        this.getStyleList()
     },
     watch:{
         // 'ledgerTable.data'(newVal,oldVal){
@@ -349,7 +352,15 @@ export default {
         // }
     },
     methods:{
-
+        //显示方案--关闭弹窗
+        handleClose(){
+            this.addStyleShow = false
+            this.getStyleList()
+        },
+        //显示方案--新方案添加到数列
+        getStyleName(val){
+            this.styleData.treeData.data.push( {value:val,"querySchemeName":val} )
+        },
         //显示方案--树形节点点击
         styleTreeNode(node){
             console.log(node);          
@@ -360,19 +371,19 @@ export default {
             archives_ledger_api7(null,res=>{
                 base.log("r","获取显示方案",res.data)
                 if(res.data.success){
-                    this.styleData.treeData.data = res.data.result[0].querySchemeFieldList
-                    this.ledgerTable.bar[4].list = JSON.parse(JSON.stringify(res.data.result[0].querySchemeFieldList))
+                    this.styleData.treeData.data = res.data.result
+                    this.ledgerTable.bar[4].list = JSON.parse(JSON.stringify(res.data.result))
                     this.ledgerTable.bar[4].list = this.ledgerTable.bar[4].list.map(item=>{
                         item.value = item.querySchemeId
                         item.label = item.querySchemeName
                         return item
                     })
+                    this.ledgerTable.bar[4].list.push({value:"+新增显示方案",label:"+新增显示方案"})
                 }else{
                     base.error(res.data)
                 }
             })
         },
-
         //台账设置--删除按钮
         delLedger(){
             if(!this.ledgerNode){
@@ -502,18 +513,17 @@ export default {
         },
         //查询按钮点击
         seachLedger(){
-            // if(!this.ledgerNode){
-            //     this.$message.warning("请选择台账")
-            //     return
-            // }
+            if(!this.ledgerNode){
+                this.$message.warning("请选择台账")
+                return
+            }
             this.getLegerReq() 
-            this.addStyleShow = true
-
         }, 
         //表格下拉框 --表格显示方案切换
         selectValueChange(val){
-           if(val ===  "8"){
+           if(val ===  "+新增显示方案"){
               this.addStyleShow = true
+              this.getMenuFun()
            }          
         },       
         //表格下拉框 -- 机构树 

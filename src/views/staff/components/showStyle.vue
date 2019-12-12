@@ -55,14 +55,14 @@
             <div class="archives_style">
                     <div class="side_tree">
                         <tree :treeData = data.treeData ></tree>
-                        <el-input v-show="showInput" size="mini" v-model="data.styleName" @click="inputName" placeholder="请输入方案名称"></el-input>
-                        <el-button @click="addNewStyle" size="small">添加新的方案</el-button>
+                        <el-input style="marginTop:10px;marginBottom:10px" v-show="showInput" size="mini" v-model="styleName" placeholder="请输入方案名称"></el-input>
+                        <el-button  @click="addNewStyle" size="small">添加新的方案</el-button>
                     </div>
                     <div class="content">
                         <div class="operate">
                             <el-button type="plain" size="mini">删除</el-button>
                             <el-button type="plain" size="mini">设为默认方案</el-button>
-                            <el-button type="primary" size="mini">保存</el-button>
+                            <el-button type="primary" size="mini"  @click="saveStyle">保存</el-button>
                         </div>
                         <div class="show_heaher">
                             <h3>显示表头</h3>
@@ -87,16 +87,18 @@
                                </el-tab-pane>
                             </el-tabs>
                             <div v-for="(item, itemIndex) in tabContList" :key="itemIndex">
-                                <template v-if="item !== false">
+                                <template v-if="typeof item !== 'number'">
                                     <div class="title" v-for ="(sec,index) in item" :key="index">
-                                        <el-checkbox v-model="sec.checkAll"  @change="handleCheckAll($event,sec)">{{sec.groupName}}</el-checkbox>
-                                        <el-checkbox-group v-model="sec.checkedList" @change="handleCheckedChange($event,sec)">
-                                                <el-row :gutter="20">
-                                                <el-col :span="5"  v-for="(it,index) in sec.customFieldVOList" :key="index">
-                                                    <el-checkbox  :label="it">{{it.fieldName}}</el-checkbox>                                                
-                                                </el-col>
-                                                </el-row>
-                                        </el-checkbox-group>
+                                        <div v-if="sec.tableId == tabName">
+                                            <el-checkbox v-model="sec.checkAll"  @change="handleCheckAll($event,sec)">{{sec.groupName}}</el-checkbox>
+                                            <el-checkbox-group v-model="sec.checkedList" @change="handleCheckedChange($event,sec)">
+                                                    <el-row :gutter="20" style="marginLeft:20px">
+                                                    <el-col :span="5"  v-for="(it,index) in sec.customFieldVOList" :key="index">
+                                                        <el-checkbox  :label="it">{{it.fieldName}}</el-checkbox>                                                
+                                                    </el-col>
+                                                    </el-row>
+                                            </el-checkbox-group>
+                                        </div>
                                     </div>
                                 </template>
                             </div>
@@ -120,42 +122,44 @@ export default {
     props:{
         show:Boolean,
         data:Object,       
-    },
-    model:{
-        prop:"show",
-        event:"close"
-    },
-    
+    },   
     data(){
         return{
             activeName:"",
+            styleName:"",
             showInput:false,
             tabsList:[],
             tabContList: [],
-            fieldList:[],
+            tabName:"",
         }       
     },
     computed:{
-        "checkTry"(){
-           let list =  this.fieldList.map(item=>item.checkedList)
-           let arr= []
-           list.forEach(item=>{
-                item.forEach(sec=>{
-                    arr.push(sec)
-                })
-            })
+        "checkTry"(){ 
+           let arr = []        
+           this.tabContList.forEach((item,index)=>{
+               if(typeof item !== "number"){
+                  item.forEach((sec,i)=>{
+                      arr.push(...sec.checkedList)
+                  })
+               }                        
+           })            
             return arr
-        }
+        },
+
     },
     created(){
-        this.getTabsMenu() 
+        this.$emit('getNav',this.getTabsMenu)  
     },
     methods:{
         //点击叉号删除字段
-        delField(val){          
-           this.fieldList =  this.fieldList.map(item=>{              
-              let checkedList =  item.checkedList.filter(sec =>  sec.fieldId !== val.fieldId)
-              item.checkedList =  checkedList
+        delField(val){            
+           this.tabContList =  this.tabContList.map(item=>{ 
+               if(typeof item !== "number"){ 
+               item.map(sub=>{
+                   let checkedList =  sub.checkedList.filter(sec =>  sec.fieldId !== val.fieldId)
+                   sub.checkedList =  checkedList
+               })        
+             }                 
               return item
            })           
         },
@@ -183,8 +187,14 @@ export default {
                     list.forEach(item=>{                       
                         item.checkAll = false
                         item.checkedList = []
-                    }) 
-                    this.fieldList =  JSON.parse(JSON.stringify(list))              
+                        item.tableId = tableId
+                    })            
+                    this.tabContList = this.tabContList.map(item=>{                        
+                        if(item == tableId){
+                            item = JSON.parse(JSON.stringify(list))
+                        }
+                        return  item
+                    })
                 }else{
                     base.error(res.data)
                 }
@@ -196,15 +206,21 @@ export default {
                 base.log("r","获取tab菜单",res.data)
                 if(res.data.success){
                     this.tabsList = res.data.result;
-                    this.tabContList = new Array(res.data.result.length).fill(false);
+                    this.getField(res.data.result[0].tableId)
+                    this.tabName = res.data.result[0].tableId
+                    this.tabContList = res.data.result.map(item => item.tableId)
                     this.activeName = String(res.data.result[0].tableId) 
                 }else{
                     base.error(res.data)
                 }
             })
         },
-        //显示方案名
-        inputName(){
+        //保存方案名
+        saveStyle(){  
+            this.showInput = false  
+            if(this.data.getStyleName){
+                this.data.getStyleName(this.styleName)
+            }
             
         },
         //点击添加新方案按钮
@@ -212,15 +228,17 @@ export default {
             this.showInput = true
         },
         //关闭弹窗
-        handleClose(){
-            this.$emit("close",false)          
+        handleClose(){          
+            if(this.data.handleClose){
+                this.data.handleClose()
+            }       
         },
         //tab栏切换
         handleClick(tab){
-            if(!tab.name){
-                return
-            }      
-            this.getField(Number(tab.name))              
+            this.tabName = tab.name            
+            if(this.tabContList.includes(Number(tab.name))){
+               this.getField(Number(tab.name)) 
+            }                              
         }
     }
 };

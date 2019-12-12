@@ -34,8 +34,8 @@
             background-color: #fff;            
             .wrap{
                 margin-top: 20px;
-                // max-width: 1040px;
-                // width: 80%;
+                max-width: 1040px;
+                width: 80%;
             }
         }
     }
@@ -65,7 +65,7 @@
                                  </div>  
                             </template>
                             <template v-slot:btn>
-                                <el-button type="primary" size="mini" @click="uploadBaseCheck" :disabled="uploadBase.fileList.length === 0">导入校验</el-button>
+                                <el-button type="primary" size="mini" @click="uploadBaseCheckReq" :disabled="uploadBase.fileList.length === 0">导入校验</el-button>
                             </template>
                         </commonUpload>
                     </div>                   
@@ -131,6 +131,9 @@
 import commonUpload from "../../components/archivesUpload/archivesUpload"
 import  base  from "../../assets/js/base"
 
+import {
+    archives_file_api1
+     } from "../../request/api"
 
 export default {
     name: "archives_import",
@@ -143,10 +146,15 @@ export default {
             //基本信息导入
             uploadBase:{
                 uploadUrl:"",
-                // tableShow:false,
+                tableShow:false,
+                tableData: {
+                    head: [],
+                    hideHeader: false,
+                    data: [],
+                    total: 0,
+                    pageHide: true
+                },
                 fileList:[],
-                multiple:true,
-                maxNum:20,
             },
             activeBase:0,
             // 附件信息导入
@@ -174,16 +182,27 @@ export default {
 
     },
     methods:{
-        //基本信息校验--解析本地excel文件
-        uploadBaseCheck(){
-            base.getExcelTable(this.uploadBase.fileList[0].raw,(res)=>{
-                console.log(res);               
-            })           
+        //基本信息校验--校验请求
+        uploadBaseCheckReq(){
+            let send = this.uploadBase.fileList[0].raw;
+            let fd = new FormData();
+            fd.append("file", send);           
+            base.log("s", "基本信息导入校验", fd);
+            archives_file_api1(fd,res=>{
+                base.log("r", "基本信息导入校验", res.data);
+                if(res.data.success){
+                    this.uploadBase.tableShow = true
+                    this.activeBase = 1       
+                    this.uploadBase.tableData.head = res.data.result.headList
+                    this.uploadBase.tableData.data = []
+                }else{
+                    base.error(res.data)
+                }
+            })
         },
         //基本信息--模板下载
         downloadTemp(){
-            this.activeBase = 1
-            // this.uploadBase.tableShow = true
+            this.activeBase = 1            
         },
         //tab栏点击
         handleClick(){

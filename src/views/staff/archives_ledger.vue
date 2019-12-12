@@ -316,8 +316,7 @@ export default {
                 nodeClick: this.styleTreeNode,
              },
             },
-            getMenuFun:null,
-            
+            getMenuFun:null,          
             //新增编辑台账
             addDialogShow:false,
             dialogTitle:"", 

@@ -112,7 +112,9 @@
 <script>
 import tree from "../../../components/tree/tree"
 import base from "../../../assets/js/base"
-import { archives_ledger_api8, archives_ledger_api9 } from "../../../request/api";
+import {  archives_ledger_api8, 
+          archives_ledger_api9,
+        } from "../../../request/api";
 
 export default {
     name:"show_style",
@@ -145,7 +147,6 @@ export default {
            })            
             return arr
         },
-
     },
     created(){
         this.$emit('getNav',this.getTabsMenu)  

@@ -1350,8 +1350,8 @@ export default {
 
             let checkedCount = value.length;
             this.checkAll = checkedCount === this.delOrgList.length;
-            this.isIndeterminate =
-                checkedCount > 0 && checkedCount < this.delOrgList.length;
+            this.isIndeterminate = checkedCount > 0 && checkedCount < this.delOrgList.length;
+            
         },
         //删除机构,编辑机构,封存,解封,合并,划转--多选赋值
         orgSelectChange(node) {

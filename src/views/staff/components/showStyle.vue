@@ -60,13 +60,13 @@
             <div class="archives_style">
                     <div class="side_tree">
                         <tree :treeData = data.treeData ></tree>
-                        <el-input style="marginTop:10px;marginBottom:10px" v-show="showInput" size="mini" v-model="styleName" placeholder="请输入方案名称"></el-input>
+                        <el-input style="marginTop:10px;marginBottom:10px" v-show="showInput" size="mini" v-model.trim="styleName" placeholder="请输入方案名称"></el-input>
                         <el-button  @click="addNewStyle" size="small">添加新的方案</el-button>
                     </div>
                     <div class="content">
                         <div class="operate">
-                            <el-button type="plain" size="mini">删除</el-button>
-                            <el-button type="plain" size="mini">设为默认方案</el-button>
+                            <el-button type="plain" size="mini" @click="delStyle">删除</el-button>
+                            <el-button type="plain" size="mini" @click="defaultStyle">设为默认方案</el-button>
                             <el-button type="primary" size="mini"  @click="saveStyle">保存</el-button>
                         </div>
                         <div class="show_heaher">
@@ -82,7 +82,7 @@
                                 >
                                     <el-col :span="4" v-for="(item,index) in checkTry2" :key="index" >
                                         <span class="btn">
-                                                <i class="el-icon-close" @click="delField(item)"></i>
+                                                <i class="el-icon-close" @click="delField(item)" v-if="item.fieldName !== '姓名'"></i>
                                                 <el-button class="moveBtn" type="plain" size="small">{{item.fieldName}}</el-button>
                                         </span>  
                                     </el-col> 
@@ -91,8 +91,8 @@
                         </div>
                         <div class="sort">
                             <h3>数据排序</h3>
-                            <el-button type="plain" size="small">单位升序<i class="el-icon-arrow-up"></i></el-button>
-                            <el-button type="plain" size="small">部门升序<i class="el-icon-arrow-up"></i></el-button>
+                            <el-button type="plain" size="small" @click="unitSort = !unitSort;">{{unitSort ? "单位升序" : "单位降序"}}<i :class="unitSort ? 'el-icon-arrow-up' : 'el-icon-arrow-down' "></i></el-button>
+                            <el-button type="plain" size="small" @click="departSort = !departSort;">{{departSort ? "部门升序" : "部门降序"}}<i :class="departSort ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"></i></el-button>
                         </div>
                         <div class="readyField">
                             <h3>待选字段</h3>
@@ -108,7 +108,7 @@
                                             <el-checkbox-group v-model="sec.checkedList" @change="handleCheckedChange($event,sec)">
                                                     <el-row :gutter="20" style="marginLeft:20px">
                                                         <el-col :span="5"  v-for="(it,index) in sec.customFieldVOList" :key="index">
-                                                            <el-checkbox  :label="it">{{it.fieldName}}</el-checkbox>                                                
+                                                            <el-checkbox  :label="it" :disabled="it.fieldName ==='姓名'">{{it.fieldName}}</el-checkbox>                                                
                                                         </el-col>
                                                     </el-row>
                                             </el-checkbox-group>
@@ -147,7 +147,10 @@ export default {
             tabsList:[],
             tabContList: [],
             tabName:"",
-            checkTry2: []
+            checkTry2: [],
+            //升序降序
+            unitSort:true,
+            departSort:true,
         }       
     },
     computed:{
@@ -190,8 +193,20 @@ export default {
              sec.indeterminate = checkedCount > 0 && checkedCount < sec.customFieldVOList.length;
         },
         //全选改变
-        handleCheckAll(val,sec){           
-            sec.checkedList = val ? sec.customFieldVOList : [];
+        handleCheckAll(val,sec){ 
+            let list = sec.customFieldVOList.filter(item => item.fieldName === '姓名')
+            console.log(list);
+            
+            //设定模糊选中
+            if(list.length>0){
+                sec.checkedList = val ? sec.customFieldVOList : [...list];
+            }else{
+                sec.checkedList = val ? sec.customFieldVOList : [];
+            }        
+            
+            
+            // console.log(sec.customFieldVOList);
+            
             sec.indeterminate   = sec.checkedList.length > 0 && sec.checkedList.length < sec.customFieldVOList.length;
         },
         //获取字段名
@@ -210,12 +225,20 @@ export default {
                         item.tableId        = tableId;          /* tab栏id */
                         item.indeterminate  = false;            /* 是否半选 */
 
-                        // 处理默认勾选状态
+                        // 处理默认勾选状态                        
                         // 处理默认全选状态
                     })            
                     this.tabContList = this.tabContList.map(item=>{                        
                         if(item == tableId){
                             item = JSON.parse(JSON.stringify(list))
+                            item.forEach(sec => {
+                                sec.customFieldVOList.find(sub=>{
+                                    if(sub.fieldName === '姓名'){    //将姓名设置为默认选中并禁用
+                                        sec.checkedList.push(sub)                                        
+                                        sec.indeterminate = true    //设置为模糊选中
+                                    }
+                                })
+                            })
                         }
                         return  item
                     })
@@ -242,13 +265,27 @@ export default {
                 }
             })
         },
-        //保存方案名
-        saveStyle(){  
-            this.showInput = false  
-            if(this.data.getStyleName){
-                this.data.getStyleName(this.styleName)
-            }
+        //删除按钮
+        delStyle(){
+            console.log("点击删除");
+        },
+        //设置默认按钮
+        defaultStyle(){
+            console.log("设置默认");
             
+        },
+        //保存按钮方案名
+        saveStyle(){
+            if(this.showInput == true && this.styleName !== ""){
+                if(this.data.getStyleName){
+                    this.data.getStyleName(this.styleName)
+                }
+                 this.showInput = false
+                 this.styleName = ""
+            }else if(this.showInput == false){
+                 
+            }              
+                       
         },
         //点击添加新方案按钮
         addNewStyle(){

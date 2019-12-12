@@ -511,6 +511,8 @@ export default {
         },
         //查询按钮点击
         seachLedger(){
+            this.addStyleShow = true
+              this.getMenuFun()
             if(!this.ledgerNode){
                 this.$message.warning("请选择台账")
                 return

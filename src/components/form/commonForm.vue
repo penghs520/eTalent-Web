@@ -55,6 +55,8 @@
     box-sizing: border-box;
 }
 .groupTitle{
+    height: 78px;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -118,10 +120,10 @@
                     editIng: showForm[groupIndex]
                 }" >
                 <!-- 组名 -->
-                <div class="groupTitle" v-show="group.groupTitle" >
+                <div class="groupTitle" v-show="group.groupTitle || option.showType === 'seeForm'" >
                     <div class="title" >
-                        <span class="groupTieleIcon"></span>
-                        <span>{{group.groupTitle}}</span>
+                        <span class="groupTieleIcon" v-show="group.groupTitle"></span>
+                        <span v-show="group.groupTitle">{{group.groupTitle}}</span>
                     </div>
                     <div class="editBtn" v-if="option.showType === 'seeForm'" v-show="!showForm[groupIndex]" @click="edit(groupIndex)">
                         <i class="el-icon-edit icon"></i>
@@ -495,6 +497,12 @@ export default {
             this.domList.forEach((group,groupIndex) => {
                 // 添加ref绑定名称
                 this.formRefNameList.push(`form_${groupIndex}`);
+                // 编辑按钮显示状态处理
+                for (const key in this.showForm) {
+                    if (this.showForm.hasOwnProperty(key)) {
+                        this.showForm[key] = false;
+                    }
+                }
                 group.list.forEach((item, index) => {
                     // 特殊dom处理
                     this.specialDom(item, index);
@@ -676,7 +684,9 @@ export default {
         // 取消
         cancel(index) {
             this.$set(this.showForm,index,false);
-            this.data.cancel(index);
+            if (this.data.cancel) {
+                this.data.cancel(index);
+            }
         },
 
         // 确定
@@ -685,7 +695,7 @@ export default {
                 if (valid) {
                     if (this.data.sure) {
                         let data = this.getCurrentGroupData(groupIndex);
-                        this.data.sure(groupIndex,data);
+                        this.data.sure(groupIndex,data,this.data.formId);
                         this.$set(this.loading, groupIndex, true);
                     }
                 }

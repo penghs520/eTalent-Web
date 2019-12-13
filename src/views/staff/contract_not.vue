@@ -145,7 +145,7 @@ export default {
                 ],
                 showSelect: true,
                 activeColumn: '姓名',
-                cellClick: Function,
+                cellClick: this.cellClick,
                 loading: false,
                 pageResize: false,
                 pageSizeChange: this.pageSizeChange,
@@ -198,6 +198,12 @@ export default {
     },
     mounted() {},
     methods: {
+        // 表格单元格被点击
+        cellClick(key,row) {
+            if (key === 'userName') {
+                console.log(row)
+            }
+        },
         // 获取机构树
         getOrg(orgList) {
             this.table.bar[3].treeData.data = orgList;

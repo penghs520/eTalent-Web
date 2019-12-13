@@ -7,26 +7,26 @@ import request from './http';
 
 // 自定义字段接口
     // 新增保存
-    const custom_api1 = (data, callback) => {request('post', `api/masterdata/staffarc/SaveFieldAndValue`, data, callback)};
+    const custom_api1 = (data, callback) => {request('post', `hpi/masterdata/staffarc/SaveFieldAndValue`, data, callback)};
     // 根据表id查询form参数配置--新增
-    const custom_api2 = (data, callback) => {request('get', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
+    const custom_api2 = (data, callback) => {request('get', `hpi/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
     // 根据表id与人员id查询form参数配置--编辑、显示
-    const custom_api3 = (data, callback) => {request('get', `api/masterdata/staffarc/selectValue`, data, callback)};
+    const custom_api3 = (data, callback) => {request('get', `hpi/masterdata/staffarc/selectValue`, data, callback)};
 
 
 // 登录
-const login_api1 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
-const login_api2 = (data, callback) => {request('form', `api/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
-const login_api3 = (data, callback) => {request('form', `api/masterdata/userLogin/sendCodeByPhone`, data, callback)};
-const login_api4 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
-const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogin/logout`, data, callback)};
+const login_api1 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
+const login_api2 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
+const login_api3 = (data, callback) => {request('form', `hpi/masterdata/userLogin/sendCodeByPhone`, data, callback)};
+const login_api4 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
+const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogin/logout`, data, callback)};
 
 // 员工管理
     // 公用接口
         // 根据档案显示对应权限下的单位
         const staff_api1     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getCompany`, data, callback)};
         // 根据档案id显示对应权限下的子集部门
-        const staff_api2     = (data, callback) => {request('get', `ppi/masterdata/staffarc/getOrgIdByCompanyId`, data, callback)};
+        const staff_api2     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getOrgIdByCompanyId`, data, callback)};
         // 显示部门下的岗位
         const staff_api3     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getPostByOrgId`, data, callback)};
 

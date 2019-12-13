@@ -249,46 +249,7 @@
 
         <!-- 详情 -->
         <div class="detail" v-if="detailShow" v-show="!sendEntryApply">
-            <div class="userInfo">
-                <div class="user">
-                    <span class="pic"></span>
-                    <span class="text">
-                        <div class="nameBox">
-                            <span class="name">{{detailInfoData.userName}}</span>
-                            <i class="qj-man icon man" v-if="detailInfoData.gender === '男'" ></i>
-                            <i class="qj-woman icon woman" v-if="detailInfoData.gender === '女'"></i>
-                            <span class="status">{{detailInfoData.employmentState}}</span>
-                        </div>
-                        <p>{{detailInfoData.applicationPosition}}</p>
-                    </span>
-                </div>
-                <div class="operat">
-                    <div class="btns">
-                        <el-button type="primary" size="small" @click="detailShow = false" >返回</el-button>
-                        <el-button type="primary" plain size="small" >打印</el-button>
-                        <el-button type="primary" plain size="small" @click="detail_entrySure" >确认入职</el-button>
-                        <el-button type="primary" plain size="small" @click="detail_sendEntry" >发送入职登记</el-button>
-                    </div>
-                    <div class="contact">
-                        <span>
-                            <img class="email" src="../../assets/img/email.png" alt="">
-                            <span>{{detailInfoData.email}}</span>
-                        </span>
-                        <span>
-                            <img class="phone" src="../../assets/img/phone.png" alt="">
-                            <span>{{detailInfoData.phone}}</span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="cont">
-                <el-tabs v-model="tabActiveName" @tab-click="detail_tabClick">
-                    <el-tab-pane v-for="(item,index) in tabList" :key="index" :label="item.tableCode" :name="String(item.tableId)"></el-tab-pane>
-                </el-tabs>
-                <div class="detailCommonTable">
-                    <commonForm :data="detail_commonForm" ref="detail_commonForm" ></commonForm>
-                </div>
-            </div>
+            <userInfo :userInfo="userInfoData" :methods="methods" :tabList="tabList" :formList="formList" ></userInfo>
         </div>
 
         <!-- 新增 -->
@@ -414,6 +375,7 @@ import commonTable from '../../components/table/commonTable';
 import commonUpload from '../../components/upload/upload';
 import commonForm from '../../components/form/commonForm';
 import tree from '../../components/tree/tree';
+import userInfo from './components/userInfo';
 import file from '../../request/filePath';
 import {
     sys_api1, 
@@ -444,7 +406,7 @@ import {
 
 export default {
     name: 'entry',              /* 入职管理 */
-    components: {commonTable, commonUpload, tree, commonForm},
+    components: {commonTable, commonUpload, tree, commonForm, userInfo},
     data() {
         return {
             cardTyptList: [],               // 证件类型
@@ -650,7 +612,8 @@ export default {
             detailInfoData: null,
             tabActiveName: '1',
             tabActiveName2: '1',
-            tabList: null,
+            // tabList: null,
+            detail_list: [],
             detail_commonForm: {
                 domList: [],
                 option: {
@@ -660,6 +623,18 @@ export default {
                 },
                 sure: this.detail_sure,
             },
+
+            userInfoData: null,
+            methods: {
+                tabClick: this.detail_tabClick,
+                formSure: this.detail_sure,
+                entrySure: this.detail_entrySure,
+                sendEntry: this.detail_sendEntry,
+                reback: this.detail_reback
+                // print:
+            },
+            tabList: [],
+            formList: [],
         };
     },
     mounted() {
@@ -1403,7 +1378,6 @@ export default {
             };
             base.log('s', '导出', send);
             entry_api10(send, res => {
-                console.log(res)
                 let blob = new Blob([res.data]);
                 let url = window.URL.createObjectURL(blob);
                 let a = document.createElement("a");
@@ -1432,6 +1406,7 @@ export default {
         // 表格单元格被点击
         tableCellClick(key,row,text) {
             if (key === 'userName') {
+                this.userInfoData = row;
                 this.detailInfoData = row;
                 this.detail_getTab();
                 this.detailShow = true;
@@ -1446,8 +1421,8 @@ export default {
                 if (d.success) {
                     this.tabList = d.result;
                     if (d.result.length > 0) {
-                        this.tabActiveName = String(d.result[0].tableId);
-                        this.tabActiveName2 = String(d.result[0].tableId);
+                        // this.tabActiveName = String(d.result[0].tableId);
+                        // this.tabActiveName2 = String(d.result[0].tableId);
                         this.detail_getForm(d.result[0].tableId);
                     }
                 }else{
@@ -1458,11 +1433,7 @@ export default {
 
         // 详情--tab被点击
         detail_tabClick(v) {
-            if (v.name !== this.tabActiveName2) {
-                this.tabActiveName2 = v.name;
-                // 请求内容
-                this.detail_getForm(v.name);
-            }
+            this.detail_getForm(v.tableId);
         },
 
         // 详情--请求tab栏中的form配置
@@ -1476,7 +1447,7 @@ export default {
                 let d = res.data;
                 base.log('r', '根据表Id获取自定义表', d);
                 if (d.success) {
-                    this.detail_commonForm.domList = d.result.customGroupVOList;
+                    this.formList = d.result;
                 }else{
                     base.error(d);
                 }
@@ -1484,10 +1455,12 @@ export default {
         },
 
         // 详情--确定
-        detail_sure(groupIndex,data) {
+        detail_sure(groupIndex,data,formId,tab) {
             console.log('-------------');
             console.log(groupIndex);
             console.log(data);
+            console.log(formId);
+            console.log(tab);
         },
 
         // 详情--按钮
@@ -1496,6 +1469,10 @@ export default {
         },
         detail_sendEntry() {
             this.sendEntryNote(null,null,[this.detailInfoData]);
+        },
+
+        detail_reback() {
+            this.detailShow = false;
         },
         
     }

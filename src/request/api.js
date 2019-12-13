@@ -46,11 +46,11 @@ const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogi
     const entry_api12     = (data, callback) => {request('post', `hpi/masterdata/staffpre/updatePreEmployment`, data, callback)};
     const entry_api13     = (data, callback) => {request('post', `hpi/masterdata/staffarc/searchCustomTableGroupFieldListByTableCodePre`, data, callback)};
     const entry_api14     = (data, callback) => {request('form', `hpi/masterdata/staffarc/selectCustomTableForPre`, data, callback)};
-    const entry_api15     = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFile`, data, callback)};
-    const entry_api16     = (data, callback) => {request('get', `api/masterdata/port/exportCheckFile`, data, callback)};
-    const entry_api17     = (data, callback) => {request('form', `api/masterdata/port/exportCheckFileTxt`, data, callback)};
-    const entry_api18     = (data, callback) => {request('get', `api/masterdata/port/importFile`, data, callback)};
-    const entry_api19     = (data, callback) => {request('form', `api/masterdata/port/cancelForImport`, data, callback)};
+    const entry_api15     = (data, callback) => {request('post', `hpi/masterdata/port/importFileAndCheckFilePre`, data, callback)};
+    const entry_api16     = (data, callback) => {request('get',  `hpi/masterdata/port/exportCheckFile`, data, callback)};
+    const entry_api17     = (data, callback) => {request('form', `hpi/masterdata/port/exportCheckFileTxt`, data, callback)};
+    const entry_api18     = (data, callback) => {request('get',  `hpi/masterdata/port/importFile`, data, callback)};
+    const entry_api19     = (data, callback) => {request('form', `hpi/masterdata/port/cancelForImport`, data, callback)};
 
     // 参数设置
         //合同参数
@@ -76,7 +76,7 @@ const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogi
         const archives_ledger_api9     = (data, callback) => {request('get', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
 
         //数据导入
-        const archives_import_api1       = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const archives_import_api1       = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFileArc`, data, callback)};
         
         //附件管理
         const archives_file_api1       = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFileArc`, data, callback)};
@@ -240,6 +240,9 @@ export {
             // 员工台账
             archives_ledger_api1,archives_ledger_api2,archives_ledger_api3,archives_ledger_api4,archives_ledger_api5,archives_ledger_api6,
             archives_ledger_api7,archives_ledger_api8,archives_ledger_api9,
+
+            // 文件导入
+            archives_import_api1,
 
             // 附件管理
             archives_file_api1,

@@ -145,6 +145,162 @@ let base = {
         div.appendChild(domObject)
         return div.innerHTML
     },
+
+    /**
+     * 解析公共表单数据
+     * @param {initialData} 需要解析的数据,数组格式
+     */
+    domListFormatter(initialData) {
+        let result = [];
+
+        if (!Array.isArray(initialData)) {
+            console.error(`commonForm提示：值类型错误：domList的值应该是数组`);
+            return result;
+        };
+        
+        initialData.forEach((group, groupIndex) => {
+            let myGroup = new Object();
+            if (group.hasOwnProperty('groupName')) {
+                myGroup.groupTitle = group.groupName;
+            };
+            if (group.hasOwnProperty('customFieldVOList')) {
+                if (Array.isArray(group.customFieldVOList)) {
+                    myGroup.list = new Array();
+                    let list = group.customFieldVOList;
+                    list.forEach((item,index) => {
+                        let dom = new Object();
+                        // type
+                        if (item.hasOwnProperty('fieldType')) {
+                            dom.type = item.fieldType;
+                        };
+
+                        // label
+                        if (item.hasOwnProperty('fieldName')) {
+                            dom.label = item.fieldName;
+                        };
+
+                        // key
+                        if (item.hasOwnProperty('fieldId')) {
+                            dom.key = String(item.fieldId);
+                        }
+
+                        // default
+                        if (item.hasOwnProperty('defaultValue')) {
+                            if (item.defaultValue !== 'null') {
+                                dom.default = item.defaultValue;
+                            }
+                        }
+
+                        // placeholder
+                        if (item.hasOwnProperty('placeholder')) {
+                            dom.placeholder = item.placeholder;
+                        }
+
+                        // maxLength
+                        if (item.hasOwnProperty('maxLength')) {
+                            dom.maxLength = item.maxLength;
+                        }
+
+                        // minLength
+                        if (item.hasOwnProperty('minLength')) {
+                            dom.minLength = item.minLength;
+                        }
+
+                        // inputType
+                        if (item.hasOwnProperty('inputType')) {
+                            dom.inputType = item.inputType;
+                        }
+
+                        // max
+                        if (item.hasOwnProperty('maxNumber')) {
+                            dom.max = item.maxNumber;
+                        }
+
+                        // min
+                        if (item.hasOwnProperty('minNumber')) {
+                            dom.min = item.minNumber;
+                        }
+
+                        // floatLength
+                        if (item.hasOwnProperty('floatLength')) {
+                            dom.floatLength = item.floatLength;
+                        }
+
+                        // list
+                        if (item.hasOwnProperty('dictList') && item.dictList) {
+                            dom.list = item.dictList.map(item => ({label: item.dictValue, value: item.dictCode}));
+                        }
+
+                        // isRange
+                        if (item.hasOwnProperty('isTimeRange')) {
+                            dom.isRange = item.isTimeRange;
+                        }
+
+                        // timeMin
+                        if (item.hasOwnProperty('minTime')) {
+                            dom.timeMin = item.minTime;
+                        }
+
+                        // timeMax
+                        if (item.hasOwnProperty('maxTime')) {
+                            dom.timeMax = item.maxTime;
+                        }
+
+                        // timeFormat
+                        if (item.hasOwnProperty('formatTime')) {
+                            dom.timeFormat = item.formatTime;
+                        }
+
+                        // isReadOnly
+                        if (item.hasOwnProperty('isOnlyRead')) {
+                            dom.isReadOnly = item.isOnlyRead;
+                        }
+
+                        // isMust
+                        if (item.hasOwnProperty('isMust')) {
+                            dom.isMust = item.isMust;
+                        }
+
+                        // rule
+                        if (item.hasOwnProperty('rule') && item.rule) {
+                            dom.rule = item.rule.split(',');
+                        }
+
+                        myGroup.list[index] = dom;
+                    });
+                }else{
+                    console.error(`commonForm提示：值类型错误：customFieldVOList的值应该是数组`);
+                }
+            }else{
+                console.error(`commonForm提示：后端缺少字段：customFieldVOList`);
+            };
+
+            result[groupIndex] = myGroup;
+        });
+
+        console.log(result)
+        return result;
+    },
+
+    /**
+     * 解析自定义导入数据
+     * @param {list} 需要解析的数据,数组格式
+     */
+    checkResultFormatter(list) {
+        let result = new Object();
+        result.checkResult = list.every(item => item.checkResult);
+        result.list = new Array();
+        list.forEach((item,index) => {
+            // 
+            let cellList = item.customFieldVOList;
+            let row = new Object();
+            cellList.forEach(cell => {
+                row[cell.fieldCode] = cell.fieldValue
+            });
+            result.list[index] = row;
+        });
+        return result;
+    },
 };
 
 export default base;

@@ -194,7 +194,8 @@ export default {
                     this.uploadBase.tableShow = true
                     this.activeBase = 1       
                     this.uploadBase.tableData.head = res.data.result.headList
-                    this.uploadBase.tableData.data = []
+                    let newList = base.checkResultFormatter(res.data.result.list)
+                    this.uploadBase.tableData.data = newList.list
                 }else{
                     base.error(res.data)
                 }
@@ -205,11 +206,9 @@ export default {
             this.activeBase = 1            
         },
         //tab栏点击
-        handleClick(){
-            
+        handleClick(){           
         }
     }
-
 };
 </script>
 

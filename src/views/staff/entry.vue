@@ -1273,7 +1273,7 @@ export default {
                 this.uploadData.fileList = [];
                 this.uploadData.tableShow = false;
                 this.uploadData.checkFailshow = false;
-                this.uploadData.title = "机构导入";
+                this.uploadData.title = "人员导入";
                 this.uploadData.btnText = "校验"
             } else if (this.uploadData.btnText === "确定") {
                 this.cancelImportReq()
@@ -1341,7 +1341,7 @@ export default {
             this.uploadData.fileList = [];
             this.uploadData.tableShow = false;
             this.uploadData.checkFailshow = false;
-            this.uploadData.title = "机构导入";
+            this.uploadData.title = "人员导入";
             this.uploadData.cancelbtn = "取消";
             this.uploadData.checkedResult = "";
             this.uploadData.btnText = "校验"

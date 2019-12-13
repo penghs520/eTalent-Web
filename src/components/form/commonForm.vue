@@ -359,7 +359,7 @@ export default {
     methods: {
         // 转换方法--后端传来的字段不是预期的字段，需要转换一下下
         domListFormatter(initialData) {
-            let result = new Array();
+            let result = [];
 
             if (!Array.isArray(initialData)) {
                 console.error(`commonForm提示：值类型错误：domList的值应该是数组`);

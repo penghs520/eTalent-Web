@@ -33,6 +33,7 @@
             height: 100%;
             overflow: auto;
             .sider{
+                box-sizing: border-box;
                 width: 215px;
                 border-right: 1px solid #f0f0f0;
                 padding: 16px 16px 0px 20px;
@@ -68,7 +69,7 @@
 
 <template>
     <div id="archives_ledger">
-        <div class="content">
+        <div class="content" v-if="!addStyleShow">
             <el-tabs v-model="activeName" @tab-click="handleClick">
                 <!-- 常用台账 -->
                 <el-tab-pane label="常用台账" name="common" class="common">
@@ -86,16 +87,17 @@
                     <div  class="common_content">
                         <commonTable :table="ledgerTable" ref="commonTable" ></commonTable>                       
                     </div>
-                    <!-- 展示方案组件 -->
-                    <showStyle :show="addStyleShow" :data="styleData" @getNav="getMenuFun = $event" ></showStyle>                   
+                                   
                   </el-tab-pane>
                    <!-- 台账设置 -->
                    <el-tab-pane label="台账设置" name="setting" class="common">
                     <!-- 台账设置侧边 -->
                     <div class="sider">
-                        <el-button type="plain" size="small" :style="{ marginBottom :'16px'} " @click="addLedger">新增</el-button>
-                        <el-button type="plain" size="small" @click="editLedger">编辑</el-button>
-                        <el-button type="plain" size="small" @click="delLedger">删除</el-button>
+                        <el-row :gutter="10">
+                          <el-col :span="8"><el-button type="plain" size="small" :style="{ marginBottom :'16px'} " @click="addLedger">新增</el-button></el-col>
+                          <el-col :span="8"><el-button type="plain" size="small" @click="editLedger">编辑</el-button></el-col>
+                          <el-col :span="8"><el-button type="plain" size="small" @click="delLedger">删除</el-button></el-col>
+                        </el-row>  
                         <tree :treeData="treeData"></tree>
                         <!--新增编辑台账弹窗-->
                         <el-dialog
@@ -153,6 +155,8 @@
                 </el-tab-pane>
             </el-tabs>
         </div>
+        <!-- 展示方案组件 -->
+        <showStyle v-if="addStyleShow" :data="styleData"></showStyle>   
     </div>
 </template>
 
@@ -313,9 +317,10 @@ export default {
                 },
                 icons:[],
                 nodeClick: this.styleTreeNode,
+                showCheckbox: true                 /* 非必须，是否显示多选框 */,
+                checkClick: this.checkClick   
              },
-            },
-            getMenuFun:null,          
+            },       
             //新增编辑台账
             addDialogShow:false,
             dialogTitle:"", 
@@ -512,7 +517,6 @@ export default {
         //查询按钮点击
         seachLedger(){
             this.addStyleShow = true
-              this.getMenuFun()
             if(!this.ledgerNode){
                 this.$message.warning("请选择台账")
                 return
@@ -523,7 +527,6 @@ export default {
         selectValueChange(val){
            if(val ===  "+新增显示方案"){
               this.addStyleShow = true
-              this.getMenuFun()
            }          
         },       
         //表格下拉框 -- 机构树 

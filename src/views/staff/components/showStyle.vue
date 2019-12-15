@@ -236,7 +236,7 @@
                             @end="drag=false">
                                 <span class="btn" :span="4" v-for="(item,index) in sortList" :key="index">
                                     <i class="el-icon-error" @click="delFieldsort(index)"></i>
-                                    <el-button   type="primary" size="small" @click="statusChange(index)">
+                                    <el-button   type="primary" size="small" @click="statusChange(index)" >
                                         {{item.fieldName}}{{item.sortStatus ? "(升序)" : "(降序)"}}
                                     </el-button>
                                 </span>  
@@ -449,6 +449,20 @@ export default {
             console.log(this.treeNode);
             if(node.querySchemeId){
                 this.getStyleInfo(node)
+            }else{
+                this.tabContList = this.tabContList.map(item=>{                        
+                    item.forEach(sec=>{
+                            sec.customFieldVOList.forEach(sub=>{
+                                if(sub.fieldName === "姓名" ){
+                                     let judge = this.tableList.findIndex(item => item.fieldId === sub.fieldId)
+                                    if(judge == -1){
+                                        this.tableList.push(sub)
+                                    }
+                                }
+                            })
+                        })
+                    return  item
+                })
             }
             
         },
@@ -461,8 +475,31 @@ export default {
             archives_ledger_api12(send,res=>{
                  base.log("r","查看方案信息",res.data)
                 if(res.data.success){
-                    this.tableList = res.data.result.querySchemeFieldList
-                    this.sortList = res.data.result.querySchemeSortList
+                    //渲染默认表头
+                    let tList = JSON.parse(JSON.stringify(res.data.result.querySchemeFieldList))
+                    tList =  tList.map(item=>item.fieldId)
+                    this.tabContList.forEach(item=>{                        
+                        item.forEach(sec=>{
+                            sec.customFieldVOList.forEach(sub=>{
+                                if(tList.includes(sub.fieldId)){
+                                    this.tableList.push(sub)
+                                }
+                            })
+                        })
+                    })
+                    //渲染默认排序字段
+                    let sList = JSON.parse(JSON.stringify(res.data.result.querySchemeSortList))
+                    sList =  sList.map(item=>item.fieldId)
+                    this.tabContList.forEach(item=>{                        
+                        item.forEach(sec=>{
+                            sec.customFieldVOList.forEach(sub=>{
+                                if(sList.includes(sub.fieldId)){
+                                    sub.sortStatus = sub.orderByRule == "升序" 
+                                    this.sortList.push(sub)
+                                }
+                            })
+                        })
+                    })
                 }else{
                     base.error(res.data)
                 }
@@ -553,13 +590,6 @@ export default {
                     this.tabContList = this.tabContList.map(item=>{                        
                         if(item == tableId){
                             item = JSON.parse(JSON.stringify(list))
-                            item.forEach(sec=>{
-                                sec.customFieldVOList.forEach(sub=>{
-                                    if(sub.fieldName === "姓名"){
-                                        this.tableList.push(sub)
-                                    }
-                                })
-                            })
                         }
                         return  item
                     })

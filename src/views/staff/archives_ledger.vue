@@ -307,19 +307,7 @@ export default {
             //显示台账方案
             addStyleShow:false, 
             styleData:{
-                getStyleName:this.getStyleName,
                 handleClose:this.handleClose,
-                treeData: {
-                data: [],
-                props: {
-                    children: "",
-                    label: "querySchemeName",
-                },
-                icons:[],
-                nodeClick: this.styleTreeNode,
-                showCheckbox: true                 /* 非必须，是否显示多选框 */,
-                checkClick: this.checkClick   
-             },
             },       
             //新增编辑台账
             addDialogShow:false,
@@ -360,21 +348,11 @@ export default {
             this.addStyleShow = false
             this.getStyleList()
         },
-        //显示方案--新方案添加到数列
-        getStyleName(val){
-            this.styleData.treeData.data.push( {value:val,"querySchemeName":val} )
-        },
-        //显示方案--树形节点点击
-        styleTreeNode(node){
-            console.log(node);          
-        },
         //获取展示方案
-        getStyleList(){
-            console.log(123456);           
+        getStyleList(){           
             archives_ledger_api7(null,res=>{
                 base.log("r","获取显示方案",res.data)
                 if(res.data.success){
-                    this.styleData.treeData.data = res.data.result
                     this.ledgerTable.bar[4].list = JSON.parse(JSON.stringify(res.data.result))
                     this.ledgerTable.bar[4].list = this.ledgerTable.bar[4].list.map(item=>{
                         item.value = item.querySchemeId
@@ -516,7 +494,6 @@ export default {
         },
         //查询按钮点击
         seachLedger(){
-            this.addStyleShow = true
             if(!this.ledgerNode){
                 this.$message.warning("请选择台账")
                 return

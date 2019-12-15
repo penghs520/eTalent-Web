@@ -52,6 +52,20 @@
 .intro{
     padding-top: 24px;
 }
+//校验结果
+.text_success,
+.el-icon-success {
+    color: #2fc42f;
+}
+.report {
+    color: #1fafe7;
+    cursor: pointer;
+}
+.checkFailshow,
+.el-icon-error {
+    color: #f03838;
+    font-weight: 700;
+}
 </style>
 <style>
 #commonUpload_upload .el-upload,
@@ -107,10 +121,19 @@
                 <commonTable :table="data.tableData" key="table1" ></commonTable>
             </div>
             <!-- 导入说明 -->
-            <div class="com format intro" v-if="active === 0">
+            <div class="com format intro" >
                 <span class="remind">导入说明:</span>
                 <div class="slot_content">
-                    <slot name="explain" class="remind_text"></slot>
+                    <slot name="explain" class="remind_text" v-if="active === 0"></slot>
+                    <span class="text_success" v-show="data.checkedResult ==='success'  && active !== 0">
+                        <i class="el-icon-success"></i>
+                        <span>校验成功,可导入数据</span>
+                    </span>
+                    <span class="text_fail" v-show="data.checkedResult === 'fail'  && active !== 0 ">
+                        <i class="el-icon-error"></i>
+                        <span class="checkFailshow">校验失败，</span>
+                        <span class="report" @click="readReport">点击此处查看校验报告</span>
+                    </span>
                 </div>
             </div>            
         </div>       
@@ -142,7 +165,12 @@ export default {
     },
     mounted() {},
     methods: {
-        
+         readReport() {
+            if (this.data.readReport) {
+                this.data.readReport();
+            }
+        },
+
         // 默认下载模板方法
         downloadModle(name) {
             let url = file[name];

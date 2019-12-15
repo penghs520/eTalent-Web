@@ -136,7 +136,12 @@
             }
         }
     }
+    
 }
+.group_list {
+        margin-top: 10px;
+        padding-left: 35px;
+    }
 </style>
 
 <template>
@@ -147,19 +152,63 @@
                 <div class="sider">
                     <!-- 左侧菜单树形 -->
                     <el-row :gutter="10">
-                      <el-col :span="8"><el-button type="plain" size="small" :style="{ marginBottom :'16px'} " >新增</el-button></el-col>
-                      <el-col :span="8"><el-button type="plain" size="small" >编辑</el-button></el-col>
-                      <el-col :span="8"><el-button type="plain" size="small" >删除</el-button></el-col>
-                    </el-row>                   
-                     <tree :treeData = data.treeData ></tree>
+                      <el-col :span="8"><el-button type="plain" size="small" :style="{ marginBottom :'16px'} " @click="addStyle" >新增</el-button></el-col>
+                      <el-col :span="8"><el-button type="plain" size="small" @click="editStyle">编辑</el-button></el-col>
+                      <el-col :span="8"><el-button type="plain" size="small" @click="delStyleBtn">删除</el-button></el-col>
+                    </el-row>
+                    <tree :treeData="treeData"></tree>
                 </div> 
-                    <!-- 内容区-->
-                <div class="common_content">
-                    <div class="operate">
-                        <el-button type="primary" size="small" @click="defaultStyle">设为默认方案</el-button>
+                <!-- 新增编辑方案弹窗 -->
+                 <el-dialog
+                    :visible.sync="addDialogShow"
+                    class="qinjeeDialogMini"
+                    :append-to-body="true"
+                    :close-on-click-modal="false"
+                    center>
+                    <span slot="title">{{dialogTitle}}</span>
+                    <div class="qinjeeDialogMiniCont">
+                        <el-form :model="addStyleForm" :rules="rules" ref="addStyleForm" label-width="100px" class="demo-ruleForm">
+                            <el-form-item label="方案名称" prop="name">
+                                <el-input v-model.trim="addStyleForm.name" size="mini" placeholder="请输入名称"></el-input>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                        <el-button size="small" @click="addDialogShow = false">取 消</el-button>
+                        <el-button size="small" type="primary" @click="saveStyleName('addStyleForm')">确 定</el-button>
+                    </span>
+                 </el-dialog> 
+                 <!-- 删除方案弹窗 -->
+                 <el-dialog
+                    :visible.sync="delStyleShow"
+                    class="qinjeeDialogMini"
+                    :append-to-body="true"
+                    :close-on-click-modal="false"
+                    center>
+                    <span slot="title">确认删除</span>
+                    <div class="qinjeeDialogMiniCont">
+                        <div>
+                            <div>
+                                <i class="el-icon-warning warning icon"></i>
+                                <span>是否确认删除以下查询方案?</span>
+                            </div>
+                            <div class="group_list">
+                                <div>{{treeNode.querySchemeName}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                        <el-button size="small" @click="delStyleShow = false">取 消</el-button>
+                        <el-button size="small" type="primary" @click="delStyle">确 定</el-button>
+                    </span>
+                    </el-dialog>
+                <!-- 内容区-->
+                <div class="common_content" >
+                    <div class="operate" v-show="treeNode">
+                        <el-button type="primary" size="small" @click="defaultStyleReq">设为默认方案</el-button>
                     </div>
                     <!-- 显示表头 -->
-                    <div class="show_heaher">
+                    <div class="show_heaher" v-show="treeNode">
                             <h3 class="sub_title">显示表头 <span class="drag_sort">可拖拽调整显示顺序</span></h3>
                             <span style="display: none;"></span>
                             <draggable
@@ -169,15 +218,15 @@
                                     @start="drag=true"
                                     @end="drag=false">
                                         <span class="btn" v-for="(item,index) in tableList" :key="index" >
-                                            <i class="el-icon-error" @click="delField(index)"></i>
-                                            <el-button class="moveBtn"  type="primary" size="small">
+                                            <i class="el-icon-error" @click="delField(index)" v-show="item.fieldName !== '姓名'"></i>
+                                            <el-button class="moveBtn"  type="primary" size="small" :disabled="item.fieldName === '姓名'">
                                                 {{item.fieldName}}
                                             </el-button>
                                         </span>  
                             </draggable>
                     </div>
                     <!-- 排序 -->
-                    <div class="sort">
+                    <div class="sort" v-show="treeNode">
                         <h3 class="sub_title">数据排序 <span class="drag_sort">可拖拽调整显示顺序</span></h3>
                         <draggable
                             class="sortComponent"
@@ -187,14 +236,14 @@
                             @end="drag=false">
                                 <span class="btn" :span="4" v-for="(item,index) in sortList" :key="index">
                                     <i class="el-icon-error" @click="delFieldsort(index)"></i>
-                                    <el-button   type="primary" size="small">
-                                        {{item.fieldName}}
+                                    <el-button   type="primary" size="small" @click="statusChange(index)">
+                                        {{item.fieldName}}{{item.sortStatus ? "(升序)" : "(降序)"}}
                                     </el-button>
                                 </span>  
                         </draggable>
                     </div>
                     <!-- 待选字段 -->
-                    <div class="ready_field">
+                    <div class="ready_field" v-show="treeNode">
                             <h3 class="sub_title">待选字段</h3>
                             <el-tabs @tab-click="handleClick"  v-model="activeName">
                                 <el-tab-pane :label="item.tableName" :name="String(item.tableId)" v-for="(item,index) in tabsList" :key="index" >
@@ -222,9 +271,9 @@
                             </div>
                     </div>
                     <!-- 底部 -->
-                    <div class="footer_btn">
+                    <div class="footer_btn" >
                         <el-button type="plain" size="small" @click="handleClose">返回</el-button>
-                        <el-button type="primary" size="small" @click="saveStyle">保存</el-button>
+                        <el-button type="primary" size="small" @click="saveStyle" :disabled="!treeNode">保存</el-button>
                     </div>
                 </div>
            </div>
@@ -235,7 +284,14 @@
 <script>
 import tree from "../../../components/tree/tree"
 import base from "../../../assets/js/base"
-import { archives_ledger_api8, archives_ledger_api9 } from "../../../request/api";
+import { archives_ledger_api7,
+         archives_ledger_api8,
+         archives_ledger_api9,
+         archives_ledger_api10,
+         archives_ledger_api11,
+         archives_ledger_api12,
+         archives_ledger_api13,
+          } from "../../../request/api";
 import draggable from "vuedraggable";
 
 export default {
@@ -252,41 +308,228 @@ export default {
         return{
             activeName:"",
             styleName:"",
-            tabsList:[],
+            tabsList:[],   
             tabContList: [],
-            tabName:"",
-            checkTry2: [],
+            tabName:"",       //tab栏绑定的name
             tableList:[],
             sortList:[],
-        }       
-    },
-    computed:{
+            //左侧菜单
+            treeData: {
+                data: [],
+                props: {
+                    children: "",
+                    label: "querySchemeName",
+                },
+                nodeClick: this.styleNodeClick,
+            },
+            treeNode:"",
+            addDialogShow:false,
+            addStyleForm:{
+                name:"",
+            },
+            rules:{
+                name: [
+                    { required: true, message: '请输入名称', trigger: 'blur' },
+                ],
+            },
+            dialogTitle:"新增方案",
+            //删除方案
+            delStyleShow:false,
 
+        }       
     },
     mounted(){
         // 初始化
+        this.getStyleReq()
         this.getTabsMenu()  
     },
     methods:{
-        //设置默认按钮
-        defaultStyle(){
+        //删除方案--点击按钮
+        delStyleBtn(){
+            if(!this.treeNode){
+                this.$message.warning("请选择查询方案")
+                return
+            }
+            this.delStyleShow = true
         },
-        //点击表头叉号删除字段
+        //删除方案--请求接口
+        delStyle(){
+            let send = [this.treeNode.querySchemeId]
+            base.log("s","删除方案",send)
+            archives_ledger_api11(send,res=>{
+                base.log("r","删除方案",res.data)
+                if(res.data.success){
+                    this.$message.success("删除成功");
+                    this.delStyleShow = false;
+                    this.getStyleReq()
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
+        //保存按钮方案名
+        saveStyle(){
+           this.addStyleReq()
+        },
+        //点击编辑按钮
+        editStyle(){
+            if(!this.treeNode){
+                this.$message.warning("请选择一个编辑方案")
+                return
+            }
+            this.addStyleForm.name = this.treeNode.querySchemeName
+            this.addDialogShow = true
+            this.dialogTitle = "编辑方案"
+             setTimeout(() => {
+                 this.$refs.addStyleForm.clearValidate()
+             }, 0);
+        },
+        //新增方案 --保存名称按钮
+        saveStyleName(formName){
+              this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    if(this.dialogTitle == "新增方案"){
+                        this.addDialogShow = false
+                        this.treeData.data.push({
+                            querySchemeName:this.addStyleForm.name
+                        })
+                    }else if(this.dialogTitle == "编辑方案"){
+                        this.addDialogShow = false
+                        this.treeData.data.forEach(item=>{
+                            if(item.querySchemeName == this.treeNode.querySchemeName){
+                                item.querySchemeName  = this.addStyleForm.name
+                            }
+                        })
+                    }
+                } else {
+                    return false;
+                }
+            });
+        },
+        //新增编辑方案--请求接口
+        addStyleReq(){
+            let userInfo = JSON.parse(localStorage.getItem("userInfo"))
+            let fieldIds = this.tableList.map(item => item.fieldId) 
+            let sortIds = this.sortList.map(item =>{
+                   return {
+                       fieldId:item.fieldId,
+                       orderByRule:item.sortStatus ? "升序" : "降序",
+                   }
+            })
+            let send = {
+                    archiveId: userInfo.archiveId,
+                    fieldId: fieldIds,
+                    querySchemeId: this.treeNode.querySchemeId ? this.treeNode.querySchemeId : "",
+                    querySchemeName: this.treeNode.querySchemeName,
+                    sort: this.treeNode.index,
+                    sorts:sortIds,
+                }
+                base.log("s","新增编辑方案",send)
+            archives_ledger_api10(send,res=>{
+                base.log("r","新增编辑方案",res.data)
+                if(res.data.success){   
+                    this.$message.success("操作成功")
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
+        //左侧菜单--树形节点点击
+        styleNodeClick(node){
+            this.treeNode = node
+            this.treeData.data.forEach((item,index) => {
+                if(item.sortId){
+                    this.treeNode.index = item.sortId
+                }else{
+                    if(item.querySchemeName === node.querySchemeName){
+                    this.treeNode.index = index
+                  }
+               }
+            })
+            console.log(this.treeNode);
+            if(node.querySchemeId){
+                this.getStyleInfo(node)
+            }
+            
+        },
+        //左侧菜单--获取方案信息请求接口
+        getStyleInfo(node){
+            let send = {
+                id:node.querySchemeId
+            }
+            base.log("s","查看方案信息",send)
+            archives_ledger_api12(send,res=>{
+                 base.log("r","查看方案信息",res.data)
+                if(res.data.success){
+                    this.tableList = res.data.result.querySchemeFieldList
+                    this.sortList = res.data.result.querySchemeSortList
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
+        //左侧菜单--点击新增按钮
+        addStyle(){
+            this.addDialogShow = true;
+            this.addStyleForm.name = "";
+            this.dialogTitle = "新增方案"
+              setTimeout(() => {
+                 this.$refs.addStyleForm.clearValidate()
+             }, 0);
+        },
+        //左侧菜单-- 获取左侧菜单
+        getStyleReq(){
+            archives_ledger_api7(null,res=>{
+                base.log("r","获取显示方案",res.data)
+                if(res.data.success){
+                   this.treeData.data = res.data.result
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
+        //内容区--设置默认按钮
+        defaultStyleReq(){
+             let send = {
+                querySchmeId:this.treeNode.querySchemeId
+            }
+            base.log("s","设置默认方案",send)
+            archives_ledger_api13(send,res=>{
+                 base.log("r","设置默认方案",res.data)
+                if(res.data.success){
+                    this.$message.success("设置成功")
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
+        //内容区--点击表头叉号删除字段
         delField(index){            
            this.tableList.splice(index,1)       
         },
-        //点击表头叉号取消排序
+        //内容区--点击表头叉号取消排序
         delFieldsort(index){            
            this.sortList.splice(index,1)       
         },
-        //点击下拉框
+        //内容区--点击升序降序
+        statusChange(index){
+          this.sortList = this.sortList.map((item,i)=>{
+               if(index == i){
+                   item.sortStatus = !item.sortStatus
+               }
+               return item 
+           })
+        },
+        //内容区--点击下拉框
         handleCommand(command,sub){
            //添加到排序
            if(command === "sort"){
                let judge = this.sortList.findIndex(item => item.fieldId === sub.fieldId)
+               
                 if(judge == -1){
                    this.sortList.push(sub)
                }
+               sub.sortStatus = true;
            }else if(command === "tableHead"){
                let judge = this.tableList.findIndex(item => item.fieldId === sub.fieldId)
                 if(judge == -1){
@@ -294,14 +537,14 @@ export default {
                }
            }
         },
-        //获取字段名
+        //获取字段名--固定渲染姓名字段
         getField(tableId){
             let send = {
                 tableId,
             }
-            base.log("s","获取字段",send)
+            // base.log("s","获取字段",send)
               archives_ledger_api9(send,res=>{
-                base.log("r","获取字段",res.data)
+                // base.log("r","获取字段",res.data)
                 if(res.data.success){
                    let list =   JSON.parse(JSON.stringify(res.data.result.customGroupVOList))
                     list.forEach(item=>{                       
@@ -310,6 +553,13 @@ export default {
                     this.tabContList = this.tabContList.map(item=>{                        
                         if(item == tableId){
                             item = JSON.parse(JSON.stringify(list))
+                            item.forEach(sec=>{
+                                sec.customFieldVOList.forEach(sub=>{
+                                    if(sub.fieldName === "姓名"){
+                                        this.tableList.push(sub)
+                                    }
+                                })
+                            })
                         }
                         return  item
                     })
@@ -336,12 +586,6 @@ export default {
                     base.error(res.data)
                 }
             })
-        },
-        //保存按钮方案名
-        saveStyle(){
-            if(this.data.getStyleName){
-                    this.data.getStyleName()
-            }
         },
         //关闭子页面
         handleClose(){          

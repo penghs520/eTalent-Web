@@ -209,6 +209,7 @@
                                         v-model="addOrgForm.orgManagerId"
                                         placeholder="输入查找"
                                         filterable
+                                        clearable
                                     >
                                         <el-option
                                             v-for="item in orgManagerList"
@@ -327,6 +328,7 @@
                                         v-model="editOrgForm.orgManagerName"
                                         placeholder="输入查找"
                                         filterable
+                                        clearable
                                     >
                                         <el-option
                                             v-for="item in orgManagerList"

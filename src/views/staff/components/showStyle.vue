@@ -447,18 +447,26 @@ export default {
                   }
                }
             })
-            console.log(this.treeNode);
+            console.log("treeNode",this.treeNode);
+            console.log("node",node);
+            
             //点击树形触发渲染数据
             if(node.querySchemeId){
+                console.log("回调");
+                
                 this.getStyleInfo(node)
             }else{
+                console.log("新增");
+                
                 this.tabContList = this.tabContList.map(item=>{                        
                     item.forEach(sec=>{
                             sec.customFieldVOList.forEach(sub=>{
                                 if(sub.fieldName === "姓名" ){
                                      let judge = this.tableList.findIndex(item => item.fieldId === sub.fieldId)
                                     if(judge == -1){
-                                        this.tableList=[sub]
+                                        this.tableList =[sub]
+                                        console.log(sub);
+                                        
                                     }
                                 }
                             })

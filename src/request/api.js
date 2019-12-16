@@ -4,6 +4,7 @@ import request from './http';
 // 系统参数接口
     // 根据字典类型查询字典列表
     const sys_api1 = (data, callback) => {request('form', `api/masterdata/sysDict/searchSysDictListByDictType`, data, callback)};
+    const sys_api2 = (data, callback) => {request('form', `hpi/masterdata/number/creatConNumber`, data, callback)};
 
 // 自定义字段接口
     // 新增保存
@@ -12,6 +13,9 @@ import request from './http';
     const custom_api2 = (data, callback) => {request('get', `hpi/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
     // 根据表id与人员id查询form参数配置--编辑、显示
     const custom_api3 = (data, callback) => {request('get', `hpi/masterdata/staffarc/selectValue`, data, callback)};
+    // 根据企业ID和功能CODE查询自定义档案表
+    const custom_api4 = (data, callback) => {request('post', `hpi/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
+
 
 
 // 登录
@@ -29,6 +33,8 @@ const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogi
         const staff_api2     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getOrgIdByCompanyId`, data, callback)};
         // 显示部门下的岗位
         const staff_api3     = (data, callback) => {request('get', `hpi/masterdata/staffarc/getPostByOrgId`, data, callback)};
+        // 新增或修改自定义字段表中的数据
+        const staff_api4     = (data, callback) => {request('post', `hpi/masterdata/staffarc/saveCustomArchiveTableData`, data, callback)};
 
 
     // 入职管理
@@ -218,17 +224,17 @@ const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogi
 
 export {
     // 系统参数
-    sys_api1,
+    sys_api1, sys_api2,
 
     // 自定义字段
-    custom_api1, custom_api2, custom_api3,
+    custom_api1, custom_api2, custom_api3, custom_api4,
     
     // 登录
     login_api1, login_api2,login_api3,login_api4,login_api5,
 
     // 员工管理
         // 公用接口
-        staff_api1, staff_api2, staff_api3,
+        staff_api1, staff_api2, staff_api3, staff_api4,
         // 入职管理
         entry_api1, entry_api2, entry_api3, entry_api4, entry_api5, entry_api6, entry_api7, entry_api8, entry_api9, entry_api10,
         entry_api11, entry_api12, entry_api13, entry_api14, entry_api15,entry_api16,entry_api17,entry_api18,entry_api19,

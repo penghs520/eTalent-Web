@@ -87,11 +87,36 @@
             }
         }
     }
+    .addBtn{
+        height: 64px;
+        border: 1px dashed rgba(0,0,0,0.15);
+        background-color: rgba(0,0,0,0.02);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 16px;
+        color: #FF8C58;
+        margin-top: 24px;
+        margin: 0 40px;
+        i{
+            margin-right: 10px;
+        }
+    }
+}
+</style>
+<style>
+#staff_components_userInfo .el-tabs__nav-scroll{
+    background-color: #fff !important;
+    border-bottom: 1px solid #F1F2F2;
+    display: flex;
+    justify-content: center;
 }
 </style>
 
 <template>
-    <div id="staff_components_userInfo">
+    <div id="staff_components_userInfo" class="detail">
         <div class="userInfo">
             <div class="user">
                 <span class="pic"></span>
@@ -107,10 +132,10 @@
             </div>
             <div class="operat">
                 <div class="btns">
-                    <el-button type="primary"       size="small" v-show="methods.reback"    @click="methods.reback" >返回</el-button>
-                    <el-button type="primary" plain size="small" v-show="methods.print"     @click="methods.print" >打印</el-button>
-                    <el-button type="primary" plain size="small" v-show="methods.entrySure" @click="methods.entrySure" >确认入职</el-button>
-                    <el-button type="primary" plain size="small" v-show="methods.sendEntry" @click="methods.sendEntry" >发送入职登记</el-button>
+                    <el-button type="primary"       size="small" v-if="methods.reback"    @click="methods.reback" >返回</el-button>
+                    <el-button type="primary" plain size="small" v-if="methods.print"     @click="methods.print" >打印</el-button>
+                    <el-button type="primary" plain size="small" v-if="methods.entrySure" @click="methods.entrySure" >确认入职</el-button>
+                    <el-button type="primary" plain size="small" v-if="methods.sendEntry" @click="methods.sendEntry" >发送入职登记</el-button>
                 </div>
                 <div class="contact">
                     <span v-show="userInfo.email">
@@ -126,10 +151,17 @@
         </div>
         <div class="cont">
             <el-tabs v-model="tabActiveName" @tab-click="detail_tabClick">
-                <el-tab-pane v-for="(item,index) in tabList" :key="index" :label="item.tableName" :name="String(item.tableId)"></el-tab-pane>
+                <el-tab-pane v-for="(item,index) in tabList" :key="index" :label="item.tableName" :name="String(item.sort)">
+                </el-tab-pane>
             </el-tabs>
             <div class="detailCommonTable" v-for="(item, index) in detail_list" :key="index">
-                <commonForm :data="item" ref="detail_commonForm_index" ></commonForm>
+                <commonForm :data="item" :index="index" :ref="`detail_commonForm_${index}`" ></commonForm>
+            </div>
+
+            <!-- 添加 -->
+            <div class="addBtn" v-if="currentTab && optionData.addShow" >
+                <i class="el-icon-circle-plus-outline"></i>
+                <span>添加{{currentTab.tableName}}</span>
             </div>
         </div>
     </div>
@@ -165,8 +197,10 @@ export default {
                 showType: 'seeForm',
                 labelWidth: '120px',        /* 非必须，label宽度，默认100px */
                 formatDom: true,         /* 非必须，是否格式化dom数据，默认false, 注意：从后端请求来的数据一般都需要格式化 */
+                addShow: false
             },
             currentTab: null,
+            tabIndex: 0,
         };
     },
     created() {
@@ -194,12 +228,19 @@ export default {
         },
     },
     watch: {
+        tabList: {
+            handler: function(v) {
+                this.init();
+            },
+            deep: true
+        }
     },
     mounted() {},
     methods: {
         // 初始化
         init() {
             if (this.tabList && this.tabList.length > 0) {
+                this.tabIndex = 0;
                 this.currentTab = this.tabList[0];
             }
             if (this.option) {
@@ -208,14 +249,17 @@ export default {
         },
 
         // 详情--确定
-        detail_sure(groupIndex,data,formId) {
+        detail_sure(groupIndex,data,formId,commonFormIndex) {
             if (this.methods.formSure) {
-                this.methods.formSure(groupIndex, data, formId, this.currentTab);
+                this.methods.formSure(groupIndex, data, formId, this.currentTab, this.tabIndex, commonFormIndex);
             }
         },
 
         // 详情--tab被点击
         detail_tabClick(v) {
+            console.log(v)
+            console.log(typeof v.name)
+            this.tabIndex = v.index;
             if (v.name !== this.tabActiveName2) {
                 this.tabActiveName2 = v.name;
                 this.currentTab = this.tabList[Number(v.index)];
@@ -223,6 +267,10 @@ export default {
                     this.methods.tabClick(this.currentTab);
                 }
             }
+        },
+
+        closeSubmit(commonFormIndex,groupIndex) {
+            this.$refs[`detail_commonForm_${commonFormIndex}`][0].closeSubmit(groupIndex);
         },
     }
 }

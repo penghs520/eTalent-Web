@@ -86,104 +86,6 @@
 .tableBox{
     padding: 16px 0;
 }
-
-.detail{
-    width: 100%;
-    height: 100%;
-    background-color: #F0F0F0;
-    .userInfo{
-        padding: 32px 48px 48px 48px;
-        background-color: #fff;
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 16px;
-        .user{
-            display: flex;
-            .pic{
-                width: 104px;
-                height: 104px;
-                border-radius: 50%;
-                overflow: hidden;
-                background-color: #D3D3D5;
-                margin-right: 48px;
-            }
-            .text{
-                width: 216px;
-                .nameBox{
-                    padding-top: 16px;
-                    display: flex;
-                    align-items: center;
-                    .name{
-                        font-size: 20px;
-                        line-height: 28px;
-                        color: #676B6D;
-                    }
-                    .icon{
-                        margin: 0 8px;
-                        font-size: 14px;
-                    }
-                    .man{
-                        color: #19ADE6;
-                    }
-                    .woman{
-                        color: #FF9DC6;
-                    }
-                    .status{
-                        padding: 0 8px;
-                        height: 22px;
-                        border-radius: 4px;
-                        border:1px solid rgba(135,232,222,1);
-                        background:rgba(230,255,251,1);
-                        color: #46D1D0;
-                        text-align: center;
-                    }
-                }
-                p{
-                    font-size: 16px;
-                    margin-top: 20px;
-                    color: #676B6D;
-                    line-height: 30px;
-                    text-align: left;
-                }
-            }
-        }
-        .operat{
-            .btns{
-                button{
-                    margin-left: 12px;
-                }
-                margin-bottom: 70px;
-            }
-            .contact{
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                font-size: 14px;
-                color: #676B6D;
-                span{
-                    display: flex;
-                    align-items: center;
-                    .email{
-                        width: 16px;
-                        margin-right: 8px;
-                    }
-                    .phone{
-                        width: 12px;
-                        margin-right: 8px;
-                    }
-                }
-            }
-        }
-    }
-}
-</style>
-<style>
-#staffEntry .el-tabs__nav-scroll{
-    background-color: #fff !important;
-    border-bottom: 1px solid #F1F2F2;
-    display: flex;
-    justify-content: center;
-}    
 </style>
 
 <template>
@@ -249,7 +151,7 @@
 
         <!-- 详情 -->
         <div class="detail" v-if="detailShow" v-show="!sendEntryApply">
-            <userInfo :userInfo="userInfoData" :methods="methods" :tabList="tabList" :formList="formList" ></userInfo>
+            <userInfo ref="detail_userInfo" :userInfo="userInfoData" :methods="methods" :tabList="tabList" :formList="formList" ></userInfo>
         </div>
 
         <!-- 新增 -->
@@ -379,15 +281,16 @@ import userInfo from './components/userInfo';
 import file from '../../request/filePath';
 import {
     sys_api1, 
+    staff_api1, 
+    staff_api2, 
+    staff_api3, 
+    staff_api4,
     custom_api1,
     custom_api2,
     custom_api3,
     entry_api1, 
     entry_api2, 
     entry_api3, 
-    staff_api1, 
-    staff_api2, 
-    staff_api3, 
     entry_api4, 
     entry_api5,
     entry_api6, 
@@ -635,6 +538,7 @@ export default {
             },
             tabList: [],
             formList: [],
+            currentTab: null,
         };
     },
     mounted() {
@@ -1423,6 +1327,7 @@ export default {
                     if (d.result.length > 0) {
                         // this.tabActiveName = String(d.result[0].tableId);
                         // this.tabActiveName2 = String(d.result[0].tableId);
+                        this.currentTab = d.result[0];
                         this.detail_getForm(d.result[0].tableId);
                     }
                 }else{
@@ -1433,6 +1338,7 @@ export default {
 
         // 详情--tab被点击
         detail_tabClick(v) {
+            this.currentTab = v;
             this.detail_getForm(v.tableId);
         },
 
@@ -1455,12 +1361,32 @@ export default {
         },
 
         // 详情--确定
-        detail_sure(groupIndex,data,formId,tab) {
-            console.log('-------------');
-            console.log(groupIndex);
-            console.log(data);
-            console.log(formId);
-            console.log(tab);
+        detail_sure(groupIndex,data,formId,tab,tabIndex,commonFormIndex) {
+            console.log(tab)
+            let send = {
+                "businessId": this.detailInfoData.employmentId,
+                "customFieldVOList": [data],
+                "id": formId,
+                "tableId": tab.tableId
+            };
+            this.detail_submit(send,tabIndex,groupIndex,commonFormIndex);
+        },
+
+        // 新增或修改自定义表中的数据
+        // 详情--提交
+        detail_submit(send,tabIndex, groupIndex,commonFormIndex) {
+            base.log('s', '详情更新/新增', send);
+            staff_api4(send, res => {
+                let d = res.data;
+                base.log('r', '详情更新', d);
+                if (d.success) {
+                    this.$refs.detail_userInfo.closeSubmit(commonFormIndex, groupIndex);
+                    this.detail_getForm(this.currentTab.tableId);
+                    base.success(d);
+                }else{
+                    base.error(d);
+                }
+            })
         },
 
         // 详情--按钮

@@ -129,6 +129,10 @@
                         <i class="el-icon-edit icon"></i>
                         <span>编辑</span>
                     </div>
+                    <div class="editBtn" v-if="option.showType === 'seeForm' && showForm[groupIndex]" @click="del(groupIndex)">
+                        <i class="el-icon-edit icon"></i>
+                        <span>删除</span>
+                    </div>
                 </div>
                 <!-- 展示内容 -->
                 <div class="showBox" v-if="option.showType === 'see' || option.showType === 'seeForm'" v-show="option.showType === 'see' || !showForm[groupIndex]" >
@@ -285,6 +289,7 @@ export default {
     name: 'commonForm',             /* 公共表单 */
     components: {tree},
     props: {
+        index: Number,              /* 存在多个commonForm时的index序号 */
         data: Object,
     },
     data() {
@@ -303,8 +308,8 @@ export default {
             rules: {
                 // name: [{required: true, message: '请输入姓名', trigger: 'change'}],
             },
-            showForm: {},                   /* 存储各分组的编辑状态 */
-            loading: {},
+            showForm: [],                   /* 存储各分组的编辑状态 */
+            loading: [],
             formRefNameList: [],            /* 表单ref名称列表 */
             allLoading: false,              /* 总按钮的loading */
 
@@ -493,16 +498,16 @@ export default {
         },
         // 初始化
         init() {
+            console.log('初始化')
             this.formRefNameList = new Array();
             this.domList.forEach((group,groupIndex) => {
                 // 添加ref绑定名称
                 this.formRefNameList.push(`form_${groupIndex}`);
                 // 编辑按钮显示状态处理
-                for (const key in this.showForm) {
-                    if (this.showForm.hasOwnProperty(key)) {
-                        this.showForm[key] = false;
-                    }
-                }
+                this.showForm.forEach(item => {
+                    item = false;
+                });
+                this.loading = [];
                 group.list.forEach((item, index) => {
                     // 特殊dom处理
                     this.specialDom(item, index);
@@ -681,6 +686,11 @@ export default {
             this.$set(this.showForm,index,true);
         },
 
+        // 删除
+        del(index) {
+            // this.data.del(index,this.data.formId,this.index);
+        },
+
         // 取消
         cancel(index) {
             this.$set(this.showForm,index,false);
@@ -695,7 +705,7 @@ export default {
                 if (valid) {
                     if (this.data.sure) {
                         let data = this.getCurrentGroupData(groupIndex);
-                        this.data.sure(groupIndex,data,this.data.formId);
+                        this.data.sure(groupIndex,data,this.data.formId,this.index);
                         this.$set(this.loading, groupIndex, true);
                     }
                 }

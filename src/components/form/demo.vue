@@ -60,7 +60,7 @@ export default {
                     isAllBtn: Boolean,          /* 非必须, 是否显示控制所有表单的按钮,默认值:false,一般用于弹窗,该值为true时,不显示分组按钮 */
                 },
                 formId: Number/String,          /* 非必须，多个表单时需要的表单id */
-                sure: Function,                 /* 非必须，表单格式下，"确定"按钮的回调,接收3个参数：组序号、该组数据、formId, option.isAllBtn为true时无效 */
+                sure: Function,                 /* 非必须，表单格式下，"确定"按钮的回调,接收4个参数：组序号、该组数据、formId、commonForm index, option.isAllBtn为true时无效 */
                 cancel: Function,               /* 非必须，表单格式下，"取消"按钮的回到，接收一个参数：组序号 */
                 allCancel: Function,            /* 非必须, 表单格式下,控制所有分组的"取消"按钮的回调,无参数,option.isAllBtn为false时无效 */
                 allSure: Function,              /* 非必须, 表单格式下,控制所有分组的"确定"按钮的回调,接收1个参数,所有表单的值,option.isAllBtn为false时无效 */

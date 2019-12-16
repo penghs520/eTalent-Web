@@ -8,7 +8,7 @@
         height: 100%;
         border: 10px solid #f0f0f0;
         border-bottom: none;
-        padding: 24px 0px 0px 24px;
+        padding-top: 24px;
         box-sizing: border-box;
         background-color: #fff;
     }

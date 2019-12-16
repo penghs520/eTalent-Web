@@ -32,13 +32,13 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
 
 
     // 入职管理
-    const entry_api1     = (data, callback) => {request('form', `hpi/masterdata/staffpre/selectPreEmployment`, data, callback)};
-    const entry_api2     = (data, callback) => {request('post', `hpi/masterdata/staffpre/insertPreEmployment`, data, callback)};
-    const entry_api3     = (data, callback) => {request('post', `hpi/masterdata/staffpre/sendMail`, data, callback)};
-    const entry_api4     = (data, callback) => {request('post', `hpi/masterdata/staffpre/confirmPreemployment`, data, callback)};
-    const entry_api5     = (data, callback) => {request('post', `hpi/masterdata/staffpre/deletePreEmployment`, data, callback)};
-    const entry_api6     = (data, callback) => {request('post', `hpi/masterdata/staffpre/updatePreEmploymentChange`, data, callback)};
-    const entry_api7     = (data, callback) => {request('post', `hpi/masterdata/staffarc/importPreFile`, data, callback)};      // 导入
+    const entry_api1     = (data, callback) => {request('form',  `hpi/masterdata/staffpre/selectPreEmployment`, data, callback)};
+    const entry_api2     = (data, callback) => {request('post',  `hpi/masterdata/staffpre/insertPreEmployment`, data, callback)};
+    const entry_api3     = (data, callback) => {request('post',  `hpi/masterdata/staffpre/sendMail`, data, callback)};
+    const entry_api4     = (data, callback) => {request('post',  `hpi/masterdata/staffpre/confirmPreemployment`, data, callback)};
+    const entry_api5     = (data, callback) => {request('post',  `hpi/masterdata/staffpre/deletePreEmployment`, data, callback)};
+    const entry_api6     = (data, callback) => {request('post',  `hpi/masterdata/staffpre/updatePreEmploymentChange`, data, callback)};
+    const entry_api7     = (data, callback) => {request('post',  `hpi/masterdata/staffarc/importPreFile`, data, callback)};      // 导入
     const entry_api8     = (data, callback) => {request('get',   `hpi/masterdata/staffarc/getPostByOrgId`, data, callback)};
     const entry_api9     = (data, callback) => {request('post',  `hpi/masterdata/staffarc/sendMessage`, data, callback)};
     const entry_api10     = (data, callback) => {request('post', `hpi/masterdata/port/exportPreFile`, data, callback, 'blob')};
@@ -65,29 +65,33 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const archives_api2     = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
         //员工台账
-        const archives_ledger_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
-        const archives_ledger_api2     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBook`, data, callback)};
-        const archives_ledger_api3     = (data, callback) => {request('form', `api/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
-        const archives_ledger_api4     = (data, callback) => {request('get', `api/masterdata/staffsta/selectStaff`, data, callback)};
-        const archives_ledger_api5     = (data, callback) => {request('get', `api/masterdata/staffsta/deleteStandingBook`, data, callback)};
-        const archives_ledger_api6     = (data, callback) => {request('post', `api/masterdata/staffsta/updateStandingBook`, data, callback)};
-        const archives_ledger_api7     = (data, callback) => {request('form', `api/masterdata/staffarc/selectQueryScheme`, data, callback)};
-        const archives_ledger_api8     = (data, callback) => {request('post', `api/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
-        const archives_ledger_api9     = (data, callback) => {request('get', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
-        const archives_ledger_api10     = (data, callback) => {request('post', `api/masterdata/staffarc/saveQueryScheme`, data, callback)};
-        const archives_ledger_api11     = (data, callback) => {request('post', `api/masterdata/staffarc/deleteQueryScheme`, data, callback)};
-        const archives_ledger_api12     = (data, callback) => {request('form', `api/masterdata/staffarc/selectQuerySchemeMessage`, data, callback)};
-        const archives_ledger_api13     = (data, callback) => {request('get', `api/masterdata/staffarc/setDefaultQuerySchme`, data, callback)};
+        const archives_ledger_api1     = (data, callback) => {request('get',   `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const archives_ledger_api2     = (data, callback) => {request('form',  `hpi/masterdata/staffsta/selectMyStandingBook`, data, callback)};
+        const archives_ledger_api3     = (data, callback) => {request('form',  `hpi/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
+        const archives_ledger_api4     = (data, callback) => {request('post',   `hpi/masterdata/staffsta/selectStaff`, data, callback)};
+        const archives_ledger_api5     = (data, callback) => {request('get',   `hpi/masterdata/staffsta/deleteStandingBook`, data, callback)};
+        const archives_ledger_api6     = (data, callback) => {request('post',  `hpi/masterdata/staffsta/updateStandingBook`, data, callback)};
+        const archives_ledger_api7     = (data, callback) => {request('form',  `hpi/masterdata/staffarc/selectQueryScheme`, data, callback)};
+        const archives_ledger_api8     = (data, callback) => {request('post',  `hpi/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
+        const archives_ledger_api9     = (data, callback) => {request('get',   `hpi/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
+        const archives_ledger_api10     = (data, callback) => {request('post', `hpi/masterdata/staffarc/saveQueryScheme`, data, callback)};
+        const archives_ledger_api11     = (data, callback) => {request('post', `hpi/masterdata/staffarc/deleteQueryScheme`, data, callback)};
+        const archives_ledger_api12     = (data, callback) => {request('form', `hpi/masterdata/staffarc/selectQuerySchemeMessage`, data, callback)};
+        const archives_ledger_api13     = (data, callback) => {request('get',  `hpi/masterdata/staffarc/setDefaultQuerySchme`, data, callback)};
 
         //数据导入
         const archives_import_api1       = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFileArc`, data, callback)};
         
         //附件管理
-        const archives_file_api1       = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFileArc`, data, callback)};
+        const archives_file_api1       = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
         //黑名单管理
-        const archives_blacklist_api1  = (data, callback) => {request('get', `hpi/masterdata/staffsta/selectBalckList`, data, callback)};
-        const archives_blacklist_api2  = (data, callback) => {request('post', `hpi/masterdata/staffsta/deleteBalckList`, data, callback)};
+        const archives_blacklist_api1  = (data, callback) => {request('get',   `hpi/masterdata/staffsta/selectBalckList`, data, callback)};
+        const archives_blacklist_api2  = (data, callback) => {request('post',  `hpi/masterdata/staffsta/deleteBalckList`, data, callback)};
+        const archives_blacklist_api3  = (data, callback) => {request('post',  `hpi/masterdata/port/importFileAndCheckFileBlackList`, data, callback)};
+        const archives_blacklist_api4  = (data, callback) => {request('post',  `hpi/masterdata/port/exportBlackFile`, data, callback)};
+        const archives_blacklist_api5  = (data, callback) => {request('post',  `hpi/masterdata/staffsta/insertBalckList`, data, callback)};
+        const archives_blacklist_api6  = (data, callback) => {request('get',   `hpi/masterdata/port/importFile`, data, callback)};
 
     // 劳动合同
         // 未签合同
@@ -135,7 +139,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
        
         // 角色反查
         const userCheck_api1    = (data, callback) => {request('post', `api/masterdata/roleSearch/searchArchiveListByUserName`, data, callback)};
-        const userCheck_api2    = (data, callback) => {request('get', `api/masterdata/roleSearch/getOrganizationTree`, data, callback)};
+        const userCheck_api2    = (data, callback) => {request('get',  `api/masterdata/roleSearch/getOrganizationTree`, data, callback)};
         const userCheck_api3    = (data, callback) => {request('form', `api/masterdata/roleSearch/searchRoleTreeByArchiveId`, data, callback)};
         const userCheck_api4    = (data, callback) => {request('post', `api/masterdata/roleSearch/updateArchiveRole`, data, callback)};
 
@@ -156,13 +160,13 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
 // 组织中台
     // 职位管理
         // 职位族设置
-        const positionGroup_api1    = (data, callback) => {request('get', `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
-        const positionGroup_api2    = (data, callback) => {request('get', `api/masterdata/positionGroup/addPositionGroup`, data, callback)};
+        const positionGroup_api1    = (data, callback) => {request('get',  `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
+        const positionGroup_api2    = (data, callback) => {request('get',  `api/masterdata/positionGroup/addPositionGroup`, data, callback)};
         const positionGroup_api3    = (data, callback) => {request('post', `api/masterdata/positionGroup/deletePositionGroup`, data, callback)};
-        const positionGroup_api4    = (data, callback) => {request('get', `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
+        const positionGroup_api4    = (data, callback) => {request('get',  `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
         const positionGroup_api5    = (data, callback) => {request('post', `api/masterdata/positionGroup/editPositionGroup`, data, callback)};
-        const positionGroup_api6    = (data, callback) => {request('get', `api/masterdata/positionGroup/sortPositionGroup`, data, callback)};
-        const positionGroup_api7    = (data, callback) => {request('get', `api/masterdata/positionGroup/downloadExcel`, data, callback, 'blob')};
+        const positionGroup_api6    = (data, callback) => {request('get',  `api/masterdata/positionGroup/sortPositionGroup`, data, callback)};
+        const positionGroup_api7    = (data, callback) => {request('get',  `api/masterdata/positionGroup/downloadExcel`, data, callback, 'blob')};
 
         // 职位设置
         const position_api1    = (data, callback) => {request('post', `api/masterdata/position/getPositionPage`, data, callback)};
@@ -170,29 +174,29 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const position_api3    = (data, callback) => {request('form', `api/masterdata/position/editPosition`, data, callback)};
         const position_api4    = (data, callback) => {request('post', `api/masterdata/position/deletePosition`, data, callback)};
         const position_api5    = (data, callback) => {request('post', `api/masterdata/position/sortPosition`, data, callback)};
-        const position_api6    = (data, callback) => {request('get', `api/masterdata/position/downloadExcel`, data, callback, 'blob')};
+        const position_api6    = (data, callback) => {request('get',  `api/masterdata/position/downloadExcel`, data, callback, 'blob')};
         
     
     
     // 组织机构
         //机构维护
-        const orgRepair_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const orgRepair_api1     = (data, callback) => {request('get',  `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
         const orgRepair_api2     = (data, callback) => {request('post', `api/masterdata/organization/getOrganizationPageList`, data, callback)};
         const orgRepair_api3     = (data, callback) => {request('form', `api/masterdata/sysDict/searchSysDictListByDictType`, data, callback)};
-        const orgRepair_api4     = (data, callback) => {request('get', `api/masterdata/organization/addOrganization`, data, callback)};
+        const orgRepair_api4     = (data, callback) => {request('get',  `api/masterdata/organization/addOrganization`, data, callback)};
         const orgRepair_api5     = (data, callback) => {request('post', `api/masterdata/organization/deleteOrganizationById`, data, callback)};
-        const orgRepair_api6     = (data, callback) => {request('get', `api/masterdata/organization/editOrganization`, data, callback)};
+        const orgRepair_api6     = (data, callback) => {request('get',  `api/masterdata/organization/editOrganization`, data, callback)};
         const orgRepair_api7     = (data, callback) => {request('post', `api/masterdata/organization/lockOrganizationByIds`, data, callback)};
         const orgRepair_api8     = (data, callback) => {request('post', `api/masterdata/organization/unlockOrganizationByIds`, data, callback)};
         const orgRepair_api9     = (data, callback) => {request('post', `api/masterdata/organization/mergeOrganization`, data, callback)};
         const orgRepair_api10    = (data, callback) => {request('post', `api/masterdata/organization/transferOrganization2`, data, callback)};
-        const orgRepair_api11    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationGraphics`, data, callback)};
+        const orgRepair_api11    = (data, callback) => {request('get',  `api/masterdata/organization/getOrganizationGraphics`, data, callback)};
         const orgRepair_api12    = (data, callback) => {request('post', `api/masterdata/organization/getDirectOrganizationPageList`, data, callback)};
         const orgRepair_api13    = (data, callback) => {request('post', `api/masterdata/organization/sortOrganization`, data, callback)};
         const orgRepair_api14    = (data, callback) => {request('post', `api/masterdata/organization/exportOrganization`, data, callback, 'blob')};
         const orgRepair_api15    = (data, callback) => {request('post', `api/masterdata/organization/uploadAndCheck`, data, callback)};
-        const orgRepair_api16    = (data, callback) => {request('get', `api/masterdata/organization/importToDatabase`, data, callback)};
-        const orgRepair_api17    = (data, callback) => {request('get', `api/masterdata/organization/exportError2Txt`, data, callback,'blob')};
+        const orgRepair_api16    = (data, callback) => {request('get',  `api/masterdata/organization/importToDatabase`, data, callback)};
+        const orgRepair_api17    = (data, callback) => {request('get',  `api/masterdata/organization/exportError2Txt`, data, callback,'blob')};
     
     //用户管理
         //用户信息
@@ -201,23 +205,23 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         
     // 岗位管理
         // 岗位维护
-        const postRepair_api1    = (data, callback) => {request('get', `api/masterdata/organization/getOrganizationPostTree`, data, callback)};
-        const postRepair_api2    = (data, callback) => {request('post', `api/masterdata/post/getPostList`, data, callback)};
-        const postRepair_api3    = (data, callback) => {request('get', `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
-        const postRepair_api4    = (data, callback) => {request('post', `api/masterdata/post/addPost`, data, callback)};
-        const postRepair_api5    = (data, callback) => {request('form', `api/masterdata/post/editPost`, data, callback)};
-        const postRepair_api6    = (data, callback) => {request('post', `api/masterdata/post/deletePost`, data, callback)};
-        const postRepair_api7    = (data, callback) => {request('post', `api/masterdata/post/lockPostByIds`, data, callback)};
-        const postRepair_api8    = (data, callback) => {request('post', `api/masterdata/post/unlockPostByIds`, data, callback)};
-        const postRepair_api9    = (data, callback) => {request('post', `api/masterdata/post/copyPost`, data, callback)};
-        const postRepair_api10    = (data, callback) => {request('get', `api/masterdata/post/getPostSuccessive`, data, callback)};
-        const postRepair_api11    = (data, callback) => {request('get', `api/masterdata/post/getPostGraphics`, data, callback)};
+        const postRepair_api1    = (data, callback) => {request('get',   `api/masterdata/organization/getOrganizationPostTree`, data, callback)};
+        const postRepair_api2    = (data, callback) => {request('post',  `api/masterdata/post/getPostList`, data, callback)};
+        const postRepair_api3    = (data, callback) => {request('get',   `api/masterdata/positionGroup/getAllPositionGroupTree`, data, callback)};
+        const postRepair_api4    = (data, callback) => {request('post',  `api/masterdata/post/addPost`, data, callback)};
+        const postRepair_api5    = (data, callback) => {request('form',  `api/masterdata/post/editPost`, data, callback)};
+        const postRepair_api6    = (data, callback) => {request('post',  `api/masterdata/post/deletePost`, data, callback)};
+        const postRepair_api7    = (data, callback) => {request('post',  `api/masterdata/post/lockPostByIds`, data, callback)};
+        const postRepair_api8    = (data, callback) => {request('post',  `api/masterdata/post/unlockPostByIds`, data, callback)};
+        const postRepair_api9    = (data, callback) => {request('post',  `api/masterdata/post/copyPost`, data, callback)};
+        const postRepair_api10    = (data, callback) => {request('get',  `api/masterdata/post/getPostSuccessive`, data, callback)};
+        const postRepair_api11    = (data, callback) => {request('get',  `api/masterdata/post/getPostGraphics`, data, callback)};
         const postRepair_api12    = (data, callback) => {request('post', `api/masterdata/post/getDirectPostPageList`, data, callback)};
         const postRepair_api13    = (data, callback) => {request('post', `api/masterdata/post/sortPorts`, data, callback)};
         const postRepair_api14    = (data, callback) => {request('post', `api/masterdata/post/exportPost`, data, callback,'blob')};
         const postRepair_api15    = (data, callback) => {request('post', `api/masterdata/post/uploadAndCheck`, data, callback,)};
-        const postRepair_api16    = (data, callback) => {request('get', `api/masterdata/post/importToDatabase`, data, callback,)};
-        const postRepair_api17    = (data, callback) => {request('get', `api/masterdata/post/exportError2Txt`, data, callback,'blob')};
+        const postRepair_api16    = (data, callback) => {request('get',  `api/masterdata/post/importToDatabase`, data, callback,)};
+        const postRepair_api17    = (data, callback) => {request('get',  `api/masterdata/post/exportError2Txt`, data, callback,'blob')};
        
 
 export {
@@ -253,7 +257,7 @@ export {
             archives_file_api1,
 
             // 黑名单管理
-            archives_blacklist_api1,archives_blacklist_api2,
+            archives_blacklist_api1,archives_blacklist_api2,archives_blacklist_api3,archives_blacklist_api4,archives_blacklist_api5,archives_blacklist_api6,
         
         // 劳动合同
             // 未签合同

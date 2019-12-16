@@ -287,13 +287,13 @@ let base = {
      * @param {list} 需要解析的数据,数组格式
      */
     checkResultFormatter(list) {
-        let result = new Object();
+        let result =[];
         result.checkResult = list.every(item => item.checkResult);
-        result.list = new Array();
+        result.list = [];
         list.forEach((item,index) => {
             // 
             let cellList = item.customFieldVOList;
-            let row = new Object();
+            let row = [];
             cellList.forEach(cell => {
                 row[cell.fieldCode] = cell.fieldValue
             });

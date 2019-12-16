@@ -279,8 +279,7 @@
                         class="qinjeeDialogSmall"
                         :append-to-body="true"
                         :close-on-click-modal="false"
-                        center
-                    >
+                        center>
                         <span slot="title">编辑机构</span>
                         <div class="qinjeeDialogSmallCont">
                             <el-form
@@ -289,8 +288,7 @@
                                 ref="editOrgForm"
                                 label-width="100px"
                                 class="demo-ruleForm"
-                                size="small"
-                            >
+                                size="small">
                                 <el-form-item label="机构编码" prop="orgCode">
                                     <el-input v-model.trim="editOrgForm.orgCode"></el-input>
                                 </el-form-item>
@@ -313,12 +311,10 @@
                                         placeholder="请选择"
                                         ref="selectTree2"
                                         popper-class="base_treeSelect"
-                                        style="width:100%"
-                                    >
+                                        style="width:100%">
                                         <el-option
                                             :label="editOrgForm.orgParentName"
-                                            :value="editOrgForm.orgParentName"
-                                        >
+                                            :value="editOrgForm.orgParentName">
                                             <tree :treeData="enrolTree"></tree>
                                         </el-option>
                                     </el-select>
@@ -328,8 +324,7 @@
                                         v-model="editOrgForm.orgManagerName"
                                         placeholder="输入查找"
                                         filterable
-                                        clearable
-                                    >
+                                        clearable>
                                         <el-option
                                             v-for="item in orgManagerList"
                                             :key="item.value"
@@ -988,6 +983,8 @@ export default {
                 this.uploadActive = 1;
                 this.uploadData.tableShow = true;
                 this.uploadCheckReq();
+                this.uploadData.btnText = "返回";                    
+
             }
         },
         //机构导入--文件上传请求
@@ -1026,7 +1023,6 @@ export default {
                     this.uploadActive = 2;
                 } else {
                     this.uploadData.checkedResult = "fail";
-                    this.uploadData.btnText = "返回";                    
                     this.uploadData.tableData.data = res.data.result.excelList;
                     this.uploadData.checkFailTable.data =res.data.result.failCheckList;
                     this.uploadData.checkFailTable.total =res.data.result.failCheckList.length;

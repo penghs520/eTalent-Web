@@ -335,7 +335,6 @@ export default {
             dialogTitle:"新增方案",
             //删除方案
             delStyleShow:false,
-
         }       
     },
     mounted(){
@@ -386,7 +385,7 @@ export default {
         },
         //新增方案 --保存名称按钮
         saveStyleName(formName){
-              this.$refs[formName].validate((valid) => {
+            this.$refs[formName].validate((valid) => {
                 if (valid) {
                     if(this.dialogTitle == "新增方案"){
                         this.addDialogShow = false
@@ -429,6 +428,7 @@ export default {
                 base.log("r","新增编辑方案",res.data)
                 if(res.data.success){   
                     this.$message.success("操作成功")
+                    this.getStyleReq()
                 }else{
                     base.error(res.data)
                 }
@@ -437,6 +437,7 @@ export default {
         //左侧菜单--树形节点点击
         styleNodeClick(node){
             this.treeNode = node
+            // 点击树形给sortId赋值
             this.treeData.data.forEach((item,index) => {
                 if(item.sortId){
                     this.treeNode.index = item.sortId
@@ -447,6 +448,7 @@ export default {
                }
             })
             console.log(this.treeNode);
+            //点击树形触发渲染数据
             if(node.querySchemeId){
                 this.getStyleInfo(node)
             }else{
@@ -456,7 +458,7 @@ export default {
                                 if(sub.fieldName === "姓名" ){
                                      let judge = this.tableList.findIndex(item => item.fieldId === sub.fieldId)
                                     if(judge == -1){
-                                        this.tableList.push(sub)
+                                        this.tableList=[sub]
                                     }
                                 }
                             })
@@ -464,7 +466,6 @@ export default {
                     return  item
                 })
             }
-            
         },
         //左侧菜单--获取方案信息请求接口
         getStyleInfo(node){
@@ -478,28 +479,33 @@ export default {
                     //渲染默认表头
                     let tList = JSON.parse(JSON.stringify(res.data.result.querySchemeFieldList))
                     tList =  tList.map(item=>item.fieldId)
+                    let tableArr = []
                     this.tabContList.forEach(item=>{                        
                         item.forEach(sec=>{
                             sec.customFieldVOList.forEach(sub=>{
                                 if(tList.includes(sub.fieldId)){
-                                    this.tableList.push(sub)
+                                    tableArr.push(sub)
                                 }
                             })
                         })
                     })
+                    this.tableList = tableArr
+
                     //渲染默认排序字段
                     let sList = JSON.parse(JSON.stringify(res.data.result.querySchemeSortList))
                     sList =  sList.map(item=>item.fieldId)
+                    let sortArr = []
                     this.tabContList.forEach(item=>{                        
                         item.forEach(sec=>{
                             sec.customFieldVOList.forEach(sub=>{
                                 if(sList.includes(sub.fieldId)){
                                     sub.sortStatus = sub.orderByRule == "升序" 
-                                    this.sortList.push(sub)
+                                    sortArr.push(sub)
                                 }
                             })
                         })
                     })
+                    this.sortList = sortArr
                 }else{
                     base.error(res.data)
                 }
@@ -519,7 +525,11 @@ export default {
             archives_ledger_api7(null,res=>{
                 base.log("r","获取显示方案",res.data)
                 if(res.data.success){
-                   this.treeData.data = res.data.result
+                    let list = JSON.parse(JSON.stringify(res.data.result))
+                    list.sort((a,b)=>{
+                       return a.sort - b.sort
+                    })
+                    this.treeData.data = list
                 }else{
                     base.error(res.data)
                 }

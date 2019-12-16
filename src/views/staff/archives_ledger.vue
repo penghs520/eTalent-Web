@@ -173,6 +173,7 @@ import { archives_ledger_api1,
          archives_ledger_api5,
          archives_ledger_api6,
          archives_ledger_api7,
+         archives_ledger_api13,
          sys_api1,
          } from '../../request/api'
 export default {
@@ -470,6 +471,14 @@ export default {
                 return val;
             }
         },
+        //查询按钮点击
+        seachLedger(){
+            if(!this.ledgerNode){
+                this.$message.warning("请选择台账")
+                return
+            }
+            this.getLegerReq() 
+        }, 
         //查询台账请求
         getLegerReq(){
             let ids = this.orgList.map(item =>item.orgId)        
@@ -496,20 +505,28 @@ export default {
                 
             })
         },
-        //查询按钮点击
-        seachLedger(){
-            if(!this.ledgerNode){
-                this.$message.warning("请选择台账")
-                return
+        //表格下拉框 -- 切换方案设置默认请求接口
+        styleChangeReq(val){
+            let send = {
+                querySchmeId:val.querySchemeId
             }
-            this.getLegerReq() 
-        }, 
+            base.log("s","设置默认方案",send)
+            archives_ledger_api13(send,res=>{
+                 base.log("r","设置默认方案",res.data)
+                if(res.data.success){
+                    this.$message.success("设置成功")
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
         //表格下拉框 --表格显示方案切换
         selectValueChange(val){
            if(val ===  "+新增显示方案"){
               this.addStyleShow = true
            }          
-        },       
+        },
+        //       
         //表格下拉框 -- 机构树 
         checkTreeClick(val,list){
             this.orgList =  list.checkedNodes

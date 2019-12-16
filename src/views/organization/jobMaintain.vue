@@ -613,6 +613,7 @@ import {
     postRepair_api15,
     postRepair_api16,
     postRepair_api17,
+    postRepair_api18,
 } from "../../request/api";
 
 export default {
@@ -814,7 +815,6 @@ export default {
                     { required: true, message: "请选择", trigger: "blur" }
                 ]
             },
-            maxCodeAdd: "",
             orgTree: {
                 data: [],
                 props: {
@@ -1498,15 +1498,16 @@ export default {
                 this.addPostForm.orgName = "";
             }
 
+            this.getCodeReq()
+            this.getAllPositionReq();
+
+            this.dialogType = true;
+            this.addPostDialog = true;
             this.addPostForm.positionId = ""
             this.addPostForm.parentPostId = ""
             this.addPostForm.parentPostName = ""
             this.addPostForm.positionName = ""
-            this.addPostForm.postCode = this.maxCodeAdd; 
 
-            this.getAllPositionReq();            
-            this.dialogType = true;
-            this.addPostDialog = true;
              setTimeout(() => {
                    this.$refs.addPostForm.clearValidate()
             }, 0); 
@@ -1589,19 +1590,23 @@ export default {
                 this.$refs.selectTree3.blur();
             }
         },
-        //岗位新增 -- 获取下级岗位最大编码(根据岗位表)
-        getPostMaxCode(postList, nodeData) {
-            if (postList.length != 0) {
-                let codeList = postList.map(item => item.postCode);
-                let maxCode = Math.max.apply(this, codeList);               
-                this.maxCodeAdd = maxCode + 1;
-                if(isNaN(this.maxCodeAdd)){
-                    this.maxCodeAdd = nodeData.orgCode
-                }              
-            } else {
-                this.maxCodeAdd = nodeData.orgCode + "01";
+        //岗位新增 --获取岗位编码请求
+        getCodeReq(){
+            let send = {
+                orgId:this.orgNode.orgId,
+                parentPostId:this.orgNode.postId ? this.orgNode.postId : "",
             }
+            base.log("s","获取岗位编码",send)
+            postRepair_api18(send,res=>{
+            base.log("r","获取岗位编码",res.data)
+                if(res.data.success){
+                    this.addPostForm.postCode = res.data.result
+                }else{  
+                    base.error(res.data)
+                }
+            })
         },
+
 
         //岗位表-- 格式化封存样式
         formatter(key, val) {
@@ -1627,7 +1632,6 @@ export default {
                 if (res.data.success) {
                     this.postTable.data = res.data.result.list;
                     this.postTable.total = res.data.result.total;
-                    this.getPostMaxCode(res.data.result.list, this.orgNode); //获取最大下级岗位编码
                     this.postTable.pageResize = false;
                     this.exportPostList = res.data.result.list; //导出文件列表
 

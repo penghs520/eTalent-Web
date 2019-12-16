@@ -666,7 +666,8 @@ import {
     orgRepair_api14,
     orgRepair_api15,
     orgRepair_api16,
-    orgRepair_api17
+    orgRepair_api17,
+    orgRepair_api18,
 } from "../../request/api";
 
 export default {
@@ -771,7 +772,7 @@ export default {
                 pageChange: this.orgPageChange,
                 formatter: this.formatter
             },
-            orgParent: "", //获取机构表的Id
+            orgParent: "",    //树形节点
             currentPage: 1,
             pageSize: 10,
             // 新增机构弹窗
@@ -806,7 +807,6 @@ export default {
                 { label: "负责人", value: "1" },
                 { label: "负责人001", value: "2" }
             ],
-            maxCodeAdd: "",
             //删除机构
             checkAll: true,
             isIndeterminate: false,
@@ -1398,29 +1398,24 @@ export default {
                 this.$message.warning("请选择机构");
                 return;
             }
-            
-            
-            this.addOrgForm.orgName = "";
-            this.addOrgForm.orgManagerId = "";
-            this.getOrgType(); //获取所有机构类型
+            this.getOrgType()
+            this.getCodeReq()
+
             this.addOrgDialog = true;
-            setTimeout(() => {
-                   this.$refs.addOrgForm.clearValidate()
-            }, 0);         
-            this.addOrgForm.orgCode = Number(this.maxCodeAdd);
+            this.addOrgForm.orgName = "";
+            this.addOrgForm.orgType = "";
+            this.addOrgForm.orgManagerId = "";
             this.addOrgForm.orgParentId = this.orgParent.orgId;
             this.addOrgForm.orgParentName = this.orgParent.orgName;
+
+            setTimeout(() => {
+                    this.$refs.addOrgForm.clearValidate()
+            }, 0);         
         },
         // 新增机构--请求接口
         addOrgReq(formName) {
             this.$refs[formName].validate(valid => {
                 if (valid) {
-                    // let send = {
-                    //     orgManagerId: this.addOrgForm.orgManagerId,
-                    //     orgName: this.addOrgForm.orgName,
-                    //     orgType: this.addOrgForm.orgType,
-                    //     orgParentId: this.addOrgForm.orgParentId
-                    // };
                     let send = this.addOrgForm;
                     orgRepair_api4(send, res => {
                         base.log("s", "新增机构", send);
@@ -1454,18 +1449,20 @@ export default {
                 }
             });
         },
-        //新增机构--获取最大下级机构的编码
-        getMaxOrgCode(parentrOrg) {
-            if (parentrOrg.childList) {
-                let orgCode = parentrOrg.childList.map(item => item.orgCode);
-                let maxCode = Math.max.apply(this, orgCode);
-                this.maxCodeAdd = maxCode + 1;
-                if(isNaN(this.maxCodeAdd)){
-                    this.maxCodeAdd = parentrOrg.orgCode
-                }
-            } else {
-                this.maxCodeAdd = parentrOrg.orgCode + "01";
+        //新增机构--获取新增机构编码请求
+        getCodeReq(){
+            let send = {
+                orgId:this.orgParent.orgId
             }
+            base.log("s","获取机构编码",send)
+            orgRepair_api18(send,res=>{
+            base.log("r","获取机构编码",res.data)
+                if(res.data.success){
+                    this.addOrgForm.orgCode = res.data.result
+                }else{  
+                    base.error(res.data)
+                }
+            })
         },
 
         //机构表--页码改变
@@ -1524,7 +1521,6 @@ export default {
                 console.log("机构表");
                 if (this.orgParent) {
                     this.getOrgTable(); //获取机构表
-                    this.getMaxOrgCode(this.orgParent); //获取最大下级机构编码
                 }
             } else if (tab.name == "orgPic") {
                 console.log("机构图");
@@ -1541,7 +1537,6 @@ export default {
                 this.currentPage = 1;
                 this.orgTable.pageResize = true;
                 this.getOrgTable(); //获取机构表
-                this.getMaxOrgCode(node); //获取最大下级机构编码
             } else if (this.activeName === "orgPic") {
                 // 获取机构图
                 this.getChartData(node);

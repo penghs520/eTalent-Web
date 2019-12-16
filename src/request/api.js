@@ -71,19 +71,19 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const archives_api2     = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
         //员工台账
-        const archives_ledger_api1     = (data, callback) => {request('get',   `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
-        const archives_ledger_api2     = (data, callback) => {request('form',  `hpi/masterdata/staffsta/selectMyStandingBook`, data, callback)};
-        const archives_ledger_api3     = (data, callback) => {request('form',  `hpi/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
-        const archives_ledger_api4     = (data, callback) => {request('post',   `hpi/masterdata/staffsta/selectStaff`, data, callback)};
-        const archives_ledger_api5     = (data, callback) => {request('get',   `hpi/masterdata/staffsta/deleteStandingBook`, data, callback)};
-        const archives_ledger_api6     = (data, callback) => {request('post',  `hpi/masterdata/staffsta/updateStandingBook`, data, callback)};
-        const archives_ledger_api7     = (data, callback) => {request('form',  `hpi/masterdata/staffarc/selectQueryScheme`, data, callback)};
-        const archives_ledger_api8     = (data, callback) => {request('post',  `hpi/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
-        const archives_ledger_api9     = (data, callback) => {request('get',   `hpi/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
-        const archives_ledger_api10     = (data, callback) => {request('post', `hpi/masterdata/staffarc/saveQueryScheme`, data, callback)};
-        const archives_ledger_api11     = (data, callback) => {request('post', `hpi/masterdata/staffarc/deleteQueryScheme`, data, callback)};
-        const archives_ledger_api12     = (data, callback) => {request('form', `hpi/masterdata/staffarc/selectQuerySchemeMessage`, data, callback)};
-        const archives_ledger_api13     = (data, callback) => {request('get',  `hpi/masterdata/staffarc/setDefaultQuerySchme`, data, callback)};
+        const archives_ledger_api1     = (data, callback) => {request('get',   `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const archives_ledger_api2     = (data, callback) => {request('form',  `api/masterdata/staffsta/selectMyStandingBook`, data, callback)};
+        const archives_ledger_api3     = (data, callback) => {request('form',  `api/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
+        const archives_ledger_api4     = (data, callback) => {request('post',  `api/masterdata/staffsta/selectStaff`, data, callback)};
+        const archives_ledger_api5     = (data, callback) => {request('get',   `api/masterdata/staffsta/deleteStandingBook`, data, callback)};
+        const archives_ledger_api6     = (data, callback) => {request('post',  `api/masterdata/staffsta/updateStandingBook`, data, callback)};
+        const archives_ledger_api7     = (data, callback) => {request('form',  `api/masterdata/staffarc/selectQueryScheme`, data, callback)};
+        const archives_ledger_api8     = (data, callback) => {request('post',  `api/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
+        const archives_ledger_api9     = (data, callback) => {request('get',   `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
+        const archives_ledger_api10     = (data, callback) => {request('post', `api/masterdata/staffarc/saveQueryScheme`, data, callback)};
+        const archives_ledger_api11     = (data, callback) => {request('post', `api/masterdata/staffarc/deleteQueryScheme`, data, callback)};
+        const archives_ledger_api12     = (data, callback) => {request('form', `api/masterdata/staffarc/selectQuerySchemeMessage`, data, callback)};
+        const archives_ledger_api13     = (data, callback) => {request('get',  `api/masterdata/staffarc/setDefaultQuerySchme`, data, callback)};
 
         //数据导入
         const archives_import_api1       = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFileArc`, data, callback)};
@@ -203,6 +203,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const orgRepair_api15    = (data, callback) => {request('post', `api/masterdata/organization/uploadAndCheck`, data, callback)};
         const orgRepair_api16    = (data, callback) => {request('get',  `api/masterdata/organization/importToDatabase`, data, callback)};
         const orgRepair_api17    = (data, callback) => {request('get',  `api/masterdata/organization/exportError2Txt`, data, callback,'blob')};
+        const orgRepair_api18    = (data, callback) => {request('get',  `api/masterdata/organization/generateOrgCode`, data, callback,)};
     
     //用户管理
         //用户信息
@@ -228,6 +229,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const postRepair_api15    = (data, callback) => {request('post', `api/masterdata/post/uploadAndCheck`, data, callback,)};
         const postRepair_api16    = (data, callback) => {request('get',  `api/masterdata/post/importToDatabase`, data, callback,)};
         const postRepair_api17    = (data, callback) => {request('get',  `api/masterdata/post/exportError2Txt`, data, callback,'blob')};
+        const postRepair_api18    = (data, callback) => {request('get',  `api/masterdata/post/generatePostCode`, data, callback,'blob')};
        
 
 export {
@@ -309,13 +311,13 @@ export {
             //机构维护
             orgRepair_api1,orgRepair_api2,orgRepair_api3,orgRepair_api4,orgRepair_api5,orgRepair_api6,orgRepair_api7,orgRepair_api8,
             orgRepair_api9,orgRepair_api10, orgRepair_api11,orgRepair_api12,orgRepair_api13, orgRepair_api14,orgRepair_api15,orgRepair_api16,
-            orgRepair_api17,
+            orgRepair_api17,orgRepair_api18,
 
         // 岗位管理
             // 岗位维护
             postRepair_api1,postRepair_api2,postRepair_api3,postRepair_api4,postRepair_api5,postRepair_api6,postRepair_api7,
             postRepair_api8,postRepair_api9,postRepair_api10,postRepair_api11,postRepair_api12,postRepair_api13,postRepair_api14,
-            postRepair_api15,postRepair_api16,postRepair_api17,
+            postRepair_api15,postRepair_api16,postRepair_api17,postRepair_api18,
 
         //用户管理
             //用户信息

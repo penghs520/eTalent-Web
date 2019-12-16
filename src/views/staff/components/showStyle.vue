@@ -299,7 +299,7 @@ export default {
     components:{
         tree,
         draggable
-    },
+    }, 
     props:{
         show:Boolean,
         data:Object,        
@@ -437,6 +437,7 @@ export default {
         //左侧菜单--树形节点点击
         styleNodeClick(node){
             this.treeNode = node
+            this.tableList = []
             // 点击树形给sortId赋值
             this.treeData.data.forEach((item,index) => {
                 if(item.sortId){
@@ -447,17 +448,11 @@ export default {
                   }
                }
             })
-            console.log("treeNode",this.treeNode);
-            console.log("node",node);
             
             //点击树形触发渲染数据
             if(node.querySchemeId){
-                console.log("回调");
-                
                 this.getStyleInfo(node)
             }else{
-                console.log("新增");
-                
                 this.tabContList = this.tabContList.map(item=>{                        
                     item.forEach(sec=>{
                             sec.customFieldVOList.forEach(sub=>{
@@ -465,8 +460,6 @@ export default {
                                      let judge = this.tableList.findIndex(item => item.fieldId === sub.fieldId)
                                     if(judge == -1){
                                         this.tableList =[sub]
-                                        console.log(sub);
-                                        
                                     }
                                 }
                             })

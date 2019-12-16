@@ -1017,6 +1017,7 @@ export default {
                 this.uploadActive = 1;
                 this.uploadData.tableShow = true;
                 this.uploadCheckReq();
+                this.uploadData.btnText = "返回";
             }
         },
         //岗位导入--文件上传请求
@@ -1055,7 +1056,6 @@ export default {
                     this.uploadActive = 2;
                 } else {
                     this.uploadData.checkedResult = "fail";
-                    this.uploadData.btnText = "返回";
                     this.uploadData.tableData.data = res.data.result.excelList;
                     this.uploadData.checkFailTable.data =res.data.result.failCheckList;
                     this.uploadData.checkFailTable.total =res.data.result.failCheckList.length;

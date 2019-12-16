@@ -147,8 +147,8 @@
                 <!-- 表单内容 -->
                 <div class="formBox" v-if="option.showType === 'form' || option.showType === 'seeForm'" v-show="option.showType === 'form' || showForm[groupIndex]" >
                     <el-form :model="form" size="small" status-icon :rules="rules" :ref="`form_${groupIndex}`" :label-width="option.labelWidth" >
-                 <div v-for="(item,index) in group.list" :key="index" class="elFormItemBox">
-                    <el-form-item   v-if="item.isShow !== false" :class="{isFullRow: item.isFullRow}" :label="`${item.label}：`" :prop="item.key">
+                 <div v-for="(item,index) in group.list" :key="index" class="elFormItemBox" :class="{isFullRow: item.isFullRow}">
+                    <el-form-item   v-if="item.isShow !== false" :label="`${item.label}：`" :prop="item.key">
                             <!-- 输入框 -->
                             <template v-if="item.type === 'input'">
                                 <!-- 数字输入框 -->
@@ -264,7 +264,7 @@
                         </div>
                         
                     </el-form>
-                    <el-row class="btnRow" v-if="!option.isAllBtn">
+                    <el-row class="btnRow" v-if="!option.isAllBtn && !option.btnHide">
                         <el-button @click="cancel(groupIndex)" size="small" >取消</el-button>
                         <el-button @click="sure(groupIndex,`form_${groupIndex}`)" size="small" type="primary" :loading="loading[groupIndex]" >确定</el-button>
                     </el-row>
@@ -272,7 +272,7 @@
             </div>
 
             <!-- 控制全部的按钮 -->
-            <el-row class="btnRow" v-if="option.isAllBtn">
+            <el-row class="btnRow" v-if="option.isAllBtn && !option.btnHide">
                 <el-button @click="allFormCancel" size="small" >取消</el-button>
                 <el-button @click="allFormSure" size="small" type="primary" :loading="allLoading" >确定</el-button>
             </el-row>
@@ -733,6 +733,20 @@ export default {
                 if (pass) {
                     this.data.allSure(this.form);
                 }
+            }
+        },
+
+        getData() {
+            let pass = true;
+            this.formRefNameList.forEach(name => {
+                this.$refs[name][0].validate((valid) => {
+                    if (!valid) {
+                        pass = false;
+                    }
+                });
+            });
+            if (pass) {
+                return this.form;
             }
         },
 

@@ -173,6 +173,7 @@ import { archives_ledger_api1,
          archives_ledger_api5,
          archives_ledger_api6,
          archives_ledger_api7,
+         sys_api1,
          } from '../../request/api'
 export default {
     name:"archives_ledger",
@@ -224,17 +225,10 @@ export default {
                         defaultVal: '',
                         label:"人员分类：",
                         method:this.selectArchiveType,
-                        list:[
-                            {value:"全选"},
-                            {value:"正式"},
-                            {value:"试用"},
-                            {value:"实习"},
-                            {value:"离职"},
-                            {value:"退休"},
-                        ]
+                        list:[]
                     },
                     {
-                        type: 'selectTree',                 /* 单选下拉框树形 */
+                        type: 'selectTree',                       /* 单选下拉框树形 */
                         placeholder: '请筛选机构',
                         label:"部门选择：",
                         key: 'typeTree',                         // 必须,树形下拉框选择值绑定的变量
@@ -278,8 +272,8 @@ export default {
                         placeholder: '请选择',
                         key: 'type3',
                         label:"显示方案：",
-                        defaultVal: '默认显示方案',
-                        isShow :true,
+                        defaultVal: '',
+                        isShow :false,
                         method:this.selectValueChange,
                         list:[],
                     },
@@ -327,20 +321,21 @@ export default {
         }
     },
     created(){
-        this.getOrgTreeReq()
-        this.getNotShareLeger()
-        this.getStyleList()
+        this.getOrgTreeReq()       //获取机构树
+        this.getNotShareLeger()    //获取不共享台账 
+        this.getStyleList()        //获取模块方案
+        this.archiveTypeReq()      //获取人员分类
     },
     watch:{
-        // 'ledgerTable.data'(newVal,oldVal){
-        //     if(newVal.length === 0){
-        //         this.ledgerTable.bar[4].isShow = false
-        //         this.ledgerTable.bar[5].isShow = false
-        //     }else{
-        //         this.ledgerTable.bar[4].isShow = true
-        //         this.ledgerTable.bar[5].isShow = true
-        //     }
-        // }
+        'ledgerTable.data'(newVal,oldVal){
+            if(newVal.length === 0){
+                this.ledgerTable.bar[4].isShow = false
+                this.ledgerTable.bar[5].isShow = false
+            }else{
+                this.ledgerTable.bar[4].isShow = true
+                this.ledgerTable.bar[5].isShow = true
+            }
+        }
     },
     methods:{
         //显示方案--关闭弹窗
@@ -353,11 +348,19 @@ export default {
             archives_ledger_api7(null,res=>{
                 base.log("r","获取显示方案",res.data)
                 if(res.data.success){
-                    this.ledgerTable.bar[4].list = JSON.parse(JSON.stringify(res.data.result))
-                    this.ledgerTable.bar[4].list = this.ledgerTable.bar[4].list.map(item=>{
-                        item.value = item.querySchemeId
-                        item.label = item.querySchemeName
-                        return item
+                    let list = JSON.parse(JSON.stringify(res.data.result))
+                    this.ledgerTable.bar[4].list = list.map(item=>{
+                        return {
+                            value:item.querySchemeId,
+                            label:item.querySchemeName,
+                        }
+                    })
+                    //设置默认显示方案
+                    list.forEach(item=>{
+                        if(item.isDefault === 1){
+                            this.ledgerTable.bar[4].defaultVal = item.querySchemeId
+                            
+                        }
                     })
                     this.ledgerTable.bar[4].list.push({value:"+新增显示方案",label:"+新增显示方案"})
                 }else{
@@ -456,12 +459,11 @@ export default {
                  this.$refs.addLegerForm.clearValidate()
              }, 0);
         },
-
         //台账表格--时间格式化
         timeFormatter(key,val){
             if (key === 'hireDate' || key === 'probationDueDate') {
                 if (val) {
-                    let newVal = val.split('T')[0];
+                    let newVal = val.split(' ')[0];
                     return newVal;
                 }
             }else{
@@ -480,12 +482,14 @@ export default {
                 stangdingBookId:10,
                 // type:this.workType,
                 type:"兼职",
+                currentPage: 1,
+                pageSize: 10,
             }
             base.log("s","查询台账",send)
             archives_ledger_api4(send,res=>{
                 base.log("r","查询台账",res.data)
                 if(res.data.success){
-                    this.ledgerTable.data = res.data.result
+                    this.ledgerTable.data = res.data.result.pageResult.list
                 }else{
                     base.error(res.data)
                 }
@@ -520,6 +524,27 @@ export default {
         selectArchiveType(val){
             this.archiveType = val
             console.log(val);            
+        },
+        //表格下拉框--人员分类请求
+        archiveTypeReq(){
+            let send ={
+                dictType:"USER_CATEGORY"
+            }
+            base.log("s","人员分类请求",send)
+            sys_api1(send,res=>{
+            base.log("r","人员分类请求",res.data)
+                if(res.data.success){
+                    let list = JSON.parse(JSON.stringify(res.data.result))
+                    this.ledgerTable.bar[0].list = list.map(item=>{
+                        return {
+                            value:item.dictCode,
+                            label:item.dictValue,
+                        }
+                    })
+                }else{
+                    base.error(res.data)
+                }
+            })
         },
         //台账树--节点点击
         ledgerNodeClick(node){

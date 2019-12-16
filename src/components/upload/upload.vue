@@ -77,7 +77,7 @@
                     <el-step title="导入完成"></el-step>
                 </el-steps>
 
-                <el-row :gutter="10" type="flex" align="middle">
+                <el-row :gutter="10" type="flex" align="middle" v-if="active === 0">
                     <el-col :span=".5" class="remindLabel">温馨提醒：</el-col>
                     <el-col :span=".5" class="remindText">推荐下载标准模板，填写信息后再上传</el-col>
                     <el-col :span=".5">
@@ -94,8 +94,7 @@
                     :auto-upload="false"
                     :on-change="fileChange"
                     :limit="data.maxNum ? data.maxNum : 1"
-                    :action="data.uploadUrl"
-                >
+                    :action="data.uploadUrl">
                     <i class="el-icon-upload uploadIcon"></i>
                     <div>
                         点击或将文件拖到这里上传

@@ -58,6 +58,7 @@ export default {
                     labelWidth: '100px',        /* 非必须，label宽度，默认100px */
                     formatDom: Boolean,         /* 非必须，是否格式化dom数据，默认false, 注意：从后端请求来的数据一般都需要格式化 */
                     isAllBtn: Boolean,          /* 非必须, 是否显示控制所有表单的按钮,默认值:false,一般用于弹窗,该值为true时,不显示分组按钮 */
+                    btnHide: Boolean,           /* 非必须,是否不显示表单自带的按钮,默认false-显示;一般用于弹窗中 */
                 },
                 formId: Number/String,          /* 非必须，多个表单时需要的表单id */
                 sure: Function,                 /* 非必须，表单格式下，"确定"按钮的回调,接收4个参数：组序号、该组数据、formId、commonForm index, option.isAllBtn为true时无效 */
@@ -79,6 +80,9 @@ export default {
             // 总按钮--提交时的loading控制
             this.$refs.commonForm.allLoading = true;
             this.$refs.commonForm.allLoading = false;
+
+            // 父级去掉子组件的方法,获取表单数据
+            let data = this.$refs.commonForm.getData();
 
         },
     }

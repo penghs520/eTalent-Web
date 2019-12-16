@@ -155,6 +155,9 @@ export default {
                     pageHide: true
                 },
                 fileList:[],
+                checkedResult:"",
+                readReport:this.baseReadReport
+
             },
             activeBase:0,
             // 附件信息导入
@@ -182,7 +185,12 @@ export default {
 
     },
     methods:{
-        //基本信息校验--校验请求
+        //基本信息--查看校验报告
+        baseReadReport(){
+            console.log("查看校验");
+            
+        },
+        //基本信息--校验请求
         uploadBaseCheckReq(){
             let send = this.uploadBase.fileList[0].raw;
             let fd = new FormData();
@@ -196,6 +204,12 @@ export default {
                     this.uploadBase.tableData.head = res.data.result.headList
                     let newList = base.checkResultFormatter(res.data.result.list)
                     this.uploadBase.tableData.data = newList.list
+                    console.log("newList",newList);
+                    if(newList.checkResult){
+                        this.uploadBase.checkedResult  = "success"
+                    }else{
+                        this.uploadBase.checkedResult  = "fail"
+                    }
                 }else{
                     base.error(res.data)
                 }

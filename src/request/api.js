@@ -19,11 +19,11 @@ import request from './http';
 
 
 // 登录
-const login_api1 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
-const login_api2 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
-const login_api3 = (data, callback) => {request('form', `hpi/masterdata/userLogin/sendCodeByPhone`, data, callback)};
-const login_api4 = (data, callback) => {request('form', `hpi/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
-const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogin/logout`, data, callback)};
+const login_api1 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByAccountAndPassword`, data, callback)};
+const login_api2 = (data, callback) => {request('form', `api/masterdata/userLogin/loadMenuTreeByCurrentLoginUser`, data, callback)};
+const login_api3 = (data, callback) => {request('form', `api/masterdata/userLogin/sendCodeByPhone`, data, callback)};
+const login_api4 = (data, callback) => {request('form', `api/masterdata/userLogin/loginByPhoneAndCode`, data, callback)};
+const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogin/logout`, data, callback)};
 
 // 员工管理
     // 公用接口
@@ -80,6 +80,10 @@ const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogi
         const archives_ledger_api7     = (data, callback) => {request('form', `api/masterdata/staffarc/selectQueryScheme`, data, callback)};
         const archives_ledger_api8     = (data, callback) => {request('post', `api/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
         const archives_ledger_api9     = (data, callback) => {request('get', `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
+        const archives_ledger_api10     = (data, callback) => {request('post', `api/masterdata/staffarc/saveQueryScheme`, data, callback)};
+        const archives_ledger_api11     = (data, callback) => {request('post', `api/masterdata/staffarc/deleteQueryScheme`, data, callback)};
+        const archives_ledger_api12     = (data, callback) => {request('form', `api/masterdata/staffarc/selectQuerySchemeMessage`, data, callback)};
+        const archives_ledger_api13     = (data, callback) => {request('get', `api/masterdata/staffarc/setDefaultQuerySchme`, data, callback)};
 
         //数据导入
         const archives_import_api1       = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFileArc`, data, callback)};
@@ -178,7 +182,7 @@ const login_api5 = (data, callback) => {request('form', `hpi/masterdata/userLogi
     
     // 组织机构
         //机构维护
-        const orgRepair_api1     = (data, callback) => {request('get', `ppi/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const orgRepair_api1     = (data, callback) => {request('get', `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
         const orgRepair_api2     = (data, callback) => {request('post', `api/masterdata/organization/getOrganizationPageList`, data, callback)};
         const orgRepair_api3     = (data, callback) => {request('form', `api/masterdata/sysDict/searchSysDictListByDictType`, data, callback)};
         const orgRepair_api4     = (data, callback) => {request('get', `api/masterdata/organization/addOrganization`, data, callback)};
@@ -245,7 +249,8 @@ export {
         
             // 员工台账
             archives_ledger_api1,archives_ledger_api2,archives_ledger_api3,archives_ledger_api4,archives_ledger_api5,archives_ledger_api6,
-            archives_ledger_api7,archives_ledger_api8,archives_ledger_api9,
+            archives_ledger_api7,archives_ledger_api8,archives_ledger_api9,archives_ledger_api10,archives_ledger_api11,archives_ledger_api12,
+            archives_ledger_api13,
 
             // 文件导入
             archives_import_api1,

@@ -35,6 +35,8 @@ export default {
                 tableShow:Boolean,                  // 非必须,是否显示表格
                 tableData:Object,                   // 非必须，表格数据(同公共表格组件格式)
                 fileList:Array,                     // 必须，上传文件存储
+                checkedResult:String,               // 必须, 校验结果(传success显示成功,fail显示失败,""显示默认)
+                readReport:Function,                // 非必须, 查看校验的回调函数
             }
         }
     },

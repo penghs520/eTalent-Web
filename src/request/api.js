@@ -102,6 +102,8 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
     // 劳动合同
         // 未签合同
         const notContract_api1       = (data, callback) => {request('get', `hpi/masterdata/staffcon/selectNoLaborContractU`, data, callback)};
+        const notContract_api2       = (data, callback) => {request('post', `hpi/masterdata/port/exportArcFileNoCon`, data, callback, 'blob')};
+        const notContract_api3       = (data, callback) => {request('post', `hpi/masterdata/staffcon/insertLaborContractBatch`, data, callback)};
 
         // 已签合同
         const contractHas_api1       = (data, callback) => {request('get', `hpi/masterdata/staffcon/selectLaborContractserUser`, data, callback)};
@@ -269,7 +271,7 @@ export {
         
         // 劳动合同
             // 未签合同
-            notContract_api1,
+            notContract_api1, notContract_api2, notContract_api3,
 
             // 已签合同
             contractHas_api1,

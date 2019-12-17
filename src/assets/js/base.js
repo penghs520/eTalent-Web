@@ -59,8 +59,6 @@ let base = {
 
     blobDownLoad(response, isTxt=false, uncode=false) {
         if (response.status === 200) {
-            // 
-            console.log(response.headers)
             let name = null;
             if (response.headers.hasOwnProperty('filename')) {
                 name = response.headers['filename'];
@@ -71,10 +69,19 @@ let base = {
                 console.error('导出错误--headers中没找到文件名');
                 return false;
             }
+
+            // 处理带双引号的情况
+            if (name.includes('"')) {
+                let a = name.split('"');
+                name = a[1];
+            }
+
+            // 处理文件名需要解码的情况
             if (uncode) {
                 // 解码
                 name = decodeURI(name);
             }
+            
             let blob;
             if (isTxt) {
                 blob = new Blob([JSON.stringify(response.data)]);

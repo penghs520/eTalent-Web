@@ -176,7 +176,6 @@ export default {
     methods: {
         //查看校验报告
         readReport() {
-            console.log("点击校验");
             if (this.data.readReport) {
                 this.data.readReport();
             }

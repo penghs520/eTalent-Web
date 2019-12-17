@@ -81,7 +81,9 @@ import {
          archives_blacklist_api4,
          archives_blacklist_api5,
          archives_blacklist_api6,
+         archives_blacklist_api7,
          sys_api1,
+         entry_api17,
          } from '../../request/api'
 export default {
     name: "archives_blacklist",
@@ -148,6 +150,7 @@ export default {
             //导入
             uploadActive: 0,
             uploadShow: false,
+            uploadKey:"BLACKLIST",
             uploadData: {
                 title: "导入黑名单",
                 download: this.importTempDownload,
@@ -165,14 +168,14 @@ export default {
                 tableShow: false,             
                 tableData: {
                     head: [
-                        {name: '姓名', key: 'userName', isShow: true},
-                        {name: '证件号码', key: 'phone', isShow: true},
-                        {name: '手机号', key: 'phone', isShow: true},
-                        {name: '所属单位', key: 'businessUnitName', isShow: true , width:"180px"},
-                        {name: '部门', key: 'orgName', isShow: true, width:"180px"},
-                        {name: '岗位', key: 'postName', isShow: true},
-                        {name: '拉黑原因', key: 'blockReason', isShow: true},
-                        {name: '拉黑时间', key: 'blockTime', isShow: true},
+                        {name: '姓名', key: '姓名', isShow: true},
+                        {name: '证件号码', key: '证件号码', isShow: true},
+                        {name: '手机号', key: '联系电话', isShow: true},
+                        {name: '所属单位', key: '单位', isShow: true , },
+                        {name: '部门', key: '部门', isShow: true,},
+                        {name: '岗位', key: '岗位', isShow: true},
+                        {name: '拉黑原因', key: '拉黑原因', isShow: true},
+                        {name: '拉黑时间', key: '拉黑时间', isShow: true},
                     ],
                     hideHeader: false,
                     data: [],
@@ -212,12 +215,12 @@ export default {
                         {type: 'input', key: 'name', isMust: true, label: '姓名'},
                         // {type: 'radio', key: 'gender' ,label: '性别', list: [{label: '男', value: '男'},{label: '女', value: '女'}]},
                         {type: 'input', key: 'phone',isMust: true, label: '手机号', rule: ['phone']},
+                        {type: 'select',key: 'idType',  label: '证件类型',list:[]},
+                        {type: 'input', key: 'idNumber',isMust: true, label: '证件号码'},
                         {type: 'input', key: 'unit', label: '所属单位'},
                         {type: 'input', key: 'depart', label: '部门'},
                         {type: 'input', key: 'post', label: '岗位'},
-                        {type: 'select',key: 'idType',  label: '证件类型',list:[]},
-                        {type: 'input', key: 'idNumber', label: '证件号码'},
-                        {type: 'textarea', key: 'block', label: '拉黑原因', isFullRow: true},
+                        {type: 'textarea', key: 'block', label: '拉黑原因', },
                     ]}
                 ],
                 option: {
@@ -270,7 +273,7 @@ export default {
             base.log("r","人员类型请求",res.data)
                 if(res.data.success){
                     let list = JSON.parse(JSON.stringify(res.data.result))
-                    this.commonForm.domList[0].list[6].list = list.map(item=>{
+                    this.commonForm.domList[0].list[2].list = list.map(item=>{
                         return {
                             value:item.dictCode,
                             label:item.dictValue,
@@ -313,7 +316,14 @@ export default {
 
         //黑名单导入---导出txt
         exportTxTReq() {
-          
+            let send = {
+                funcCode:this.uploadKey
+            }
+            base.log("s","导出txt",send)
+            entry_api17(send,res=>{
+                 base.log("r","导出txt",res.data)
+                 base.blobDownLoad(res,true);
+            })
         },
         //黑名单导入--点击查看校验报告
         readReport() {
@@ -322,8 +332,39 @@ export default {
             this.uploadData.title = "校验报告";
             this.uploadData.btnText = "确定";
             this.uploadData.cancelbtn = "返回";
+            console.log("点击校验");
+            
+            this.readReportReq()
         },
-        //黑名单导入--上传按钮
+        //黑名单导入--查看校验报告请求接口
+        readReportReq(){
+             console.log("点击校验2");
+            let send = {
+                funcCode: this.uploadKey
+            }
+            base.log("s","查看校验报告",send)            
+            archives_blacklist_api7(send,res=>{
+                base.log("r","查看校验报告",res.data)
+                if(res.data.success){
+                    let dict = JSON.parse(res.data.result)
+                    let list = [];
+                    for (const key in dict) {
+                        if (dict.hasOwnProperty(key)) {
+                            const val = dict[key];
+                            let o = {
+                                lineNumber: key,
+                                resultMsg: val
+                            };
+                            list.push(o)
+                        }
+                    };
+                    this.uploadData.checkFailTable.data = list
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
+        //黑名单导入--上传/校验/导入按钮
         uploadOrReturn() {
             if (this.uploadData.btnText === "导入") {
                 this.uploadReq();
@@ -346,12 +387,8 @@ export default {
         },
         //黑名单导入--文件上传请求
         uploadReq() {
-            let send ={
-                funcCode:"",
-            }
-            base.log("s","上传文件",send)
-            archives_blacklist_api6(send,res => {
-            base.log("r","上传文件",send)
+            archives_blacklist_api6(null,res => {
+            base.log("r","上传文件",res.data)
                 if(res.data.success){
                     this.$message.success("上传成功")
                     setTimeout(() => {
@@ -366,7 +403,8 @@ export default {
         uploadCheckReq() {
             let send = this.uploadData.fileList[0].raw;
             let fd = new FormData();
-            fd.append("file", send);           
+            fd.append("file", send); 
+
             base.log("s", "黑名单导入校验", fd);
             archives_blacklist_api3(fd, res => {
                 base.log("r", "黑名单导入校验", res.data);
@@ -375,13 +413,13 @@ export default {
                     console.log("newList",newList);
 
                     if(newList.checkResult){
-                        this.uploadData.checkedResult = "success";
-                        this.uploadData.btnText = "导入";
                         this.uploadActive = 2;
-                    }else{
-                        this.uploadData.tableData.head = res.data.result.headList
+                        this.uploadData.btnText = "导入";
+                        this.uploadData.checkedResult = "success";
                         this.uploadData.tableData.data = newList.list
+                    }else{
                         this.uploadData.checkedResult  = "fail"
+                        this.uploadData.tableData.data = newList.list
                     }
                 } else {
                         base.error(res.data)
@@ -390,20 +428,20 @@ export default {
             });
         },
         //黑名单导入--格式化导入文件
-        checkResultFormatter(list) {
-            let result =[];
-            result.checkResult = list.every(item => item.resultMsg === "");
+        checkResultFormatter(resList) {
+            let result = [] ;
+            result.checkResult = resList.every(item => item.resultMsg === "");
             result.list = [];
-            list.forEach((item,index) => {
-                // 
+            
+            resList.forEach((item,index) => {
                 let cellList = item.customFieldVOList;
                 let row = [];
                 cellList.forEach(cell => {
-                    row[cell.fieldCode] = cell.fieldValue
+                    row[cell.code] = cell.fieldValue
                 });
                 result.list[index] = row;
             });
-            
+
             return result;
         },
         //黑名单导入--取消/关闭按钮

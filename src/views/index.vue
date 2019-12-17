@@ -312,7 +312,6 @@ export default {
             if (command == "logOut") {
                 login_api5(null, () => {
                     localStorage.removeItem("userInfo");
-                    this.$message.success("已退出");
                     this.$router.push("/");
                     // 清空存储的数据
                     localStorage.setItem("topMenu", '');

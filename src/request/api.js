@@ -89,7 +89,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const archives_import_api1       = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFileArc`, data, callback)};
         
         //附件管理
-        const archives_file_api1       = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const archives_file_api1       = (data, callback) => {request('post', `hpi/masterdata/port/importFileAndCheckFileArc`, data, callback)};
 
         //黑名单管理
         const archives_blacklist_api1  = (data, callback) => {request('get',   `hpi/masterdata/staffsta/selectBalckList`, data, callback)};
@@ -97,7 +97,8 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const archives_blacklist_api3  = (data, callback) => {request('post',  `hpi/masterdata/port/importFileAndCheckFileBlackList`, data, callback)};
         const archives_blacklist_api4  = (data, callback) => {request('post',  `hpi/masterdata/port/exportBlackFile`, data, callback,'blob')};
         const archives_blacklist_api5  = (data, callback) => {request('post',  `hpi/masterdata/staffsta/insertBalckList`, data, callback)};
-        const archives_blacklist_api6  = (data, callback) => {request('get',   `hpi/masterdata/port/importFile`, data, callback)};
+        const archives_blacklist_api6  = (data, callback) => {request('form',  `hpi/masterdata/port/importBlaFile`, data, callback)};
+        const archives_blacklist_api7  = (data, callback) => {request('get',   `hpi/masterdata/port/exportCheckFile`, data, callback)};
 
     // 劳动合同
         // 未签合同
@@ -268,6 +269,7 @@ export {
 
             // 黑名单管理
             archives_blacklist_api1,archives_blacklist_api2,archives_blacklist_api3,archives_blacklist_api4,archives_blacklist_api5,archives_blacklist_api6,
+            archives_blacklist_api7,
         
         // 劳动合同
             // 未签合同

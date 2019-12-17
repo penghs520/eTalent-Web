@@ -214,9 +214,7 @@ export default {
                 showAllNode: false,
                 nodeClick: this
                     .addNodeClick /* 非必须，节点被点击时的回调，接收一个参数：node节点数据 */,
-                defaultChecked: {
-                    /* 非必须,默认勾选配置 */
-                    nodeTypeKey:
+                defaultChecked: {nodeTypeKey:
                         "roleType" /* 必须,根据此字段来筛选我们想要的节点 */,
                     nodeTypeVal:
                         "ROLE" /* 必须,与 nodeTypeKey 对应的值,如果节点中nodeTypeKey的值与该值相等,该节点就是我们想要的节点 */,
@@ -337,6 +335,7 @@ export default {
             let send = {
                 currentPage: this.currentPage,
                 orgId: this.orgId,
+                // orgId: 28,
                 pageSize: this.pageSize,
                 userName: this.searchVal
             };

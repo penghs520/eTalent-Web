@@ -34,8 +34,8 @@
             background-color: #fff;            
             .wrap{
                 margin-top: 20px;
-                max-width: 1040px;
-                width: 80%;
+                // max-width: 1040px;
+                width: 90%;
             }
         }
     }
@@ -65,7 +65,7 @@
                                  </div>  
                             </template>
                             <template v-slot:btn>
-                                <el-button type="primary" size="mini" @click="uploadBaseCheckReq" :disabled="uploadBase.fileList.length === 0">导入校验</el-button>
+                                <el-button type="primary" size="mini" @click="uploadBaseCheck" :disabled="uploadBase.fileList.length === 0">{{baseBtn}}</el-button>
                             </template>
                         </commonUpload>
                     </div>                   
@@ -159,6 +159,7 @@ export default {
                 readReport:this.baseReadReport
 
             },
+            baseBtn:"导入校验",
             activeBase:0,
             // 附件信息导入
             uploadFile:{
@@ -188,6 +189,18 @@ export default {
         //基本信息--查看校验报告
         baseReadReport(){
             console.log("查看校验");
+        },
+        //基本信息-- 校验按钮
+        uploadBaseCheck(){
+            if(this.baseBtn === "导入校验"){
+                this.uploadBaseCheckReq()
+                this.baseBtn = "返回"
+            } else if(this.baseBtn === "返回"){
+                this.activeBase = 0
+                this.uploadBase.fileList = []
+                this.uploadBase.tableShow = false
+                this.baseBtn = "导入校验"
+            }
             
         },
         //基本信息--校验请求
@@ -204,6 +217,7 @@ export default {
                     this.uploadBase.tableData.head = res.data.result.headList
                     let newList = base.checkResultFormatter(res.data.result.list)
                     this.uploadBase.tableData.data = newList.list
+
                     console.log("newList",newList);
                     if(newList.checkResult){
                         this.uploadBase.checkedResult  = "success"

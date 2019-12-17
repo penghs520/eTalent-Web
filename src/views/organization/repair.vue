@@ -321,7 +321,7 @@
                                 </el-form-item>
                                 <el-form-item label="机构负责人" prop="orgManagerId">
                                     <el-select
-                                        v-model="editOrgForm.orgManagerName"
+                                        v-model="editOrgForm.orgManagerId"
                                         placeholder="输入查找"
                                         filterable
                                         clearable>

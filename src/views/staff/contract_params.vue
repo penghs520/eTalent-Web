@@ -77,7 +77,7 @@
                 </div>
                 <div class="use_content">
                     <span class="worker">适合在职人员</span>
-                    <el-checkbox-group v-model="workKind" @change="workKindChange" :max="1">
+                    <el-checkbox-group v-model="workKind" @change="workKindChange" >
                         <el-checkbox
                             v-for="(item,index) in workKindList"
                             :label="item"
@@ -232,7 +232,7 @@ export default {
     created() {
         try {
             let params = JSON.parse(localStorage.getItem("contract_params"));
-            this.workKind[0] = params.applicationScopeCode;
+            this.workKind = params.applicationScopeCode;
             this.Prefix = params.contractRulePrefix;
             this.Infix = params.contractRuleInfix;
             this.Suffix = params.contractRuleSuffix;
@@ -252,7 +252,7 @@ export default {
         //设置合同参数请求
         setParamsReq() {
             let send = {
-                applicationScopeCode: this.workKind[0],
+                applicationScopeCode: this.workKindList,
                 // contractParamDescribe:"",
                 // contractParamName:"",
                 contractRulePrefix: this.Prefix,

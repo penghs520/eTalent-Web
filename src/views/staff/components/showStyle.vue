@@ -498,7 +498,7 @@ export default {
                 })
             }
         },
-        //左侧菜单--获取方案信息请求接口
+        //左侧菜单--获取方案信息请求接口(渲染默认字段)
         getStyleInfo(node){
             let send = {
                 id:node.querySchemeId
@@ -509,8 +509,9 @@ export default {
                 if(res.data.success){
                     //渲染默认表头
                     let tList = JSON.parse(JSON.stringify(res.data.result.querySchemeFieldList))
-                    tList =  tList.map(item=>item.fieldId)
                     let tableArr = []
+                    tList =  tList.map(item=>item.fieldId)
+                    
                     this.tabContList.forEach(item=>{                        
                         item.forEach(sec=>{
                             sec.customFieldVOList.forEach(sub=>{
@@ -524,14 +525,20 @@ export default {
 
                     //渲染默认排序字段
                     let sList = JSON.parse(JSON.stringify(res.data.result.querySchemeSortList))
-                    sList =  sList.map(item=>item.fieldId)
+                    let ids =  sList.map(item=>item.fieldId)
                     let sortArr = []
+
                     this.tabContList.forEach(item=>{                        
                         item.forEach(sec=>{
                             sec.customFieldVOList.forEach(sub=>{
-                                if(sList.includes(sub.fieldId)){
-                                    sub.sortStatus = sub.orderByRule == "升序"
-                                    sortArr.push(sub)
+                                if(ids.includes(sub.fieldId)){
+                                    sList.forEach(it => {
+                                        if(it.fieldId == sub.fieldId){
+                                            sub.orderByRule=it.orderByRule
+                                            sub.sortStatus = sub.orderByRule == "升序"
+                                            sortArr.push(sub)
+                                        }
+                                    })
                                 }
                             })
                         })

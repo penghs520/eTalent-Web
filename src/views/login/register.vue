@@ -145,12 +145,12 @@
             </el-form>
             <!-- 协议 -->
             <div class="link_text">
-                <el-checkbox v-model="checked"></el-checkbox>
+                <el-checkbox v-model="checked" @change="checkedChange"></el-checkbox>
                 <span class="read">阅读并接受</span>
                 <span class="agreement">《勤杰Qinjee软件协议》</span>
             </div>
             <!-- 登陆按钮 -->
-            <el-button type="primary" @click="register('regForm')">注册</el-button>
+            <el-button type="primary" @click="register('regForm')" :disabled="!checked">注册</el-button>
             <!-- 返回登陆 -->
             <div class="we_chat">
                 <div class="footer_line">
@@ -198,7 +198,7 @@ export default {
             name2: false,
             codeTxt: "获取验证码",
             isDisable: false,
-            checked: false,
+            checked: true,
             sec: 60,
             waitTime: 60
         };
@@ -224,6 +224,12 @@ export default {
         }
     },
     methods: {
+        //多选框改变
+        checkedChange(val){
+            if(!val){
+                this.$message.warning("请点击阅读并接受《勤杰Qinjee软件协议》！")
+            }
+        },
         //验证码倒计时
         getCode() {
             if (this.regForm.mobile.length == 0) {

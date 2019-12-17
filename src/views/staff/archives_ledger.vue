@@ -200,22 +200,7 @@ export default {
             ledgerNode:"",
             //台账表格
             ledgerTable: {
-                head: [                                 /* 必须，表格头配置 */
-                    {name: '姓名', key: 'userName', isShow: true},
-                    {name: '工号', key: 'employeeNumber', isShow: true},
-                    {name: '单位', key: 'businessUnitName', isShow: true},
-                    {name: '部门', key: 'orgName', isShow: true},
-                    {name: '人员分类', key: 'idType', isShow: true},
-                    {name: '岗位', key: 'postName', isShow: true},
-                    {name: '入职日期', key: 'hireDate', isShow: true},
-                    {name: '试用期到期日', key: 'probationDueDate', isShow: true , width:"120px"},
-                    {name: '直接上级', key: 'supervisorUserName', isShow: true},
-                    {name: '联系电话', key: 'phone', isShow: true},
-                    {name: '任职类型', key: 'attritionType', isShow: true},
-                    // {name: '第一学历', key: 'idType', isShow: false},
-                    // {name: '紧急联系人姓名', key: 'idType', isShow: false},
-                    // {name: '紧急联系人电话', key: 'idType', isShow: false},
-                ],
+                head: [],
                 data: [],                               /* 必须，表格要渲染的数据，数组格式 */
                 total: 0,                               /* 必须，数据的总条数，用于翻页 */
                 bar: [
@@ -350,7 +335,6 @@ export default {
         }
     },
     methods:{
-       
         //台账设置--删除按钮
         delLedger(){
             if(!this.ledgerNode){
@@ -442,7 +426,7 @@ export default {
                  this.$refs.addLegerForm.clearValidate()
              }, 0);
         },
-        
+
         //显示方案--关闭弹窗
         handleClose(){
             this.addStyleShow = false

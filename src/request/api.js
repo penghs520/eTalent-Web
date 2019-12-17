@@ -95,7 +95,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const archives_blacklist_api1  = (data, callback) => {request('get',   `hpi/masterdata/staffsta/selectBalckList`, data, callback)};
         const archives_blacklist_api2  = (data, callback) => {request('post',  `hpi/masterdata/staffsta/deleteBalckList`, data, callback)};
         const archives_blacklist_api3  = (data, callback) => {request('post',  `hpi/masterdata/port/importFileAndCheckFileBlackList`, data, callback)};
-        const archives_blacklist_api4  = (data, callback) => {request('post',  `hpi/masterdata/port/exportBlackFile`, data, callback)};
+        const archives_blacklist_api4  = (data, callback) => {request('post',  `hpi/masterdata/port/exportBlackFile`, data, callback,'blob')};
         const archives_blacklist_api5  = (data, callback) => {request('post',  `hpi/masterdata/staffsta/insertBalckList`, data, callback)};
         const archives_blacklist_api6  = (data, callback) => {request('get',   `hpi/masterdata/port/importFile`, data, callback)};
 

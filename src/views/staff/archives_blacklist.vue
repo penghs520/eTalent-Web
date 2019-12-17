@@ -83,7 +83,6 @@ import {
          archives_blacklist_api6,
          sys_api1,
          } from '../../request/api'
-
 export default {
     name: "archives_blacklist",
     components:{
@@ -96,8 +95,7 @@ export default {
             tableData:{
                 head: [                                 /* 必须，表格头配置 */
                     {name: '姓名', key: 'userName', isShow: true},
-                    {name: '性别', key: 'employeeNumber', isShow: true},
-                    {name: '证件号码', key: 'phone', isShow: true},
+                    {name: '证件号码', key: 'idNumber', isShow: true},
                     {name: '手机号', key: 'phone', isShow: true},
                     {name: '所属单位', key: 'businessUnitName', isShow: true , width:"180px"},
                     {name: '部门', key: 'orgName', isShow: true, width:"180px"},
@@ -166,7 +164,16 @@ export default {
                 cancelbtn: "取消",
                 tableShow: false,             
                 tableData: {
-                    head: [],
+                    head: [
+                        {name: '姓名', key: 'userName', isShow: true},
+                        {name: '证件号码', key: 'phone', isShow: true},
+                        {name: '手机号', key: 'phone', isShow: true},
+                        {name: '所属单位', key: 'businessUnitName', isShow: true , width:"180px"},
+                        {name: '部门', key: 'orgName', isShow: true, width:"180px"},
+                        {name: '岗位', key: 'postName', isShow: true},
+                        {name: '拉黑原因', key: 'blockReason', isShow: true},
+                        {name: '拉黑时间', key: 'blockTime', isShow: true},
+                    ],
                     hideHeader: false,
                     data: [],
                     total: 0,
@@ -203,7 +210,7 @@ export default {
                 domList: [
                     {list: [
                         {type: 'input', key: 'name', isMust: true, label: '姓名'},
-                        {type: 'radio', key: 'gender' ,label: '性别', list: [{label: '男', value: '男'},{label: '女', value: '女'}]},
+                        // {type: 'radio', key: 'gender' ,label: '性别', list: [{label: '男', value: '男'},{label: '女', value: '女'}]},
                         {type: 'input', key: 'phone',isMust: true, label: '手机号', rule: ['phone']},
                         {type: 'input', key: 'unit', label: '所属单位'},
                         {type: 'input', key: 'depart', label: '部门'},
@@ -244,8 +251,9 @@ export default {
             archives_blacklist_api5(send,res=>{
                 base.log("r","新增黑名单",send)
                 if(res.data.success){
-                    this.$message.warning("新增成功")
+                    this.$message.success("新增成功")
                     this.getTableReq()
+                    this.addDialogShow = false
                 }else{
                     base.error(res.data)
                 }
@@ -284,7 +292,6 @@ export default {
                 this.$message.warning("请选择需要导出的文件")
                 return
             }
-
             let list = this.exportList.map(item=>item.blacklistId)
             console.log(list);
             
@@ -396,6 +403,7 @@ export default {
                 });
                 result.list[index] = row;
             });
+            
             return result;
         },
         //黑名单导入--取消/关闭按钮

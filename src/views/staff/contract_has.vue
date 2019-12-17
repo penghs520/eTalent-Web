@@ -1,11 +1,24 @@
 <style lang="scss" scoped >
-    
 </style>
 
 <template>
-    <div id="contract_has">
+    <div id="contract_has" class="commonRightCont">
         <!-- 主页 -->
         <commonTable v-show="showType === 'main'" :table="table" ref="commonTable" ></commonTable>
+
+        <!-- 续签 -->
+        <div v-show="showType === 'renew'">
+            <contractSign :signData="signData" ref="contractSign"></contractSign>
+
+            <el-row :gutter="20" class="button" type="flex" justify="center" align="middle" >
+                <el-col :span=".5">
+                    <el-button size="small" plain="" @click="renewCancel" >取消</el-button>
+                </el-col>
+                <el-col :span=".5">
+                    <el-button size="small" type="primary" @click="renewSure" >提交</el-button>
+                </el-col>
+            </el-row>
+        </div>
     </div>
 </template>
 
@@ -18,10 +31,11 @@ import commonTitle from '../../components/title';
 import commonForm from '../../components/form/commonForm';
 import commonUpload from '../../components/archivesUpload/archivesUpload';
 import file from '../../request/filePath';
+import contractSign from './components/contractSign';
 
 export default {
     name: 'contract_has',            /* 已签合同 */
-    components: {commonTable, commonTitle, commonForm, commonUpload},
+    components: {commonTable, commonTitle, commonForm, commonUpload, contractSign},
     data() {
         return {
             showType: 'main',
@@ -121,6 +135,13 @@ export default {
             },
             currentPage: 1,
             pageSize: 10,
+
+            // 续签
+            operationRows: null,
+            signData: {
+                title: '续签合同',
+                list: []
+            },
         };
     },
     created() {
@@ -191,12 +212,44 @@ export default {
             this.getTable(searchData);
         },
 
+        // 续签
+        renew(search,radio,checkbox) {
+            if (!checkbox || checkbox.length === 0) {
+                this.$message({
+                    message: '请先勾选人员',
+                    type: 'warning'
+                });
+                return false;
+            }
+            console.log(checkbox)
+            this.operationRows = checkbox;
+            this.signData.list = checkbox;
+            this.showType = 'renew';
+        },
+
+        // 续签--取消
+        renewCancel() {
+            this.showType = 'main';
+        },
+
+        // 续签--确定
+        renewSure() {},
+
+        // 终止
+        stop(search,radio,checkbox) {
+            if (!checkbox || checkbox.length === 0) {
+                this.$message({
+                    message: '请先勾选人员',
+                    type: 'warning'
+                });
+                return false;
+            }
+            console.log(checkbox)
+        },
 
 
 
 
-        renew() {},
-        stop() {},
         relieve() {},
         change() {},
         print() {},

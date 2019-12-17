@@ -24,7 +24,7 @@ module.exports = {
                 }
             },
             '/ppi': {   /* 彭洪思 */
-                target: 'http://192.168.1.138:8080',
+                target: 'http://192.168.1.139:8080',
                 changeOrigin: true,
                 pathRewrite: {
                     '^/ppi/masterdata': ''

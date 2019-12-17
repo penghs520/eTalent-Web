@@ -159,7 +159,7 @@
                             element-loading-spinner="el-icon-loading"
                             element-loading-background="rgba(0, 0, 0, 0.5)" 
                             >
-                            <el-tree class="serverTree" key="serverTree" :data="serverData" :props="serverProps" ref="serverTree" node-key="menuId" show-checkbox @check="serverCheck" :highlight-current="true" >
+                            <el-tree class="serverTree" key="serverTree" :data="serverData" :props="serverProps" :check-strictly="true" ref="serverTree" node-key="menuId" show-checkbox @check="serverCheck" :highlight-current="true" >
                                 <span slot-scope="{ node, data }">
                                     <span v-show="data.funcType !== 'NODE'" class="qj-wenjianjia roleTreeIcon serverIcon"></span>
                                     <span v-show="data.funcType === 'NODE'" class="qj-detail roleTreeIcon serverIcon"></span>

@@ -53,108 +53,7 @@
 
         <!-- 新签 -->
         <div class="add" v-show="showType === 'add'" >
-            <commonTitle name="合同签订信息" ></commonTitle>
-            <!-- 业务对象 -->
-            <ul class="person" >
-                <li class="left">
-                    <span class="label">业务对象：</span>
-                    <span class="value">
-                        <span>{{addName}}</span>
-                        <el-button type="text" size="small" class="btn" @click="addTableShow = !addTableShow" >展开详情</el-button>
-                    </span>
-                </li>
-            </ul>
-            <!-- 表格 -->
-            <commonTable v-show="addTableShow" :table="addTable" ref="addCommonTable" ></commonTable>
-            <!-- 表单 -->
-            <el-form :model="addForm" size="small" style="max-width:1000px;" status-icon :rules="addRules" ref="addForm" label-width="140px" >
-                <el-row :gutter="20">
-                    <el-col :span="12">
-                        <el-form-item label="合同编号：" prop="num">
-                            <el-input v-model="addForm.num"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="合同期限类型：" prop="type">
-                            <el-select v-model="addForm.type" style="width:100%" @change="typeChange" >
-                                <el-option v-for="(item,index) in typeList" :key="index" :label="item" :value="item" ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row :gutter="20">
-                    <el-col :span="12" v-if="userLength === 1">
-                        <el-form-item label="合同起始日期：" prop="startDate">
-                            <el-date-picker
-                                style="width:100%;"
-                                disabled=""
-                                v-model="addForm.startDate"
-                                :editable="false"
-                                size="small"
-                                value-format="yyyy-MM-dd">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" v-else>
-                        <el-form-item label="合同起始日期：" prop="startDateText">
-                            <el-input disabled="" v-model="addForm.startDateText"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="合同期限（月）：" prop="range">
-                            <el-input v-model.number="addForm.range" :disabled="rangeDisabled" type="number" @change="rangeChange" class="removeNumberInput" ></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row :gutter="20">
-                    <el-col :span="12" v-if="isEndDate && userLength === 1">
-                        <el-form-item label="合同终止日期：" prop="endDate">
-                            <el-date-picker
-                                style="width:100%;"
-                                v-model="addForm.endDate"
-                                @change="endDateChange"
-                                :editable="false"
-                                size="small"
-                                value-format="yyyy-MM-dd">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" v-else>
-                        <el-form-item label="合同终止日期：" prop="endDateText">
-                            <el-input disabled="" v-model="addForm.endDateText"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="合同签订日期：" prop="writeDate">
-                            <el-date-picker
-                                style="width:100%;"
-                                v-model="addForm.writeDate"
-                                :editable="false"
-                                size="small"
-                                value-format="yyyy-MM-dd">
-                            </el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row :gutter="20">
-                    <el-col :span="12">
-                        <el-form-item label="合同主体：" prop="theme">
-                            <el-input v-model="addForm.theme"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="签订次数：" prop="times">
-                            <el-input v-model.number="addForm.times" :disabled="true" class="inputRemove"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-form-item label="备注：" prop="note"> 
-                        <el-input v-model="addForm.note" type="textarea" :rows="2"></el-input>
-                    </el-form-item>
-                </el-row>
-            </el-form>
-
+            <contractSign :signData="signData" ref="contractSign"></contractSign>
             <el-row :gutter="20" class="button" type="flex" justify="center" align="middle" >
                 <el-col :span=".5">
                     <el-button size="small" plain="" @click="addCancel" >取消</el-button>
@@ -192,14 +91,14 @@ import {notContract_api1, sys_api2, custom_api4, custom_api3, notContract_api2, 
 import cr from '../../request/commonRequest';
 import commonTable from '../../components/table/commonTable';
 import commonTitle from '../../components/title';
-import commonForm from '../../components/form/commonForm';
 import commonUpload from '../../components/archivesUpload/archivesUpload';
 import userInfo from './components/userInfo';
 import file from '../../request/filePath';
+import contractSign from './components/contractSign';
 
 export default {
     name: 'contract_not',            /* 未签合同 */
-    components: {commonTable, commonTitle, commonForm, commonUpload, userInfo},
+    components: {commonTable, commonTitle, commonUpload, userInfo, contractSign},
     data() {
         return {
             showType: 'main',
@@ -256,52 +155,11 @@ export default {
             currentOrgId: '',       /* 当前的机构id */
 
             // 新签
-            contractType: '1',
             addTableShow: false,
-            addName: '',
-            userLength: 0,
             addRows: [],
-            addTable: {
-                head: [
-                    {name: '姓名', key: 'userName', isShow: true},
-                    {name: '工号', key: 'employeeNumber', isShow: true},
-                    {name: '单位', key: 'businessUnitName', isShow: true},
-                    {name: '部门', key: 'orgName', isShow: true},
-                    {name: '岗位', key: 'postName', isShow: true},
-                    {name: '试用开始日期', key: 'probationDueDate', isShow: true},
-                    {name: '试用结束日期', key: 'probationEndDate', isShow: true},
-                    {name: '试用期限（月）', key: 'contractPeriodMonth', isShow: true}
-                ],
-                data: [],
-                selected: {                             /* 非必须, 默认勾选的行 */
-                    key: 'und',
-                    value: undefined
-                },
-                // showSelect: true,
-                // selectChange: this.addSelectChange,
-                pageHide: true,
-            },
-            typeList: ['固定期限','无固定期限','以完成一定工作任务'],
-            rangeDisabled: false,
-            isEndDate: true,
-            addForm: {
-                num: '',                    /* 合同编号 */
-                type: '固定期限',           /* 合同类型 */
-                writeDate: '',              /* 合同签订日期 */
-                startDate: '',              /* 合同起始日期 */
-                startDateText: '员工入职日期',
-                range: '',                  /* 合同期限 */
-                endDate: '',                /* 合同终止日期 */
-                endDateText: '根据合同期限(月)自动计算',            /* 合同终止日期文字描述 */
-                theme: '',                  /* 合同主体 */
-                times: 1,                  /* 签订次数 */
-                note: '',                   /* 备注 */
-            },
-            addRules: {
-                type: [{required: true, message: '必选', trigger: 'change'}],
-                writeDate: [{required: true, message: '必选', trigger: 'change'}],
-                startDate: [{required: true, message: '必选', trigger: 'change'}],
-                endDate: [{required: true, message: '必选', trigger: 'change'}],
+            signData: {
+                title: '合同签订信息',
+                list: []
             },
 
             // 上传
@@ -438,19 +296,9 @@ export default {
                 })
                 return false;
             }
-            this.getContractNum(1);
-            this.addTable.data = selectData;
+            this.signData.list = selectData;
             this.addRows = selectData;
 
-            // 计算一些默认值
-            this.userLength = selectData.length;
-            let userList = selectData.filter((item,index) => index < 3);
-            let userNameList = userList.map(item => item.userName);
-            this.addName = userNameList.join('、');
-            this.addForm.writeDate = new Date();
-            if (selectData.length === 1) {
-                this.addForm.startDate = selectData[0].hireDate;
-            }
             this.showType = 'add';
         },
 
@@ -550,28 +398,27 @@ export default {
         },
 
         // 新签--确定
-        addSure(formName) {
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    this.addSubmit();
-                }
-            });
+        addSure() {
+            let data = this.$refs.contractSign.getData();
+            if (data) {
+                this.addSubmit(data);
+            }
         },
 
         // 新签--提交
-        addSubmit() {
+        addSubmit(dict) {
             let send = {
                 laborContractVo: {
-                    "contractBeginDate": this.addForm.startDate,
-                    "contractEndDate": this.addForm.endDate,
+                    "contractBeginDate": dict.startDate,
+                    "contractEndDate": dict.endDate,
                     "contractId": 0,
-                    "contractNumber": this.addForm.num,
-                    "contractPeriodMonth": this.addForm.range,
-                    "contractPeriodType": this.addForm.type,
-                    "contractRemark": this.addForm.note,
-                    "contractSignDate": this.addForm.writeDate,
-                    "contractSubject": this.addForm.theme,
-                    "signNumber": this.addForm.times
+                    "contractNumber": dict.num,
+                    "contractPeriodMonth": dict.range,
+                    "contractPeriodType": dict.type,
+                    "contractRemark": dict.note,
+                    "contractSignDate": dict.writeDate,
+                    "contractSubject": dict.theme,
+                    "signNumber": dict.times
                 },
                 list: this.addRows.map(item => item.archiveId)
             };

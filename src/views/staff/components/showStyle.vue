@@ -139,9 +139,36 @@
     
 }
 .group_list {
-        margin-top: 10px;
-        padding-left: 35px;
+    margin-top: 10px;
+    padding-left: 35px;
+}
+
+
+.sortButton{
+    cursor: move;
+    .sortIcon{
+        position: relative;
+        height: 8px;
+        line-height: 8px;
+        cursor: pointer;
+        overflow: hidden;
+        color: #DBDBDB;
     }
+    .sortIcon.active{
+        color: #fff;
+    }
+    .sortAb{
+        top: -5px;
+        left: 5px;
+    }
+    .sortDes{
+        top: 5px;
+        left: -12px;
+    }
+}
+// .sortIcon
+// sortAb
+// sortDes
 </style>
 
 <template>
@@ -236,8 +263,10 @@
                             @end="drag=false">
                                 <span class="btn" :span="4" v-for="(item,index) in sortList" :key="index">
                                     <i class="el-icon-error" @click="delFieldsort(index)"></i>
-                                    <el-button   type="primary" size="small" @click="statusChange(index)" >
-                                        {{item.fieldName}}{{item.sortStatus ? "(升序)" : "(降序)"}}
+                                    <el-button class="sortButton"   type="primary" size="small" >
+                                        {{item.fieldName}}
+                                        <span class="sortIcon sortAb el-icon-caret-top" :class="{active: item.sortStatus}" @click="statusChange(index,true)"></span>
+                                        <span class="sortIcon sortDes el-icon-caret-bottom" :class="{active: !item.sortStatus}" @click="statusChange(index,false)"></span>
                                     </el-button>
                                 </span>  
                         </draggable>
@@ -562,10 +591,10 @@ export default {
            this.sortList.splice(index,1)       
         },
         //内容区--点击升序降序
-        statusChange(index){
+        statusChange(index,bool){
           this.sortList = this.sortList.map((item,i)=>{
                if(index == i){
-                   item.sortStatus = !item.sortStatus
+                   item.sortStatus = bool
                }
                return item 
            })

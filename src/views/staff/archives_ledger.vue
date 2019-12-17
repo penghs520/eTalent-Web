@@ -156,7 +156,7 @@
             </el-tabs>
         </div>
         <!-- 展示方案组件 -->
-        <showStyle v-if="addStyleShow" :data="styleData"></showStyle>   
+        <showStyle v-if="addStyleShow" :data="styleData" @defaultStyle="recordDefaultStyle = $event"></showStyle>   
     </div>
 </template>
 
@@ -303,7 +303,10 @@ export default {
             addStyleShow:false, 
             styleData:{
                 handleClose:this.handleClose,
-            },       
+            },
+            recordDefaultStyle:"",
+            changeDefaultStyle:"",
+            updateDefaultStyle:"",       
             //新增编辑台账
             addDialogShow:false,
             dialogTitle:"", 
@@ -318,7 +321,9 @@ export default {
                 ],
             },           
             //删除台账
-            delDialogShow:false,           
+            delDialogShow:false,
+            
+                  
         }
     },
     created(){
@@ -326,6 +331,12 @@ export default {
         this.getNotShareLeger()    //获取不共享台账 
         this.getStyleList()        //获取模块方案
         this.archiveTypeReq()      //获取人员分类
+    },
+    beforeDestroy(){
+        let send = {
+                querySchmeId:this.recordDefaultStyle
+            }
+        this.styleChangeReq(send)
     },
     watch:{
         'ledgerTable.data'(newVal,oldVal){
@@ -339,36 +350,7 @@ export default {
         }
     },
     methods:{
-        //显示方案--关闭弹窗
-        handleClose(){
-            this.addStyleShow = false
-            this.getStyleList()
-        },
-        //获取展示方案
-        getStyleList(){           
-            archives_ledger_api7(null,res=>{
-                base.log("r","获取显示方案",res.data)
-                if(res.data.success){
-                    let list = JSON.parse(JSON.stringify(res.data.result))
-                    this.ledgerTable.bar[4].list = list.map(item=>{
-                        return {
-                            value:item.querySchemeId,
-                            label:item.querySchemeName,
-                        }
-                    })
-                    //设置默认显示方案
-                    list.forEach(item=>{
-                        if(item.isDefault === 1){
-                            this.ledgerTable.bar[4].defaultVal = item.querySchemeId
-                            
-                        }
-                    })
-                    this.ledgerTable.bar[4].list.push({value:"+新增显示方案",label:"+新增显示方案"})
-                }else{
-                    base.error(res.data)
-                }
-            })
-        },
+       
         //台账设置--删除按钮
         delLedger(){
             if(!this.ledgerNode){
@@ -460,6 +442,37 @@ export default {
                  this.$refs.addLegerForm.clearValidate()
              }, 0);
         },
+        
+        //显示方案--关闭弹窗
+        handleClose(){
+            this.addStyleShow = false
+            this.getStyleList()
+        },
+        //获取展示方案
+        getStyleList(){           
+            archives_ledger_api7(null,res=>{
+                base.log("r","获取显示方案",res.data)
+                if(res.data.success){
+                    let list = JSON.parse(JSON.stringify(res.data.result))
+                    this.ledgerTable.bar[4].list = list.map(item=>{
+                        return {
+                            value:item.querySchemeId,
+                            label:item.querySchemeName,
+                        }
+                    })
+                    //设置默认显示方案
+                    list.forEach(item=>{
+                        if(item.isDefault === 1){
+                            this.ledgerTable.bar[4].defaultVal = item.querySchemeId
+                            this.recordDefaultStyle = item.querySchemeId
+                        }
+                    })
+                    this.ledgerTable.bar[4].list.push({value:"+新增显示方案",label:"+新增显示方案"})
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
         //台账表格--时间格式化
         timeFormatter(key,val){
             if (key === 'hireDate' || key === 'probationDueDate') {
@@ -498,6 +511,7 @@ export default {
             archives_ledger_api4(send,res=>{
                 base.log("r","查询台账",res.data)
                 if(res.data.success){
+                    this.ledgerTable.head = res.data.result.heads
                     this.ledgerTable.data = res.data.result.pageResult.list
                 }else{
                     base.error(res.data)
@@ -506,15 +520,12 @@ export default {
             })
         },
         //表格下拉框 -- 切换方案设置默认请求接口
-        styleChangeReq(val){
-            let send = {
-                querySchmeId:val.querySchemeId
-            }
+        styleChangeReq(send){
             base.log("s","设置默认方案",send)
             archives_ledger_api13(send,res=>{
                  base.log("r","设置默认方案",res.data)
                 if(res.data.success){
-                    this.$message.success("设置成功")
+                   this.getLegerReq()
                 }else{
                     base.error(res.data)
                 }
@@ -522,11 +533,23 @@ export default {
         },
         //表格下拉框 --表格显示方案切换
         selectValueChange(val){
+            console.log(val);
+            this.changeDefaultStyle = val
            if(val ===  "+新增显示方案"){
-              this.addStyleShow = true
+                let send = {
+                    querySchmeId:this.recordDefaultStyle
+                }
+                this.styleChangeReq(send)
+                this.addStyleShow = true
+            }else if(val === ""){
+                return
+            }else{
+                 let send = {
+                    querySchmeId:val
+                }
+                this.styleChangeReq(send)
            }          
         },
-        //       
         //表格下拉框 -- 机构树 
         checkTreeClick(val,list){
             this.orgList =  list.checkedNodes

@@ -635,26 +635,10 @@ export default {
                 },
                 icons: [
                     /* 非必须，树形结构层级图标配置 */
-                    {
-                        key: "orgType",
-                        val: "GROUP",
-                        icon: "qj-jituan"
-                    },
-                    {
-                        key: "orgType",
-                        val: "UNIT",
-                        icon: "qj-danwei"
-                    },
-                    {
-                        key: "orgType",
-                        val: "DEPT",
-                        icon: "qj-nav_client"
-                    },
-                    {
-                        key: "orgType",
-                        val: "POST",
-                        icon: "qj-detail"
-                    }
+                    { key: "orgType",val: "GROUP",icon: "qj-jituan"},
+                    { key: "orgType",val: "UNIT",icon: "qj-danwei"},
+                    { key: "orgType", val: "DEPT",icon: "qj-nav_client"},
+                    { key: "orgType",val: "POST",icon: "qj-detail"}
                 ],
                 switchOpen: true,
                 switchChange: this.switchChange,

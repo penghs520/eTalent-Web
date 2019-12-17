@@ -304,12 +304,9 @@ export default {
             searchVal: "",
             addAuthorityTree: {
                 data: [] /* 必须，树形结构数据 */,
-                // nodeKey: "orgCode" /* 必须, 节点数据中某个字段,一般是id字段 */,
                 props: {
-                    /* 必须，树形结构数据绑字段配置 */
                     children: "childOrgList" /* 必须，子集key */,
-                    label:
-                        "orgFullName" /* 必须，菜单节点要显示的文字对应的字段 */
+                    label:"orgName" /* 必须，菜单节点要显示的文字对应的字段 */
                 },
                 icons: [
                     /* 非必须，树形结构层级图标配置 */
@@ -526,13 +523,13 @@ export default {
                     this.getTreeData(temp.childOrgList);
                     if (temp.childArchiveList) {
                         temp.childArchiveList.forEach(item => {
-                            item.orgFullName = item.userName;
+                            item.orgName = item.userName;
                         });
                         temp.childOrgList.push(...temp.childArchiveList);
                     }
                 } else if (!temp.childOrgList && temp.childArchiveList) {
                     temp.childArchiveList.forEach(item => {
-                        item.orgFullName = item.userName;
+                        item.orgName = item.userName;
                     });
                     temp.childOrgList = temp.childArchiveList;
                 }

@@ -146,8 +146,7 @@
             <el-tabs
                 v-model="activeName"
                 class="organization_repair_tabsBar"
-                @tab-click="handleClick"
-            >
+                @tab-click="handleClick">
                 <!-- 机构表 -->
                 <el-tab-pane name="orgForm">
                     <span slot="label">
@@ -160,8 +159,7 @@
                         class="qinjeeDialogSmall"
                         :append-to-body="true"
                         :close-on-click-modal="false"
-                        center
-                    >
+                        center>
                         <span slot="title">新增机构</span>
                         <div class="qinjeeDialogSmallCont">
                             <el-form
@@ -170,8 +168,7 @@
                                 ref="addOrgForm"
                                 label-width="100px"
                                 class="demo-ruleForm"
-                                size="small"
-                            >
+                                size="small">
                                 <el-form-item label="机构编码" prop="orgCode" >
                                     <el-input v-model.trim="addOrgForm.orgCode" ></el-input>
                                 </el-form-item>
@@ -194,29 +191,28 @@
                                         placeholder="请选择"
                                         ref="selectTree1"
                                         popper-class="base_treeSelect"
-                                        style="width:100%"
-                                    >
+                                        style="width:100%">
                                         <el-option
                                             :label="addOrgForm.orgParentName"
-                                            :value="addOrgForm.orgParentName"
-                                        >
+                                            :value="addOrgForm.orgParentName">
                                             <tree :treeData="enrolTree"></tree>
                                         </el-option>
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="机构负责人" prop="orgManagerId">
                                     <el-select
-                                        v-model="addOrgForm.orgManagerId"
+                                        v-model="addOrgForm.orgManagerName"
                                         placeholder="输入查找"
                                         filterable
                                         clearable
-                                    >
+                                        ref="selectTreeM1"
+                                        popper-class="base_treeSelect"
+                                        style="width:100%">
                                         <el-option
-                                            v-for="item in orgManagerList"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value"
-                                        ></el-option>
+                                            :label="addOrgForm.orgManagerName"
+                                            :value="addOrgForm.orgManagerName">
+                                            <tree :treeData="orgManagerTree"></tree>
+                                        </el-option>
                                     </el-select>
                                 </el-form-item>
                             </el-form>
@@ -320,17 +316,19 @@
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="机构负责人" prop="orgManagerId">
-                                    <el-select
-                                        v-model="editOrgForm.orgManagerId"
+                                     <el-select
+                                        v-model="editOrgForm.orgManagerName"
                                         placeholder="输入查找"
                                         filterable
-                                        clearable>
+                                        clearable
+                                        ref="selectTreeM2"
+                                        popper-class="base_treeSelect"
+                                        style="width:100%">
                                         <el-option
-                                            v-for="item in orgManagerList"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value"
-                                        ></el-option>
+                                            :label="editOrgForm.orgManagerName"
+                                            :value="editOrgForm.orgManagerName">
+                                            <tree :treeData="orgManagerTree"></tree>
+                                        </el-option>
                                     </el-select>
                                 </el-form-item>
                             </el-form>
@@ -668,6 +666,8 @@ import {
     orgRepair_api16,
     orgRepair_api17,
     orgRepair_api18,
+    orgRepair_api19,
+    user_api4,
 } from "../../request/api";
 
 export default {
@@ -750,7 +750,6 @@ export default {
                             { text: "合并", method: this.mergeOrg },
                             { text: "划转", method: this.enrolOrg },
                             { text: "排序", method: this.sortOrg },
-                            // { text: "模板下载", method: this.downloadModle },
                             { text: "导入", method: this.uploadPostTable },
                             { text: "导出", method: this.downloadTable }
                         ]
@@ -783,7 +782,8 @@ export default {
                 orgType: "",
                 orgParentId: "",
                 orgParentName: "",
-                orgManagerId: ""
+                orgManagerId: "",
+                orgManagerName: "",
             },
             rules: {
                 orgName: [
@@ -807,6 +807,21 @@ export default {
                 { label: "负责人", value: "1" },
                 { label: "负责人001", value: "2" }
             ],
+            orgManagerTree:{
+                data: [] ,
+                props: {
+                    children: "childOrgList" ,
+                    label: "orgName"
+                },
+                icons: [
+                    { key:"orgType" ,val: "GROUP" ,icon: "qj-jituan"},
+                    { key:"orgType" , val: "UNIT", icon: "qj-danwei" },
+                    { key: "orgType" ,val: "DEPT" ,icon: "qj-nav_client"},
+                    { key: "orgType" ,val: "archive" ,icon: "qj-detail"}
+                ],
+                showDefaultIcon: true ,
+                nodeClick: this.managerTreeClick
+            },
             //删除机构
             checkAll: true,
             isIndeterminate: false,
@@ -816,7 +831,10 @@ export default {
             //编辑机构
             editOrgDialog: false,
             editOrglist: [],
-            editOrgForm: {},
+            editOrgForm: {
+                orgManagerId: "",
+                orgManagerName: "",
+            },
             //封存机构
             notEnableAll: true,
             isIndet: false,
@@ -1349,7 +1367,7 @@ export default {
             let checkedCount = value.length;
             this.checkAll = checkedCount === this.delOrgList.length;
             this.isIndeterminate = checkedCount > 0 && checkedCount < this.delOrgList.length;
-            
+             
         },
         //删除机构,编辑机构,封存,解封,合并,划转--多选赋值
         orgSelectChange(node) {
@@ -1391,7 +1409,74 @@ export default {
                 }
             });
         },
+        
+        //新增机构--负责人模糊查找请求
+        searchManagerReq(){
+            let send = {
+                userName:"00"
+            }
+            orgRepair_api19(send,res=>{
+                base.log("r","机构负责人搜索",res.data)
+                if(res.dta.success){
 
+                }else{
+                    base.error(res.data)
+                }
+            })
+        },
+        //新增机构--机构负责人树形节点地点击
+        managerTreeClick(node){
+            console.log(node);
+            
+            this.addOrgForm.orgManagerId = node.archiveId;
+            this.addOrgForm.orgManagerName = node.userName;
+            
+            this.editOrgForm.orgManagerId = node.archiveId;
+            this.editOrgForm.orgManagerName = node.userName;
+
+            if (this.$refs.selectTreeM1 && node.archiveId) {
+                this.$refs.selectTreeM1.blur();
+            }
+            if (this.$refs.selectTreeM2 && node.archiveId) {
+                this.$refs.selectTreeM2.blur();
+            }
+        },
+        //新增机构-- 获取人员档案请求
+        getUserReq(){
+               user_api4(null, res => {
+                let d = res.data;
+                base.log("r", "获取机构档案树", d);
+                if (d.success) {
+                    let newTreeData = JSON.parse(JSON.stringify(d.result));
+                    this.formatterTreeData(newTreeData);
+                    this.orgManagerTree.data = newTreeData;
+                } else {
+                    base.error(d);
+                }
+            });
+        },
+        //新增机构--格式化人员档案树
+        formatterTreeData(treeList){
+            for (let i = 0; i < treeList.length; i++) {
+                let temp = treeList[i];
+                if (temp.childOrgList) {
+                    this.formatterTreeData(temp.childOrgList);
+                    if (temp.childArchiveList) {
+                        temp.childArchiveList.forEach(item => {
+                            item.orgName = item.userName; 
+                            item.orgType = "archive"; 
+                        });
+                        temp.childOrgList.push(...temp.childArchiveList);
+                    }
+                } else if (!temp.childOrgList && temp.childArchiveList) {
+                    temp.childArchiveList.forEach(item => {
+                        item.orgName = item.userName;
+                        item.orgType = "archive";
+                    });
+                    temp.childOrgList = temp.childArchiveList;
+                }
+            }
+        },
         //新增机构--弹出弹框
         addOrg() {
             if (this.orgParent.length === 0) {
@@ -1400,11 +1485,13 @@ export default {
             }
             this.getOrgType()
             this.getCodeReq()
+            this.getUserReq()
 
             this.addOrgDialog = true;
             this.addOrgForm.orgName = "";
             this.addOrgForm.orgType = "";
             this.addOrgForm.orgManagerId = "";
+            this.addOrgForm.orgManagerName = "";
             this.addOrgForm.orgParentId = this.orgParent.orgId;
             this.addOrgForm.orgParentName = this.orgParent.orgName;
 
@@ -1647,14 +1734,6 @@ export default {
             }
             document.querySelector("#orgChart").appendChild(orgchart);
         },
-
-        // 模板下载
-        // downloadModle() {
-        //     let url = file["机构导入"];
-        //     if (url) {
-        //         window.open(url, "_self");
-        //     }
-        // },
         // 机构表--导出表格
         downloadTable(searchData, radioData, checkboxData) {
             if (!this.orgParent) {

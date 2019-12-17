@@ -207,6 +207,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const orgRepair_api16    = (data, callback) => {request('get',  `api/masterdata/organization/importToDatabase`, data, callback)};
         const orgRepair_api17    = (data, callback) => {request('get',  `api/masterdata/organization/exportError2Txt`, data, callback,'blob')};
         const orgRepair_api18    = (data, callback) => {request('get',  `api/masterdata/organization/generateOrgCode`, data, callback,)};
+        const orgRepair_api19    = (data, callback) => {request('get',  `api/masterdata/organization/getUserArchiveListByUserName`, data, callback,)};
     
     //用户管理
         //用户信息
@@ -321,7 +322,7 @@ export {
             // 岗位维护
             postRepair_api1,postRepair_api2,postRepair_api3,postRepair_api4,postRepair_api5,postRepair_api6,postRepair_api7,
             postRepair_api8,postRepair_api9,postRepair_api10,postRepair_api11,postRepair_api12,postRepair_api13,postRepair_api14,
-            postRepair_api15,postRepair_api16,postRepair_api17,postRepair_api18,
+            postRepair_api15,postRepair_api16,postRepair_api17,postRepair_api18,orgRepair_api19,
 
         //用户管理
             //用户信息

@@ -71,19 +71,19 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const archives_api2     = (data, callback) => {request('get', `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
 
         //员工台账
-        const archives_ledger_api1     = (data, callback) => {request('get',   `api/masterdata/organization/getAllOrganizationTree`, data, callback)};
-        const archives_ledger_api2     = (data, callback) => {request('form',  `api/masterdata/staffsta/selectMyStandingBook`, data, callback)};
-        const archives_ledger_api3     = (data, callback) => {request('form',  `api/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
-        const archives_ledger_api4     = (data, callback) => {request('post',  `api/masterdata/staffsta/selectStaff`, data, callback)};
-        const archives_ledger_api5     = (data, callback) => {request('get',   `api/masterdata/staffsta/deleteStandingBook`, data, callback)};
-        const archives_ledger_api6     = (data, callback) => {request('post',  `api/masterdata/staffsta/updateStandingBook`, data, callback)};
-        const archives_ledger_api7     = (data, callback) => {request('form',  `api/masterdata/staffarc/selectQueryScheme`, data, callback)};
-        const archives_ledger_api8     = (data, callback) => {request('post',  `api/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
-        const archives_ledger_api9     = (data, callback) => {request('get',   `api/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
-        const archives_ledger_api10     = (data, callback) => {request('post', `api/masterdata/staffarc/saveQueryScheme`, data, callback)};
-        const archives_ledger_api11     = (data, callback) => {request('post', `api/masterdata/staffarc/deleteQueryScheme`, data, callback)};
-        const archives_ledger_api12     = (data, callback) => {request('form', `api/masterdata/staffarc/selectQuerySchemeMessage`, data, callback)};
-        const archives_ledger_api13     = (data, callback) => {request('get',  `api/masterdata/staffarc/setDefaultQuerySchme`, data, callback)};
+        const archives_ledger_api1     = (data, callback) => {request('get',   `hpi/masterdata/organization/getAllOrganizationTree`, data, callback)};
+        const archives_ledger_api2     = (data, callback) => {request('form',  `hpi/masterdata/staffsta/selectMyStandingBook`, data, callback)};
+        const archives_ledger_api3     = (data, callback) => {request('form',  `hpi/masterdata/staffsta/selectMyStandingBookShare`, data, callback)};
+        const archives_ledger_api4     = (data, callback) => {request('post',  `hpi/masterdata/staffsta/selectStaff`, data, callback)};
+        const archives_ledger_api5     = (data, callback) => {request('get',   `hpi/masterdata/staffsta/deleteStandingBook`, data, callback)};
+        const archives_ledger_api6     = (data, callback) => {request('post',  `hpi/masterdata/staffsta/updateStandingBook`, data, callback)};
+        const archives_ledger_api7     = (data, callback) => {request('form',  `hpi/masterdata/staffarc/selectQueryScheme`, data, callback)};
+        const archives_ledger_api8     = (data, callback) => {request('post',  `hpi/masterdata/staffarc/selectCustomTableForArc`, data, callback)};
+        const archives_ledger_api9     = (data, callback) => {request('get',   `hpi/masterdata/staffarc/searchCustomTableGroupFieldListByTableId`, data, callback)};
+        const archives_ledger_api10     = (data, callback) => {request('post', `hpi/masterdata/staffarc/saveQueryScheme`, data, callback)};
+        const archives_ledger_api11     = (data, callback) => {request('post', `hpi/masterdata/staffarc/deleteQueryScheme`, data, callback)};
+        const archives_ledger_api12     = (data, callback) => {request('form', `hpi/masterdata/staffarc/selectQuerySchemeMessage`, data, callback)};
+        const archives_ledger_api13     = (data, callback) => {request('get',  `hpi/masterdata/staffarc/setDefaultQuerySchme`, data, callback)};
 
         //数据导入
         const archives_import_api1       = (data, callback) => {request('post', `api/masterdata/port/importFileAndCheckFileArc`, data, callback)};
@@ -197,7 +197,7 @@ const login_api5 = (data, callback) => {request('form', `api/masterdata/userLogi
         const orgRepair_api7     = (data, callback) => {request('post', `api/masterdata/organization/lockOrganizationByIds`, data, callback)};
         const orgRepair_api8     = (data, callback) => {request('post', `api/masterdata/organization/unlockOrganizationByIds`, data, callback)};
         const orgRepair_api9     = (data, callback) => {request('post', `api/masterdata/organization/mergeOrganization`, data, callback)};
-        const orgRepair_api10    = (data, callback) => {request('post', `api/masterdata/organization/transferOrganization2`, data, callback)};
+        const orgRepair_api10    = (data, callback) => {request('post', `api/masterdata/organization/transferOrganization`, data, callback)};
         const orgRepair_api11    = (data, callback) => {request('get',  `api/masterdata/organization/getOrganizationGraphics`, data, callback)};
         const orgRepair_api12    = (data, callback) => {request('post', `api/masterdata/organization/getDirectOrganizationPageList`, data, callback)};
         const orgRepair_api13    = (data, callback) => {request('post', `api/masterdata/organization/sortOrganization`, data, callback)};

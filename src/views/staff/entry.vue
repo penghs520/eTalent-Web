@@ -1282,6 +1282,7 @@ export default {
             };
             base.log('s', '导出', send);
             entry_api10(send, res => {
+            base.log('r', '导出', res);
                 let blob = new Blob([res.data]);
                 let url = window.URL.createObjectURL(blob);
                 let a = document.createElement("a");

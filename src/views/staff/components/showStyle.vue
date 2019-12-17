@@ -438,6 +438,7 @@ export default {
         styleNodeClick(node){
             this.treeNode = node
             this.tableList = []
+            this.sortList = []
             // 点击树形给sortId赋值
             this.treeData.data.forEach((item,index) => {
                 if(item.sortId){
@@ -500,7 +501,7 @@ export default {
                         item.forEach(sec=>{
                             sec.customFieldVOList.forEach(sub=>{
                                 if(sList.includes(sub.fieldId)){
-                                    sub.sortStatus = sub.orderByRule == "升序" 
+                                    sub.sortStatus = sub.orderByRule == "升序"
                                     sortArr.push(sub)
                                 }
                             })
@@ -546,6 +547,7 @@ export default {
                  base.log("r","设置默认方案",res.data)
                 if(res.data.success){
                     this.$message.success("设置成功")
+                    this.$emit("defaultStyle",this.treeNode.querySchemeId)
                 }else{
                     base.error(res.data)
                 }

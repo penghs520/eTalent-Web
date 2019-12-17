@@ -65,6 +65,7 @@ let base = {
             }else if (response.headers.hasOwnProperty('content-disposition')) {
                 let nameStr = response.headers['content-disposition'];
                 name = nameStr.split('filename=')[1];
+                
             }else{
                 console.error('导出错误--headers中没找到文件名');
                 return false;
